@@ -1,8 +1,5 @@
-#include "N6XBasicLexer.h"
-#include "N6XBasicParser.h"
 #include <QtCore/QCoreApplication>
 #include <QTextCodec>
-#include "CheckerStatus.h"
 
 //static void reportError	(struct ANTLR3_BASE_RECOGNIZER_struct * recognizer)
 //{
