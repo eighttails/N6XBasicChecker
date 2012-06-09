@@ -15,7 +15,8 @@ CONFIG   -= app_bundle
 TEMPLATE = app
 
 
-SOURCES += tst_libn6xbasiccheckertesttest.cpp
+SOURCES += \
+    tst_libn6xbasiccheckertest.cpp
 DEFINES += SRCDIR=\\\"$$PWD/\\\"
 
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../libN6XBasicChecker/release/ -llibN6XBasicChecker

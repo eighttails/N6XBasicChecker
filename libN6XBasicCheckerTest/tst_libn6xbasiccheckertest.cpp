@@ -3,12 +3,12 @@
 #include <string>
 #include "checker.h"
 
-class LibN6XBasicCheckerTestTest : public QObject
+class LibN6XBasicCheckerTest : public QObject
 {
     Q_OBJECT
 
 public:
-    LibN6XBasicCheckerTestTest();
+    LibN6XBasicCheckerTest();
 
 private:
     bool parse(const std::wstring& program, ParserStatus& stat);
@@ -17,17 +17,17 @@ private Q_SLOTS:
 
 };
 
-LibN6XBasicCheckerTestTest::LibN6XBasicCheckerTestTest()
+LibN6XBasicCheckerTest::LibN6XBasicCheckerTest()
 {
 }
 
-bool LibN6XBasicCheckerTestTest::parse(const std::wstring& program, ParserStatus& stat)
+bool LibN6XBasicCheckerTest::parse(const std::wstring& program, ParserStatus& stat)
 {
     Checker checker;
     return checker.parse(program, stat);
 }
 
-void LibN6XBasicCheckerTestTest::testCase1()
+void LibN6XBasicCheckerTest::testCase1()
 {
     ParserStatus stat;
     std::wstring str =
@@ -41,6 +41,6 @@ void LibN6XBasicCheckerTestTest::testCase1()
     QCOMPARE(stat.textLineNumber_,2);
 }
 
-QTEST_APPLESS_MAIN(LibN6XBasicCheckerTestTest);
+QTEST_APPLESS_MAIN(LibN6XBasicCheckerTest);
 
-#include "tst_libn6xbasiccheckertesttest.moc"
+#include "tst_libn6xbasiccheckertest.moc"
