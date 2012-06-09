@@ -1,6 +1,17 @@
+#include <iostream>
+#include <string>
+
+#include <boost/spirit/include/qi.hpp>
+#include <boost/spirit/include/phoenix.hpp>
+#include <boost/spirit/include/phoenix_stl.hpp>
+
+#include <boost/format.hpp>
+
 #include "checker.h"
 
-#include "pch.h"
+namespace qi    = boost::spirit::qi;
+namespace phx   = boost::phoenix;
+namespace sw    = qi::standard_wide;
 
 template <typename Iterator>
 bool program_parse(Iterator first, Iterator last, ParserStatus& status)
@@ -18,10 +29,16 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
             programlist("programlist"),
             line("line"),
             statement("statement");
+    qi::rule<Iterator, sw::blank_type>
+            st_goto("st_goto"),
+            st_print("st_print");
 
     linenumber = uint_;
 
-    statement = lit(L"go") >> lit(L"to") >> linenumber;
+    st_goto = lit(L"go") >> lit(L"to") >> linenumber;
+
+    statement = st_goto;
+            //| st_print;
 
     line = linenumber[ref(status.basicLineNumber_) = _1]
             >> statement

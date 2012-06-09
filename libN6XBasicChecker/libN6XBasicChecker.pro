@@ -26,7 +26,6 @@ unix:!symbian {
 }
 
 HEADERS += \
-    pch.h \
     checker.h
 
 SOURCES += \
