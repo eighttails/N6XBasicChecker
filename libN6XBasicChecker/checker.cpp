@@ -62,15 +62,11 @@ Checker::Checker()
 
 bool Checker::parse(const std::wstring& str, ParserStatus& stat)
 {
-    stat = ParserStatus();
     std::wstring::const_iterator iter = str.begin(), end = str.end();
 
     bool ret = true;
     if (!program_parse(iter, end, stat)) {
-        std::cout << "failed" << std::endl;
         ret = false;
-    }else {
-        std::cout << "success" << std::endl;
     }
     return ret;
 }

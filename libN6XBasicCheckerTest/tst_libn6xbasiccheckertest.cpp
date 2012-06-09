@@ -34,11 +34,13 @@ void LibN6XBasicCheckerTest::testCase1()
             L"10 goto 10: go to10\n"
             "20 goto 20\n";
     QVERIFY(parse(str, stat));
+
     str = L"10 goto 10: go to10\n"
             "20 goo 20\n"
             "30 goto 30\n";
+    stat = ParserStatus();
     QVERIFY(!parse(str, stat));
-    QCOMPARE(stat.textLineNumber_,2);
+    QCOMPARE(stat.textLineNumber_, 2);
 }
 
 QTEST_APPLESS_MAIN(LibN6XBasicCheckerTest);
