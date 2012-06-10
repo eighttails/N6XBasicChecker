@@ -39,6 +39,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
             |	L("時")|L("分")|L("秒")|L("百")|L("千")|L("万")|L("π")
             |	L("┻")|L("┳")|L("┫")|L("┣")|L("╋")|L("┃")|L("━")|L("┏")|L("┓")|L("┗")|L("┛")
             |	L("×")|L("大")|L("中")|L("小")|L("▲")|L("▼")|L("★")|L("◆")|L("○")|L("●");
+
     //かな記号
     StringRule kana_kigou
             =	L("「")|L("」")|L("、")|L("・")|L("゛")|L("゜");
@@ -66,6 +67,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
             |	L("ガ")|L("ギ")|L("グ")|L("ゲ")|L("ゴ")|L("ザ")|L("ジ")|L("ズ")|L("ゼ")|L("ゾ")
             |	L("ダ")|L("ヂ")|L("ヅ")|L("デ")|L("ド")|L("バ")|L("ビ")|L("ブ")|L("ベ")|L("ボ")
             |	L("パ")|L("ピ")|L("プ")|L("ペ")|L("ポ")|L("ヴ");
+
     //半角カナ
     StringRule han_kana
             =	L("ｦ")|L("ｧ")|L("ｨ")|L("ｩ")|L("ｪ")|L("ｫ")|L("ｬ")|L("ｭ")|L("ｮ")|L("ｯ")
@@ -99,6 +101,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     UintRule linenumber = uint_;
 
     //GOTO文
+    //goとtoの間には空白を許容するため、トークンを分ける
     StringRule st_goto = L("go") >> L("to") >> linenumber;
 
     //PRINT文
