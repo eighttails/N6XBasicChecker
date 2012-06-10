@@ -31,7 +31,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     typedef qi::rule<Iterator, unsigned()> UintRule;
     typedef qi::rule<Iterator, int()> IntRule;
     typedef qi::rule<Iterator, float()> FloatRule;
-    typedef qi::rule<Iterator, std::wstring(), sw::blank_type> StringRule;
+    typedef qi::rule<Iterator, sw::blank_type> StringRule;
 
     //グラフィック文字
     StringRule graph
@@ -86,6 +86,9 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
             |	sw::alpha
             |	sw::digit
             |	graph|kana_kigou|hiragana|katakana|han_kana;
+
+    //文字列リテラル(ダブルクオーテーションを含まない)
+    StringRule stringliteral = *(printable - L("\""));
 
     //行番号
     UintRule linenumber = uint_;
