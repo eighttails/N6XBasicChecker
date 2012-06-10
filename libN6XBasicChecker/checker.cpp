@@ -75,6 +75,18 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
             |	L("ﾏ")|L("ﾐ")|L("ﾑ")|L("ﾒ")|L("ﾓ")|L("ﾔ")|L("ﾕ")|L("ﾖ")
             |	L("ﾗ")|L("ﾘ")|L("ﾙ")|L("ﾚ")|L("ﾛ")|L("ﾜ")|L("ﾝ")|L("ﾞ")|L("ﾟ");
 
+    //使用可能な文字
+    StringRule printable
+            =	L(" ")|L("!")|L("\"")|L("#")|L("$")|L("%")|L("&")
+            |	L("'")|L("(")|L(")")|L("*")
+            |	L("+")|L(",")|L("-")|L(".")|L("/")|L(":")|L(";")
+            |	L("<")|L("=")|L(">")|L("?")|L("@")|L("[")|L("\\")
+            |	L("]")|L("^")|L("_")|L("{")
+            |	L("|")|L("}")|L("~")
+            |	sw::alpha
+            |	sw::digit
+            |	graph|kana_kigou|hiragana|katakana|han_kana;
+
     //行番号
     UintRule linenumber = uint_;
 
@@ -88,7 +100,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     //行
     StringRule line = linenumber[ref(status.basicLineNumber_) = _1]
             >> statement
-            >> *(+lit(":") >> statement);
+            >> *(+L(":") >> statement);
 
     bool r = qi::phrase_parse(first, last, line, sw::blank);
 
