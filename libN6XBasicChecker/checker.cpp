@@ -25,22 +25,20 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     using qi::lit;
     using phx::ref;
 
-    qi::rule<Iterator, unsigned()> linenumber("linenumber");
-    qi::rule<Iterator, sw::blank_type>
-            line("line"),
-            statement("statement");
-    qi::rule<Iterator, sw::blank_type>
-            st_goto("st_goto"),
-            st_print("st_print");
+    typedef qi::rule<Iterator, unsigned()> UintRule;
+    typedef qi::rule<Iterator, int()> IntRule;
+    typedef qi::rule<Iterator, float()> FloatRule;
+    typedef qi::rule<Iterator, std::wstring(), sw::blank_type> StringRule;
 
-    linenumber = uint_;
 
-    st_goto = lit(L"go") >> lit(L"to") >> linenumber;
+    UintRule linenumber = uint_;
 
-    statement = st_goto;
+    StringRule st_goto = lit(L"go") >> lit(L"to") >> linenumber;
+
+    StringRule statement = st_goto;
             //| st_print;
 
-    line = linenumber[ref(status.basicLineNumber_) = _1]
+    StringRule line = linenumber[ref(status.basicLineNumber_) = _1]
             >> statement
             >> *(+lit(":") >> statement);
 
@@ -65,7 +63,7 @@ bool Checker::parse(const std::wstring& programList, ParserStatus& stat)
     boost::algorithm::split(list, programList, boost::is_any_of(L"\n"));
 
     bool result = true;
-    for(int i = 0; i < list.size(); i++){
+    for(size_t i = 0; i < list.size(); i++){
         stat.inclementLine();
         const std::wstring line = list[i];
         if (line.empty()) continue;
