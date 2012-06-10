@@ -14,6 +14,9 @@ namespace qi    = boost::spirit::qi;
 namespace phx   = boost::phoenix;
 namespace sw    = qi::standard_wide;
 
+//リテラルパーサー
+#define L(a)    lit(L##a)
+
 template <typename Iterator>
 bool program_parse(Iterator first, Iterator last, ParserStatus& status)
 {
@@ -32,51 +35,51 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
 
     //グラフィック文字
     StringRule graph
-            =    lit(L"月")|lit(L"火")|lit(L"水")|lit(L"木")|lit(L"金")|lit(L"土")|lit(L"日")|lit(L"年")|lit(L"円")
-            |	lit(L"時")|lit(L"分")|lit(L"秒")|lit(L"百")|lit(L"千")|lit(L"万")|lit(L"π")
-            |	lit(L"┻")|lit(L"┳")|lit(L"┫")|lit(L"┣")|lit(L"╋")|lit(L"┃")|lit(L"━")|lit(L"┏")|lit(L"┓")|lit(L"┗")|lit(L"┛")
-            |	lit(L"×")|lit(L"大")|lit(L"中")|lit(L"小")|lit(L"▲")|lit(L"▼")|lit(L"★")|lit(L"◆")|lit(L"○")|lit(L"●");
+            =   L("月")|L("火")|L("水")|L("木")|L("金")|L("土")|L("日")|L("年")|L("円")
+            |	L("時")|L("分")|L("秒")|L("百")|L("千")|L("万")|L("π")
+            |	L("┻")|L("┳")|L("┫")|L("┣")|L("╋")|L("┃")|L("━")|L("┏")|L("┓")|L("┗")|L("┛")
+            |	L("×")|L("大")|L("中")|L("小")|L("▲")|L("▼")|L("★")|L("◆")|L("○")|L("●");
     //かな記号
     StringRule kana_kigou
-            =	lit(L"「")|lit(L"」")|lit(L"、")|lit(L"・")|lit(L"゛")|lit(L"゜");
+            =	L("「")|L("」")|L("、")|L("・")|L("゛")|L("゜");
 
     //ひらがな
     StringRule hiragana
-            =	lit(L"を")|lit(L"ぁ")|lit(L"ぃ")|lit(L"ぅ")|lit(L"ぇ")|lit(L"ぉ")|lit(L"ゃ")|lit(L"ゅ")|lit(L"ょ")|lit(L"っ")
-            |	lit(L"あ")|lit(L"い")|lit(L"う")|lit(L"え")|lit(L"お")|lit(L"か")|lit(L"き")|lit(L"く")|lit(L"け")|lit(L"こ")
-            |	lit(L"さ")|lit(L"し")|lit(L"す")|lit(L"せ")|lit(L"そ")|lit(L"た")|lit(L"ち")|lit(L"つ")|lit(L"て")|lit(L"と")
-            |	lit(L"な")|lit(L"に")|lit(L"ぬ")|lit(L"ね")|lit(L"の")|lit(L"は")|lit(L"ひ")|lit(L"ふ")|lit(L"へ")|lit(L"ほ")
-            |	lit(L"ま")|lit(L"み")|lit(L"む")|lit(L"め")|lit(L"も")|lit(L"や")|lit(L"ゆ")|lit(L"よ")
-            |	lit(L"ら")|lit(L"り")|lit(L"る")|lit(L"れ")|lit(L"ろ")|lit(L"わ")|lit(L"ん")
-            |	lit(L"が")|lit(L"ぎ")|lit(L"ぐ")|lit(L"げ")|lit(L"ご")|lit(L"ざ")|lit(L"じ")|lit(L"ず")|lit(L"ぜ")|lit(L"ぞ")
-            |	lit(L"だ")|lit(L"ぢ")|lit(L"づ")|lit(L"で")|lit(L"ど")|lit(L"ば")|lit(L"び")|lit(L"ぶ")|lit(L"べ")|lit(L"ぼ")
-            |	lit(L"ぱ")|lit(L"ぴ")|lit(L"ぷ")|lit(L"ぺ")|lit(L"ぽ");
+            =	L("を")|L("ぁ")|L("ぃ")|L("ぅ")|L("ぇ")|L("ぉ")|L("ゃ")|L("ゅ")|L("ょ")|L("っ")
+            |	L("あ")|L("い")|L("う")|L("え")|L("お")|L("か")|L("き")|L("く")|L("け")|L("こ")
+            |	L("さ")|L("し")|L("す")|L("せ")|L("そ")|L("た")|L("ち")|L("つ")|L("て")|L("と")
+            |	L("な")|L("に")|L("ぬ")|L("ね")|L("の")|L("は")|L("ひ")|L("ふ")|L("へ")|L("ほ")
+            |	L("ま")|L("み")|L("む")|L("め")|L("も")|L("や")|L("ゆ")|L("よ")
+            |	L("ら")|L("り")|L("る")|L("れ")|L("ろ")|L("わ")|L("ん")
+            |	L("が")|L("ぎ")|L("ぐ")|L("げ")|L("ご")|L("ざ")|L("じ")|L("ず")|L("ぜ")|L("ぞ")
+            |	L("だ")|L("ぢ")|L("づ")|L("で")|L("ど")|L("ば")|L("び")|L("ぶ")|L("べ")|L("ぼ")
+            |	L("ぱ")|L("ぴ")|L("ぷ")|L("ぺ")|L("ぽ");
 
     //カタカナ
     StringRule katakana
-            =	lit(L"ヲ")|lit(L"ァ")|lit(L"ィ")|lit(L"ゥ")|lit(L"ェ")|lit(L"ォ")|lit(L"ャ")|lit(L"ュ")|lit(L"ョ")|lit(L"ッ")
-            |	lit(L"ア")|lit(L"イ")|lit(L"ウ")|lit(L"エ")|lit(L"オ")|lit(L"カ")|lit(L"キ")|lit(L"ク")|lit(L"ケ")|lit(L"コ")
-            |	lit(L"サ")|lit(L"シ")|lit(L"ス")|lit(L"セ")|lit(L"ソ")|lit(L"タ")|lit(L"チ")|lit(L"ツ")|lit(L"テ")|lit(L"ト")
-            |	lit(L"ナ")|lit(L"ニ")|lit(L"ヌ")|lit(L"ネ")|lit(L"ノ")|lit(L"ハ")|lit(L"ヒ")|lit(L"フ")|lit(L"ヘ")|lit(L"ホ")
-            |	lit(L"マ")|lit(L"ミ")|lit(L"ム")|lit(L"メ")|lit(L"モ")|lit(L"ヤ")|lit(L"ユ")|lit(L"ヨ")
-            |	lit(L"ラ")|lit(L"リ")|lit(L"ル")|lit(L"レ")|lit(L"ロ")|lit(L"ワ")|lit(L"ン")
-            |	lit(L"ガ")|lit(L"ギ")|lit(L"グ")|lit(L"ゲ")|lit(L"ゴ")|lit(L"ザ")|lit(L"ジ")|lit(L"ズ")|lit(L"ゼ")|lit(L"ゾ")
-            |	lit(L"ダ")|lit(L"ヂ")|lit(L"ヅ")|lit(L"デ")|lit(L"ド")|lit(L"バ")|lit(L"ビ")|lit(L"ブ")|lit(L"ベ")|lit(L"ボ")
-            |	lit(L"パ")|lit(L"ピ")|lit(L"プ")|lit(L"ペ")|lit(L"ポ")|lit(L"ヴ");
+            =	L("ヲ")|L("ァ")|L("ィ")|L("ゥ")|L("ェ")|L("ォ")|L("ャ")|L("ュ")|L("ョ")|L("ッ")
+            |	L("ア")|L("イ")|L("ウ")|L("エ")|L("オ")|L("カ")|L("キ")|L("ク")|L("ケ")|L("コ")
+            |	L("サ")|L("シ")|L("ス")|L("セ")|L("ソ")|L("タ")|L("チ")|L("ツ")|L("テ")|L("ト")
+            |	L("ナ")|L("ニ")|L("ヌ")|L("ネ")|L("ノ")|L("ハ")|L("ヒ")|L("フ")|L("ヘ")|L("ホ")
+            |	L("マ")|L("ミ")|L("ム")|L("メ")|L("モ")|L("ヤ")|L("ユ")|L("ヨ")
+            |	L("ラ")|L("リ")|L("ル")|L("レ")|L("ロ")|L("ワ")|L("ン")
+            |	L("ガ")|L("ギ")|L("グ")|L("ゲ")|L("ゴ")|L("ザ")|L("ジ")|L("ズ")|L("ゼ")|L("ゾ")
+            |	L("ダ")|L("ヂ")|L("ヅ")|L("デ")|L("ド")|L("バ")|L("ビ")|L("ブ")|L("ベ")|L("ボ")
+            |	L("パ")|L("ピ")|L("プ")|L("ペ")|L("ポ")|L("ヴ");
     //半角カナ
     StringRule han_kana
-            =	lit(L"ｦ")|lit(L"ｧ")|lit(L"ｨ")|lit(L"ｩ")|lit(L"ｪ")|lit(L"ｫ")|lit(L"ｬ")|lit(L"ｭ")|lit(L"ｮ")|lit(L"ｯ")
-            |	lit(L"ｱ")|lit(L"ｲ")|lit(L"ｳ")|lit(L"ｴ")|lit(L"ｵ")|lit(L"ｶ")|lit(L"ｷ")|lit(L"ｸ")|lit(L"ｹ")|lit(L"ｺ")
-            |	lit(L"ｻ")|lit(L"ｼ")|lit(L"ｽ")|lit(L"ｾ")|lit(L"ｿ")|lit(L"ﾀ")|lit(L"ﾁ")|lit(L"ﾂ")|lit(L"ﾃ")|lit(L"ﾄ")
-            |	lit(L"ﾅ")|lit(L"ﾆ")|lit(L"ﾇ")|lit(L"ﾈ")|lit(L"ﾉ")|lit(L"ﾊ")|lit(L"ﾋ")|lit(L"ﾌ")|lit(L"ﾍ")|lit(L"ﾎ")
-            |	lit(L"ﾏ")|lit(L"ﾐ")|lit(L"ﾑ")|lit(L"ﾒ")|lit(L"ﾓ")|lit(L"ﾔ")|lit(L"ﾕ")|lit(L"ﾖ")
-            |	lit(L"ﾗ")|lit(L"ﾘ")|lit(L"ﾙ")|lit(L"ﾚ")|lit(L"ﾛ")|lit(L"ﾜ")|lit(L"ﾝ")|lit(L"ﾞ")|lit(L"ﾟ");
+            =	L("ｦ")|L("ｧ")|L("ｨ")|L("ｩ")|L("ｪ")|L("ｫ")|L("ｬ")|L("ｭ")|L("ｮ")|L("ｯ")
+            |	L("ｱ")|L("ｲ")|L("ｳ")|L("ｴ")|L("ｵ")|L("ｶ")|L("ｷ")|L("ｸ")|L("ｹ")|L("ｺ")
+            |	L("ｻ")|L("ｼ")|L("ｽ")|L("ｾ")|L("ｿ")|L("ﾀ")|L("ﾁ")|L("ﾂ")|L("ﾃ")|L("ﾄ")
+            |	L("ﾅ")|L("ﾆ")|L("ﾇ")|L("ﾈ")|L("ﾉ")|L("ﾊ")|L("ﾋ")|L("ﾌ")|L("ﾍ")|L("ﾎ")
+            |	L("ﾏ")|L("ﾐ")|L("ﾑ")|L("ﾒ")|L("ﾓ")|L("ﾔ")|L("ﾕ")|L("ﾖ")
+            |	L("ﾗ")|L("ﾘ")|L("ﾙ")|L("ﾚ")|L("ﾛ")|L("ﾜ")|L("ﾝ")|L("ﾞ")|L("ﾟ");
 
     //行番号
     UintRule linenumber = uint_;
 
     //GOTO文
-    StringRule st_goto = lit(L"go") >> lit(L"to") >> linenumber;
+    StringRule st_goto = L("go") >> L("to") >> linenumber;
 
     //文
     StringRule statement = st_goto;
