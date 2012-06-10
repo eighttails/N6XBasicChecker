@@ -92,6 +92,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
 
     //文字列式
     //#PENDING 文字列演算、関数
+    //2つ目のダブルクオートの前に「-」が付いているのは、行末のダブルクオートは省略できるという仕様への対応
     StringRule str_exp = L("\"") >> stringliteral >> -L("\"");
 
     //行番号
