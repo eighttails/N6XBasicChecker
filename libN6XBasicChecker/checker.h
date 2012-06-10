@@ -13,7 +13,7 @@ struct ErrorInfo{
     std::wstring info_;
 
     ErrorInfo()
-        : textLineNumber_(1)
+        : textLineNumber_(0)
         , basicLineNumber_(-1)
         {}
 
@@ -39,7 +39,7 @@ struct ParserStatus
     std::vector<ErrorInfo> errorList_;
 
     ParserStatus()
-    : textLineNumber_(1)
+    : textLineNumber_(0)
     , basicLineNumber_(-1)
     {}
 
@@ -55,7 +55,7 @@ class Checker
 {
 public:
     Checker();
-    bool parse(const std::wstring& prog, ParserStatus& stat);
+    bool parse(const std::wstring& programList, ParserStatus& stat);
 };
 
 #endif // CHECKER_H

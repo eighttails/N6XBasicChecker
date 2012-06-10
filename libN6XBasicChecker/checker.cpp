@@ -6,6 +6,7 @@
 #include <boost/spirit/include/phoenix_stl.hpp>
 
 #include <boost/format.hpp>
+#include <boost/algorithm/string.hpp>
 
 #include "checker.h"
 
@@ -26,7 +27,6 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
 
     qi::rule<Iterator, unsigned()> linenumber("linenumber");
     qi::rule<Iterator, sw::blank_type>
-            programlist("programlist"),
             line("line"),
             statement("statement");
     qi::rule<Iterator, sw::blank_type>
@@ -42,12 +42,9 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
 
     line = linenumber[ref(status.basicLineNumber_) = _1]
             >> statement
-            >> *(+lit(":") >> statement)
-            >> qi::eol[ref(status.textLineNumber_)++];
+            >> *(+lit(":") >> statement);
 
-    programlist = +line;
-
-    bool r = qi::phrase_parse(first, last, programlist, sw::blank);
+    bool r = qi::phrase_parse(first, last, line, sw::blank);
 
     if (!r || first != last) {
         return false;
@@ -60,13 +57,25 @@ Checker::Checker()
 {
 }
 
-bool Checker::parse(const std::wstring& str, ParserStatus& stat)
+bool Checker::parse(const std::wstring& programList, ParserStatus& stat)
 {
-    std::wstring::const_iterator iter = str.begin(), end = str.end();
+    stat = ParserStatus();
+    //プログラムを行ごとに分割
+    std::vector<std::wstring> list;
+    boost::algorithm::split(list, programList, boost::is_any_of(L"\n"));
 
-    bool ret = true;
-    if (!program_parse(iter, end, stat)) {
-        ret = false;
+    bool result = true;
+    for(int i = 0; i < list.size(); i++){
+        stat.inclementLine();
+        const std::wstring line = list[i];
+        if (line.empty()) continue;
+        // 1行の構文解析結果を判定
+        std::wstring::const_iterator iter = line.begin(), end = line.end();
+        bool r = program_parse(iter, end, stat);
+        if(!r){
+            stat.errorList_.push_back(ErrorInfo(stat.textLineNumber_, stat.basicLineNumber_, L"構文エラー"));
+        }
+        result &= r;
     }
-    return ret;
+    return result;
 }
