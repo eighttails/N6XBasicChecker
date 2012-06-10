@@ -55,9 +55,15 @@ void LibN6XBasicCheckerTest::testCase1()
     //PRINT文
     programList =
             L"10 print\"abcあいう\n"
-            "20 print\"abcあいう\"\n"
+            "20 print\"abcあいう\":goto10\n"
             "30 ?\"abcあいう\"\n";
     QVERIFY(parse(programList, stat));
+
+    programList =
+            L"10 print\"abcあいう\n"
+            "20 print\"abcあいう\":got10\n"; //エラー
+    QVERIFY(!parse(programList, stat));
+    QVERIFY(stat.errorList_[0].basicLineNumber_ == 20);
 
 }
 
