@@ -90,15 +90,23 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     //文字列リテラル(ダブルクオーテーションを含まない)
     StringRule stringliteral = *(printable - L("\""));
 
+    //文字列式
+    //#PENDING 文字列演算、関数
+    StringRule str_exp = L("\"") >> stringliteral >> -L("\"");
+
     //行番号
     UintRule linenumber = uint_;
 
     //GOTO文
     StringRule st_goto = L("go") >> L("to") >> linenumber;
 
+    //PRINT文
+    StringRule st_print = (L("print")|L("?")) >> str_exp;
+
     //文
-    StringRule statement = st_goto;
-    //| st_print;
+    StringRule statement
+            = st_goto
+            | st_print;
 
     //行
     StringRule line = linenumber[ref(status.basicLineNumber_) = _1]

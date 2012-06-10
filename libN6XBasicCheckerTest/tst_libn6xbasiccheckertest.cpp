@@ -51,6 +51,14 @@ void LibN6XBasicCheckerTest::testCase1()
     QVERIFY(stat.errorList_[0].basicLineNumber_ == 20);
     QVERIFY(stat.errorList_[1].textLineNumber_ ==  5);
     QVERIFY(stat.errorList_[1].basicLineNumber_ == 40);
+
+    //PRINT文
+    programList =
+            L"10 print\"abcあいう\n"
+            "20 print\"abcあいう\"\n"
+            "30 ?\"abcあいう\"\n";
+    QVERIFY(parse(programList, stat));
+
 }
 
 QTEST_APPLESS_MAIN(LibN6XBasicCheckerTest);
