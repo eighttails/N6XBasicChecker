@@ -99,21 +99,25 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     //文字列リテラル(ダブルクオーテーションを含まない)
     StringRule str_literal = *(printable - L("\""));
 
-    StringRule str_group, str_factor, str_expression;
+    StringRule str_group, str_value, str_func, str_expression;
     //文字列グループ
     str_group
             =   '(' >> str_expression >> ')';
-    //文字列項
-    //#PENDING 文字列関数
-    str_factor
+
+    //文字列値
+    str_value
             =   str_var
+            |   str_func
             //2つ目のダブルクオートの前に「-」が付いているのは、行末のダブルクオートは省略できるという仕様への対応
             |   (L("\"") >> str_literal >> -L("\""))
             |   str_group;
 
-
     //文字列式
-    str_expression  = str_factor >> *(('+' >> str_factor));
+    str_expression  = str_value >> *(('+' >> str_value));
+
+    //文字列関数
+    //#PENDING
+    //str_func= ...
 
     //行番号
     UintRule linenumber = uint_;
