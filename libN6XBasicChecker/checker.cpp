@@ -94,7 +94,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     //文字列関連
     StringRule str_group, str_value, str_func, str_expression;
 
-    //数値型変数
+    //数値型変数(5文字まで。識別されるのは2文字まで)
     StringRule num_var = qi::repeat(1, 5)[sw::alpha];
 
     //数値型変数(配列)
@@ -113,6 +113,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
             =   num_func
             |   num_literal
             |   num_group
+            //#PENDING 論理式
             |   num_array_var
             |   num_var;
 
@@ -124,7 +125,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
                                        |(L("/") >> num_value)
                                      );
 
-    //文字列変数
+    //文字列変数($を抜いて5文字まで。識別されるのは2文字まで)
     StringRule str_var = qi::repeat(1, 5)[sw::alpha] >> L("$");
 
     //文字列変数(配列)
