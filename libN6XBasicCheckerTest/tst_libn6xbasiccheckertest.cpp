@@ -35,7 +35,8 @@ void LibN6XBasicCheckerTest::testCase1()
     programList =
             L"10 goto 10: go to10\n"
             "\n"
-            "20 goto 20\n";
+            "20 goto 20\n"
+            ;
     QVERIFY(parse(programList, stat));
 
     //エラー行判定
@@ -44,7 +45,8 @@ void LibN6XBasicCheckerTest::testCase1()
             "20 goo 20\n"       //エラー
             "\n"
             "30 goto 30\n"
-            "40 goto-40\n";     //エラー
+            "40 goto-40\n"     //エラー
+            ;
     QVERIFY(!parse(programList, stat));
     QVERIFY(stat.errorList_.size() == 2);
     QVERIFY(stat.errorList_[0].textLineNumber_ ==  2);
@@ -58,12 +60,15 @@ void LibN6XBasicCheckerTest::testCase1()
             "20 print\"abcあいう\":goto10\n"
             "30 ?\"abcあいう\"\n"
             "40 printabcde $\n"
-            "50 printa$;\"abcあいう\";b$;(a$+b$)\n";
+            "50 printa$;\"abcあいう\";b$;(a$+b$)\n"
+            "60 printa$(1);b$(1,2,3)\n"
+            ;
     QVERIFY(parse(programList, stat));
 
     programList =
             L"10 print\"abcあいう\n"
-            "20 print\"abcあいう\":got10\n"; //エラー
+            "20 print\"abcあいう\":got10\n" //エラー
+            ;
     QVERIFY(!parse(programList, stat));
     QVERIFY(stat.errorList_[0].basicLineNumber_ == 20);
 

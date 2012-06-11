@@ -89,31 +89,69 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
             |	sw::digit
             |	graph|kana_kigou|hiragana|katakana|han_kana;
 
-    //	   expr ::= term ('+' term | '-' term)*
-    //	   term ::= fctr ('*' fctr | '/' fctr)*
-    //	   fctr ::= int | '(' expr ')'
+    //数値関連
+    StringRule num_group, num_value, num_func, num_expression;
+    //文字列関連
+    StringRule str_group, str_value, str_func, str_expression;
+
+    //数値型変数
+    StringRule num_var = qi::repeat(1, 5)[sw::alpha];
+
+    //数値型変数(配列)
+    StringRule num_array_var = num_var >> L("(") >> num_expression >> *(L(",") >> num_expression) >> L(")");
+
+    //数値リテラル
+    StringRule num_literal = double_;
+
+    //数値グループ
+    num_group
+            =   '(' >> num_expression >> ')';
+
+    //数値
+    num_value
+            =   num_func
+            |   num_literal
+            |   num_group
+            |   num_array_var
+            |   num_var;
+
+    //数値式
+    num_expression  = num_value >> *(
+                                       (L("+") >> num_value)
+                                       |(L("-") >> num_value)
+                                       |(L("*") >> num_value)
+                                       |(L("/") >> num_value)
+                                     );
 
     //文字列変数
     StringRule str_var = qi::repeat(1, 5)[sw::alpha] >> L("$");
 
+    //文字列変数(配列)
+    StringRule str_array_var = str_var >> L("(") >> num_expression >> *(L(",") >> num_expression) >> L(")");
+
     //文字列リテラル(ダブルクオーテーションを含まない)
     StringRule str_literal = *(printable - L("\""));
 
-    StringRule str_group, str_value, str_func, str_expression;
     //文字列グループ
     str_group
             =   '(' >> str_expression >> ')';
 
     //文字列値
     str_value
-            =   str_var
-            |   str_func
+            =   str_func
             //2つ目のダブルクオートの前に「-」が付いているのは、行末のダブルクオートは省略できるという仕様への対応
             |   (L("\"") >> str_literal >> -L("\""))
-            |   str_group;
+            |   str_group
+            |   str_array_var
+            |   str_var;
 
     //文字列式
     str_expression  = str_value >> *(('+' >> str_value));
+
+
+    //数値型関数
+    //#PENDING
+    //num_func= ...
 
     //文字列関数
     //#PENDING
