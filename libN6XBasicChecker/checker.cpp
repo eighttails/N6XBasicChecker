@@ -98,6 +98,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     StringRule num_var = qi::repeat(1, 5)[sw::alpha];
 
     //数値型変数(配列)
+    //#PENDING DIM分との間の次元数チェック
     StringRule num_array_var = num_var >> L("(") >> num_expression >> *(L(",") >> num_expression) >> L(")");
 
     //数値リテラル
@@ -127,6 +128,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     StringRule str_var = qi::repeat(1, 5)[sw::alpha] >> L("$");
 
     //文字列変数(配列)
+    //#PENDING DIM分との間の次元数チェック
     StringRule str_array_var = str_var >> L("(") >> num_expression >> *(L(",") >> num_expression) >> L(")");
 
     //文字列リテラル(ダブルクオーテーションを含まない)
