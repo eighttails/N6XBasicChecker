@@ -89,13 +89,31 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
             |	sw::digit
             |	graph|kana_kigou|hiragana|katakana|han_kana;
 
+    //	   expr ::= term ('+' term | '-' term)*
+    //	   term ::= fctr ('*' fctr | '/' fctr)*
+    //	   fctr ::= int | '(' expr ')'
+
+    //文字列変数
+    StringRule str_var = qi::repeat(1, 5)[sw::alpha] >> L("$");
+
     //文字列リテラル(ダブルクオーテーションを含まない)
-    StringRule stringliteral = *(printable - L("\""));
+    StringRule str_literal = *(printable - L("\""));
+
+    StringRule str_group, str_factor, str_expression;
+    //文字列グループ
+    str_group
+            =   '(' >> str_expression >> ')';
+    //文字列項
+    //#PENDING 文字列関数
+    str_factor
+            =   str_var
+            //2つ目のダブルクオートの前に「-」が付いているのは、行末のダブルクオートは省略できるという仕様への対応
+            |   (L("\"") >> str_literal >> -L("\""))
+            |   str_group;
+
 
     //文字列式
-    //#PENDING 文字列演算、関数
-    //2つ目のダブルクオートの前に「-」が付いているのは、行末のダブルクオートは省略できるという仕様への対応
-    StringRule str_exp = L("\"") >> stringliteral >> -L("\"");
+    str_expression  = str_factor >> *(('+' >> str_factor));
 
     //行番号
     UintRule linenumber = uint_;
@@ -105,7 +123,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     StringRule st_goto = L("go") >> L("to") >> linenumber;
 
     //PRINT文
-    StringRule st_print = (L("print")|L("?")) >> str_exp;
+    StringRule st_print = (L("print")|L("?")) >> str_expression >> *(L(";") >> str_expression);
 
     //文
     StringRule statement

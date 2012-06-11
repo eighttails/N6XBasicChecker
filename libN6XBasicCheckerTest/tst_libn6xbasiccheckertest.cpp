@@ -56,7 +56,9 @@ void LibN6XBasicCheckerTest::testCase1()
     programList =
             L"10 print\"abcあいう\n"
             "20 print\"abcあいう\":goto10\n"
-            "30 ?\"abcあいう\"\n";
+            "30 ?\"abcあいう\"\n"
+            "40 printabcde $\n"
+            "50 printa$;\"abcあいう\";b$;(a$+b$)\n";
     QVERIFY(parse(programList, stat));
 
     programList =
