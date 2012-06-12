@@ -95,7 +95,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     StringRule str_group, str_value, str_func, str_expression;
 
     //数値型変数(5文字まで。識別されるのは2文字まで)
-    StringRule num_var = qi::repeat(1, 5)[sw::alpha];
+    StringRule num_var = qi::no_skip[sw::alpha >> qi::repeat(0, 4)[sw::alnum]];
 
     //数値型変数(配列)
     //#PENDING DIM分との間の次元数チェック
@@ -137,7 +137,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
                                      );
 
     //文字列変数($を抜いて5文字まで。識別されるのは2文字まで)
-    StringRule str_var = qi::repeat(1, 5)[sw::alpha] >> L("$");
+    StringRule str_var = qi::no_skip[sw::alpha >> qi::repeat(0, 4)[sw::alnum]] >> L("$");
 
     //文字列変数(配列)
     //#PENDING DIM分との間の次元数チェック
