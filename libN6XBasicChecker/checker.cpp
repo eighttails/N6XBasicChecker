@@ -90,7 +90,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
             |	graph|kana_kigou|hiragana|katakana|han_kana;
 
     //数値関連
-    StringRule num_group, num_value, num_func, num_expression;
+    StringRule num_group, num_value, num_func, num_expression, bool_expression;
     //文字列関連
     StringRule str_group, str_value, str_func, str_expression;
 
@@ -108,14 +108,25 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     num_group
             =   '(' >> num_expression >> ')';
 
+    //論理式
+    bool_expression
+            =   L("(")
+            >>  ((num_expression >> ((L("=") >> num_expression)
+                                    |(L("<>") >> num_expression)
+                                    |(L("<") >> num_expression)
+                                    |(L(">") >> num_expression)))
+            |   (str_expression >> ((L("=") >> str_expression)
+                                    |(L("<>") >> str_expression))))
+            >>  L(")");
+
     //数値
     num_value
             =   num_func
             |   num_literal
             |   num_group
-            //#PENDING 論理式
             |   num_array_var
-            |   num_var;
+            |   num_var
+            |   bool_expression;
 
     //数値式
     num_expression  = num_value >> *(
@@ -151,6 +162,8 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     //文字列式
     str_expression  = str_value >> *(('+' >> str_value));
 
+    //式
+    StringRule expression = str_expression | num_expression;
 
     //数値型関数
     //#PENDING
@@ -168,7 +181,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     StringRule st_goto = L("go") >> L("to") >> linenumber;
 
     //PRINT文
-    StringRule st_print = (L("print")|L("?")) >> str_expression >> *(L(";") >> str_expression);
+    StringRule st_print = (L("print")|L("?")) >> expression >> *(L(";") >> expression);
 
     //文
     StringRule statement
