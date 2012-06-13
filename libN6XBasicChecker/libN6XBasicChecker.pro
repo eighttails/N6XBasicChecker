@@ -10,9 +10,6 @@ TARGET = libN6XBasicChecker
 TEMPLATE = lib
 CONFIG += staticlib
 
-#GCC4.7でコンパイルが通るようになるまでの暫定措置
-QMAKE_CXX = /usr/bin/g++-4.6
-
 PRECOMPILED_HEADER = pch.h
 QMAKE_CXXFLAGS = -std=c++0x
 

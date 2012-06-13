@@ -14,9 +14,6 @@ CONFIG   -= app_bundle
 
 TEMPLATE = app
 
-#GCC4.7でコンパイルが通るようになるまでの暫定措置
-QMAKE_CXX = /usr/bin/g++-4.6
-
 SOURCES += main.cpp
 
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../libN6XBasicChecker/release/ -llibN6XBasicChecker
