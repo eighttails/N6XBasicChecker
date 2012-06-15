@@ -11,7 +11,7 @@ public:
     LibN6XBasicCheckerTest();
 
 private:
-    bool parse(const std::wstring& program, ParserStatus& stat, bool trace = false);
+    bool parse(const std::string& program, ParserStatus& stat, bool trace = false);
 private Q_SLOTS:
     void testCase1();
     void testCase2();
@@ -22,7 +22,7 @@ LibN6XBasicCheckerTest::LibN6XBasicCheckerTest()
 {
 }
 
-bool LibN6XBasicCheckerTest::parse(const std::wstring& program, ParserStatus& stat, bool trace)
+bool LibN6XBasicCheckerTest::parse(const std::string& program, ParserStatus& stat, bool trace)
 {
     Checker checker;
     return checker.parse(program, stat, trace);
@@ -31,10 +31,10 @@ bool LibN6XBasicCheckerTest::parse(const std::wstring& program, ParserStatus& st
 void LibN6XBasicCheckerTest::testCase1()
 {
     ParserStatus stat;
-    std::wstring programList;
+    std::string programList;
     //正常系
     programList =
-            L"10 goto 10: go to10\n"
+            "10 goto 10: go to10\n"
             "\n"
             "20 goto 20\n"
             ;
@@ -42,7 +42,7 @@ void LibN6XBasicCheckerTest::testCase1()
 
     //エラー行判定
     programList =
-            L"10 goto 10: go to10\n"
+            "10 goto 10: go to10\n"
             "20 goo 20\n"       //エラー
             "\n"
             "30 goto 30\n"
@@ -57,7 +57,7 @@ void LibN6XBasicCheckerTest::testCase1()
 
     //PRINT文
     programList =
-            L"10 print\"abcあいう\n"
+            "10 print\"abcあいう\n"
             "20 print\"abcあいう\":goto10\n"
             "30 ?\"abcあいう\"\n"
             "40 printabcde $\n"
@@ -68,7 +68,7 @@ void LibN6XBasicCheckerTest::testCase1()
     QVERIFY(parse(programList, stat, true));
 
     programList =
-            L"10 print\"abcあいう\n"
+            "10 print\"abcあいう\n"
             "20 print\"abcあいう\":got10\n" //エラー
             ;
     QVERIFY(!parse(programList, stat));
@@ -81,10 +81,10 @@ void LibN6XBasicCheckerTest::testCase2()
     //モード4までの対応とのことだが、構文系のテストとして利用させていただきます。
 
     ParserStatus stat;
-    std::wstring programList;
+    std::string programList;
     //正常系
     programList =
-            L"100 goto100" //#PENDING REM文でも入れる
+            "100 goto100" //#PENDING REM文でも入れる
 //            "110 A=1:A$=\"11\":C=EXP(1):D$=MID$(INKEY$,1,2)\n"
 //            "120 A$=\"11\"+\"33\":B$=INKEY$+LEFT$(\"aa\",1)\n"
 //            "130 A$=\"1\"+\"a\"+\"BB\"+LEFT$(\"AA\",1)+MID$(B$,1,2)+\"11\"\n"
@@ -110,7 +110,7 @@ void LibN6XBasicCheckerTest::testCase2()
 
     //異常系
     programList =
-            L"500 A$=\"1\",\"b\":B$=\"AA\"+\n"
+            "500 A$=\"1\",\"b\":B$=\"AA\"+\n"
             "510 A=1+:B=111TO\n"
             "520 COLORA$=B$+1:COLORB$+1=A$\n"
             "530 COLORA$=B$*1:COLORB$*1=A$\n"

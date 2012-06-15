@@ -10,14 +10,14 @@ struct ErrorInfo{
     //BASICリスト内の行番号
     int basicLineNumber_;
     //エラー内容
-    std::wstring info_;
+    std::string info_;
 
     ErrorInfo()
         : textLineNumber_(0)
         , basicLineNumber_(-1)
         {}
 
-    ErrorInfo(unsigned textLineNumber, int basicLineNumber, std::wstring info)
+    ErrorInfo(unsigned textLineNumber, int basicLineNumber, std::string info)
         : textLineNumber_(textLineNumber)
         , basicLineNumber_(basicLineNumber)
         , info_(info)
@@ -55,7 +55,7 @@ class Checker
 {
 public:
     Checker();
-    bool parse(const std::wstring& programList, ParserStatus& stat, bool trace = false);
+    bool parse(const std::string& programList, ParserStatus& stat, bool trace = false);
 };
 
 #endif // CHECKER_H

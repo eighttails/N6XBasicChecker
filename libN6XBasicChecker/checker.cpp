@@ -15,7 +15,7 @@ namespace phx   = boost::phoenix;
 namespace sw    = qi::standard_wide;
 
 //リテラルパーサー
-#define L(a)    lit(L##a)
+#define L(a)    lit(a)
 
 template <typename Iterator>
 bool program_parse(Iterator first, Iterator last, ParserStatus& status)
@@ -266,26 +266,26 @@ void print_info(boost::spirit::info const& what)
     boost::apply_visitor(walker, what.value);
 }
 
-bool Checker::parse(const std::wstring& programList, ParserStatus& stat, bool trace)
+bool Checker::parse(const std::string& programList, ParserStatus& stat, bool trace)
 {
     stat = ParserStatus();
     //プログラムを行ごとに分割
-    std::vector<std::wstring> list;
+    std::vector<std::string> list;
     boost::algorithm::split(list, programList, boost::is_any_of(L"\n"));
 
     bool result = true;
     for(size_t i = 0; i < list.size(); i++){
         stat.inclementLine();
-        const std::wstring line = list[i];
+        const std::string line = list[i];
         if (line.empty()) continue;
         // 1行の構文解析結果を判定
-        std::wstring::const_iterator iter = line.begin(), end = line.end();
+        std::string::const_iterator iter = line.begin(), end = line.end();
 
         bool r = true;
         try{
             program_parse(iter, end, stat);
         }
-        catch (qi::expectation_failure<std::wstring::const_iterator> const& x)
+        catch (qi::expectation_failure<std::string::const_iterator> const& x)
         {
             if(trace){
                 std::cout << "expected: "; print_info(x.what_);
@@ -293,7 +293,7 @@ bool Checker::parse(const std::wstring& programList, ParserStatus& stat, bool tr
                 std::cout << "textLine: " << stat.textLineNumber_ << std::endl;
                 std::cout << "basicline: " << stat.basicLineNumber_ << std::endl;
             }
-            stat.errorList_.push_back(ErrorInfo(stat.textLineNumber_, stat.basicLineNumber_, L"構文エラー"));
+            stat.errorList_.push_back(ErrorInfo(stat.textLineNumber_, stat.basicLineNumber_, "構文エラー"));
             r = false;
         }
 
