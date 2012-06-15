@@ -103,7 +103,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
 
     //数値型変数(5文字まで。識別されるのは2文字まで)
     DEF_STR_RULE(num_var)
-            =   qi::no_skip[sw::alpha > qi::repeat(0, 4)[sw::alnum]];
+            =   qi::no_skip[sw::alpha >> qi::repeat(0, 4)[sw::alnum]];
 
     //数値型変数(配列)
     //#PENDING DIM分との間の次元数チェック
