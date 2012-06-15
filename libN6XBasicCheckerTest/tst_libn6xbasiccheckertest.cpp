@@ -38,7 +38,7 @@ void LibN6XBasicCheckerTest::testCase1()
             "\n"
             "20 goto 20\n"
             ;
-    QVERIFY(parse(programList, stat));
+    QVERIFY(parse(programList, stat, true));
 
     //エラー行判定
     programList =
