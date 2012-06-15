@@ -108,7 +108,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     //数値型変数(配列)
     //#PENDING DIM分との間の次元数チェック
     DEF_STR_RULE(num_array_var)
-            =   num_var > L("(") >> num_expression >> *(L(",") >> num_expression) >> L(")");
+            =   num_var > L("(") > num_expression >> *(L(",") > num_expression) > L(")");
 
     //数値リテラル
     DEF_STR_RULE(num_literal)
@@ -132,7 +132,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
             |   L("^");
 
     DEF_STR_RULE(num_arithmetic_expression)
-            =   num_value >> *(arithmetic_operator >> num_value);
+            =   num_value >> *(arithmetic_operator > num_value);
 
     //関係式
     DEF_STR_RULE(rel_operator)
@@ -158,7 +158,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
 
     //数値グループ
     DEF_STR_RULE2(num_group)
-            =   L("(") >> num_expression >> L(")") ;
+            =   L("(") > num_expression > L(")") ;
 
     //文字列変数($を抜いて5文字まで。識別されるのは2文字まで)
     DEF_STR_RULE(str_var)
@@ -167,7 +167,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     //文字列変数(配列)
     //#PENDING DIM分との間の次元数チェック
     DEF_STR_RULE(str_array_var)
-            =   str_var >> L("(") >> num_expression >> *(L(",") >> num_expression) >> L(")");
+            =   str_var >> L("(") > num_expression >> *(L(",") > num_expression) > L(")");
 
     //文字列リテラル(ダブルクオーテーションを含まない)
     DEF_STR_RULE(str_literal)
@@ -178,7 +178,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
 
     //文字列グループ
     DEF_STR_RULE(str_group)
-            =   L("(") >> str_expression >> L(")");
+            =   L("(") > str_expression > L(")");
 
     //文字列値
     DEF_STR_RULE(str_value)
@@ -191,7 +191,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
 
     //文字列式
     DEF_STR_RULE2(str_expression)
-            =   str_value >> *(('+' >> str_value));
+            =   str_value >> *(('+' > str_value));
 
     //式
     DEF_STR_RULE(expression)
@@ -211,11 +211,11 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     //GOTO文
     //goとtoの間には空白を許容するため、トークンを分ける
     DEF_STR_RULE(st_goto)
-            =   L("go") >> L("to") >> linenumber;
+            =   L("go") > L("to") > linenumber;
 
     //PRINT文
     DEF_STR_RULE(st_print)
-            =   (L("print")|L("?")) >> expression >> *(L(";") >> expression);
+            =   (L("print")|L("?")) >> expression >> *(L(";") > expression);
 
     //文
     DEF_STR_RULE(statement)
@@ -225,8 +225,8 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     //行
     DEF_STR_RULE(line)
             =   linenumber[ref(status.basicLineNumber_) = _1]
-            >>  statement
-            >>  *(+L(":") >> statement);
+            >  statement
+            >>  *(+L(":") > statement);
 
 
     bool r = qi::phrase_parse(first, last, line, sw::blank);
@@ -240,6 +240,31 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
 
 Checker::Checker()
 {
+}
+
+struct printer
+{
+    typedef boost::spirit::utf8_string string;
+
+    void element(string const& tag, string const& value, int depth) const
+    {
+        for (int i = 0; i < (depth*4); ++i) // indent to depth
+            std::cout << ' ';
+
+        std::cout << "tag: " << tag;
+        if (value != "")
+            std::cout << ", value: " << value;
+        std::cout << std::endl;
+    }
+};
+
+void print_info(boost::spirit::info const& what)
+{
+    using boost::spirit::basic_info_walker;
+
+    printer pr;
+    basic_info_walker<printer> walker(pr, what.tag, 0);
+    boost::apply_visitor(walker, what.value);
 }
 
 bool Checker::parse(const std::wstring& programList, ParserStatus& stat)
@@ -256,10 +281,19 @@ bool Checker::parse(const std::wstring& programList, ParserStatus& stat)
         if (line.empty()) continue;
         // 1行の構文解析結果を判定
         std::wstring::const_iterator iter = line.begin(), end = line.end();
-        bool r = program_parse(iter, end, stat);
-        if(!r){
-            stat.errorList_.push_back(ErrorInfo(stat.textLineNumber_, stat.basicLineNumber_, L"構文エラー"));
+
+        bool r = true;
+        try{
+            program_parse(iter, end, stat);
         }
+        catch (qi::expectation_failure<std::wstring::const_iterator> const& x)
+        {
+            std::cout << "expected: "; print_info(x.what_);
+            std::cout << "got: \"" << std::string(x.first, x.last) << '"' << std::endl;
+            stat.errorList_.push_back(ErrorInfo(stat.textLineNumber_, stat.basicLineNumber_, L"構文エラー"));
+            r = false;
+        }
+
         result &= r;
     }
     return result;
