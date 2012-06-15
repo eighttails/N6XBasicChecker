@@ -191,7 +191,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
 
     //文字列式
     DEF_STR_RULE2(str_expression)
-            =   str_value >> *(('+' > str_value));
+            =   str_value >> *(L("+") > str_value);
 
     //式
     DEF_STR_RULE(expression)
