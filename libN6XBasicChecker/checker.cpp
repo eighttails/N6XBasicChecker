@@ -116,8 +116,8 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
 
     //数値
     DEF_STR_RULE(num_value)
-            =   num_func
-            |   num_literal
+            =   /*num_func
+            |*/   num_literal
             |   num_array_var
             |   num_var
             |   num_expression
@@ -146,8 +146,10 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
             |   L(">=")
             |   L("=>");
 
+    DEC_STR_RULE(str_expression);
     DEF_STR_RULE(rel_expression)
-            =   num_arithmetic_expression >> *(rel_operator > num_arithmetic_expression);
+            =   (num_arithmetic_expression >> *(rel_operator > num_arithmetic_expression))
+            |   (str_expression >> *(rel_operator > str_expression));
 
     //論理式
     //#PENDING
@@ -167,13 +169,12 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     //文字列変数(配列)
     //#PENDING DIM分との間の次元数チェック
     DEF_STR_RULE(str_array_var)
-            =   str_var >> L("(") > num_expression >> *(L(",") > num_expression) > L(")");
+            =   str_var > L("(") > num_expression >> *(L(",") > num_expression) > L(")");
 
     //文字列リテラル(ダブルクオーテーションを含まない)
     DEF_STR_RULE(str_literal)
             =   *(printable - L("\""));
 
-    DEC_STR_RULE(str_expression);
     DEC_STR_RULE(str_func);
 
     //文字列グループ
@@ -182,12 +183,12 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
 
     //文字列値
     DEF_STR_RULE(str_value)
-            =   str_func
+            =   /*str_func
             //2つ目のダブルクオートの前に「-」が付いているのは、行末のダブルクオートは省略できるという仕様への対応
-            |   (L("\"") >> str_literal >> -L("\""))
-            |   str_group
+            |   */(L("\"") >> str_literal >> -L("\""))
+            |   str_var
             |   str_array_var
-            |   str_var;
+            |   str_group;
 
     //文字列式
     DEF_STR_RULE2(str_expression)
@@ -228,7 +229,6 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
             >  statement
             >>  *(+L(":") > statement);
 
-
     bool r = qi::phrase_parse(first, last, line, sw::blank);
 
     if (!r || first != last) {
@@ -267,7 +267,7 @@ void print_info(boost::spirit::info const& what)
     boost::apply_visitor(walker, what.value);
 }
 
-bool Checker::parse(const std::wstring& programList, ParserStatus& stat)
+bool Checker::parse(const std::wstring& programList, ParserStatus& stat, bool trace)
 {
     stat = ParserStatus();
     //プログラムを行ごとに分割
@@ -288,8 +288,12 @@ bool Checker::parse(const std::wstring& programList, ParserStatus& stat)
         }
         catch (qi::expectation_failure<std::wstring::const_iterator> const& x)
         {
-            std::cout << "expected: "; print_info(x.what_);
-            std::cout << "got: \"" << std::string(x.first, x.last) << '"' << std::endl;
+            if(trace){
+                std::cout << "expected: "; print_info(x.what_);
+                std::cout << "got: " << std::string(x.first, x.last) << std::endl;
+                std::cout << "textLine: " << stat.textLineNumber_ << std::endl;
+                std::cout << "basicline: " << stat.basicLineNumber_ << std::endl;
+            }
             stat.errorList_.push_back(ErrorInfo(stat.textLineNumber_, stat.basicLineNumber_, L"構文エラー"));
             r = false;
         }

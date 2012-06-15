@@ -55,7 +55,7 @@ class Checker
 {
 public:
     Checker();
-    bool parse(const std::wstring& programList, ParserStatus& stat);
+    bool parse(const std::wstring& programList, ParserStatus& stat, bool trace = false);
 };
 
 #endif // CHECKER_H

@@ -11,7 +11,7 @@ public:
     LibN6XBasicCheckerTest();
 
 private:
-    bool parse(const std::wstring& program, ParserStatus& stat);
+    bool parse(const std::wstring& program, ParserStatus& stat, bool trace = false);
 private Q_SLOTS:
     void testCase1();
     void testCase2();
@@ -22,10 +22,10 @@ LibN6XBasicCheckerTest::LibN6XBasicCheckerTest()
 {
 }
 
-bool LibN6XBasicCheckerTest::parse(const std::wstring& program, ParserStatus& stat)
+bool LibN6XBasicCheckerTest::parse(const std::wstring& program, ParserStatus& stat, bool trace)
 {
     Checker checker;
-    return checker.parse(program, stat);
+    return checker.parse(program, stat, trace);
 }
 
 void LibN6XBasicCheckerTest::testCase1()
@@ -65,7 +65,7 @@ void LibN6XBasicCheckerTest::testCase1()
             "60 printa$(1);b$(1,2,3)\n"
             "70 print(a$=\"1\")\n"
             ;
-    QVERIFY(parse(programList, stat));
+    QVERIFY(parse(programList, stat, true));
 
     programList =
             L"10 print\"abcあいう\n"
