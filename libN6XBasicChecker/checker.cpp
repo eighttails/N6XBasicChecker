@@ -108,7 +108,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     //数値型変数(配列)
     //#PENDING DIM分との間の次元数チェック
     DEF_STR_RULE(num_array_var)
-            =   num_var > L("(") > num_expression >> *(L(",") > num_expression) > L(")");
+            =   num_var >> L("(") > num_expression >> *(L(",") > num_expression) > L(")");
 
     //数値リテラル
     DEF_STR_RULE(num_literal)
@@ -116,11 +116,10 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
 
     //数値
     DEF_STR_RULE(num_value)
-            =   /*num_func
-            |*/   num_literal
+            =   num_func
+            |   num_literal
             |   num_array_var
             |   num_var
-            |   num_expression
             |   num_group;
 
     //算術式
@@ -148,8 +147,8 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
 
     DEC_STR_RULE(str_expression);
     DEF_STR_RULE(rel_expression)
-            =   (num_arithmetic_expression >> *(rel_operator > num_arithmetic_expression))
-            |   (str_expression >> *(rel_operator > str_expression));
+            =   (str_expression >> *(rel_operator > str_expression))
+            |   (num_arithmetic_expression >> *(rel_operator > num_arithmetic_expression));
 
     //論理式
     //#PENDING
@@ -160,7 +159,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
 
     //数値グループ
     DEF_STR_RULE2(num_group)
-            =   L("(") > num_expression > L(")") ;
+            =   L("(") >> num_expression >> L(")") ;
 
     //文字列変数($を抜いて5文字まで。識別されるのは2文字まで)
     DEF_STR_RULE(str_var)
@@ -169,7 +168,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     //文字列変数(配列)
     //#PENDING DIM分との間の次元数チェック
     DEF_STR_RULE(str_array_var)
-            =   str_var > L("(") > num_expression >> *(L(",") > num_expression) > L(")");
+            =   str_var >> L("(") > num_expression >> *(L(",") > num_expression) > L(")");
 
     //文字列リテラル(ダブルクオーテーションを含まない)
     DEF_STR_RULE(str_literal)
@@ -179,15 +178,15 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
 
     //文字列グループ
     DEF_STR_RULE(str_group)
-            =   L("(") > str_expression > L(")");
+            =   L("(") >> str_expression >> L(")");
 
     //文字列値
     DEF_STR_RULE(str_value)
-            =   /*str_func
+            =   str_func
             //2つ目のダブルクオートの前に「-」が付いているのは、行末のダブルクオートは省略できるという仕様への対応
-            |   */(L("\"") >> str_literal >> -L("\""))
-            |   str_var
+            |   (L("\"") > str_literal > -L("\""))
             |   str_array_var
+            |   str_var
             |   str_group;
 
     //文字列式
@@ -212,7 +211,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     //GOTO文
     //goとtoの間には空白を許容するため、トークンを分ける
     DEF_STR_RULE(st_goto)
-            =   L("go") > L("to") > linenumber;
+            =   L("go") >> L("to") > linenumber;
 
     //PRINT文
     DEF_STR_RULE(st_print)
