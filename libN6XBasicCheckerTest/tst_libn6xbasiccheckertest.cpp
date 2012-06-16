@@ -64,6 +64,7 @@ void LibN6XBasicCheckerTest::testCase1()
             "50 printa$;\"abcあいう\";b$;(a$+b$)\n"
             "60 printa$(1);b$(1,2,3)\n"
             "70 print(a$=\"1\"):print(a+b=1)\n"
+            "80 printnot(a$=\"1\"):printnot-a=1:print-a\n"
             ;
     QVERIFY(parse(programList, stat, true));
 

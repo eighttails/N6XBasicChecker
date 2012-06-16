@@ -114,7 +114,10 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
             |   num_group;
 
     //単項式
-
+    StringRule unary_expression
+            =   num_value
+            |   (L("-") >> num_value)
+            |   (L("not") >> num_value);
 
     //算術式
     StringRule arithmetic_operator
@@ -125,7 +128,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
             |   L("^");
 
     StringRule num_arithmetic_expression
-            =   num_value >> *(arithmetic_operator > num_value);
+            =   unary_expression >> *(arithmetic_operator > unary_expression);
 
     //関係式
     StringRule rel_operator
