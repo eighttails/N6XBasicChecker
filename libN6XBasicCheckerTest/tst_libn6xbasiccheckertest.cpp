@@ -88,7 +88,6 @@ void LibN6XBasicCheckerTest::testCase2()
     std::string programList;
     //正常系
     programList =
-            "100 goto100" //#PENDING REM文でも入れる
 //            "110 A=1:A$=\"11\":C=EXP(1):D$=MID$(INKEY$,1,2)\n"
 //            "120 A$=\"11\"+\"33\":B$=INKEY$+LEFT$(\"aa\",1)\n"
 //            "130 A$=\"1\"+\"a\"+\"BB\"+LEFT$(\"AA\",1)+MID$(B$,1,2)+\"11\"\n"
@@ -97,7 +96,7 @@ void LibN6XBasicCheckerTest::testCase2()
             "160 A=1=2:A=1<>2:A=1><2:A=1>2:A=1<2:A=1>=2:A=1=>2:A=1<=2:A=1=<2\n"
             "170 A=1^2:A=1-2:A=1*2:A=1/2:A=1+2:A=1AND2:A=1OR2\n"
             "180 A=NANDA:B=NORS\n"
-//            "190 A=-1+2:B=-1.2*2+1:C=+111*2:D=NOTA+NOTB\n"
+            "190 A=-1+2:B=-1.2*2+1:C=+111*2:D=NOTA+NOTB\n"
 //            "200 COLORA$=B$:IFA$=\"A\"+\"B\"THEN110\n"
 //            "210 COLORA$=B$+\"A\"\n"
 //            "220 COLOR1+2:COLORA=B:COLORA$=\"AA\"\n"

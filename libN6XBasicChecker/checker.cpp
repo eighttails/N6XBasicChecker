@@ -135,15 +135,15 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
 
     //関係式
     StringRule rel_operator
-            =   L("=")
-            |   L("<>")
+            =   L("<>")
             |   L("><")
-            |   L("<")
-            |   L(">")
             |   L("<=")
-            |   L("=>")
+            |   L("=<")
             |   L(">=")
-            |   L("=>");
+            |   L("=>")
+            |   L("=")
+            |   L("<")
+            |   L(">");
 
     StringRule str_expression;
     StringRule rel_expression
@@ -153,8 +153,8 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     //論理式
     StringRule logical_operator
             =   L("and")
-            |   L("or")
-            |   L("xor");
+            |   L("xor")
+            |   L("or");
     StringRule logical_expression
             =   (rel_expression >> *(logical_operator > rel_expression));
 
