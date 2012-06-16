@@ -125,7 +125,9 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
             |   L("-")
             |   L("*")
             |   L("/")
-            |   L("^");
+            |   L("^")
+            |   L("\\") //整数除算
+            |   L("mod");
 
     StringRule num_arithmetic_expression
             =   unary_expression >> *(arithmetic_operator > unary_expression);
@@ -148,11 +150,16 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
             |   (num_arithmetic_expression >> *(rel_operator > num_arithmetic_expression));
 
     //論理式
-    //#PENDING
+    StringRule logical_operator
+            =   L("and")
+            |   L("or")
+            |   L("xor");
+    StringRule logical_expression
+            =   (rel_expression >> *(logical_operator > rel_expression));
 
     //数値式
     num_expression
-            =   rel_expression.alias();
+            =   logical_expression.alias();
 
     //数値グループ
     num_group

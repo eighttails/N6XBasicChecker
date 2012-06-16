@@ -65,6 +65,7 @@ void LibN6XBasicCheckerTest::testCase1()
             "60 printa$(1);b$(1,2,3)\n"
             "70 print(a$=\"1\"):print(a+b=1)\n"
             "80 printnot(a$=\"1\"):printnot-a=1:print-a\n"
+            "90 printa and b:printa or b:print a xor b\n"
             ;
     QVERIFY(parse(programList, stat, true));
 
