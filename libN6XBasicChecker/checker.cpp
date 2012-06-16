@@ -33,26 +33,19 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     typedef qi::rule<Iterator, float()> FloatRule;
     typedef qi::rule<Iterator, sw::blank_type> StringRule;
 
-    //ルール宣言
-#define DEF_STR_RULE(rule) StringRule rule; rule.name(#rule); rule
-
-    //ルール宣言(前方宣言あり)
-#define DEC_STR_RULE(rule) StringRule rule; rule.name(#rule);
-#define DEF_STR_RULE2(rule) rule
-
     //グラフィック文字
-    DEF_STR_RULE(graph)
+    StringRule graph
             =   L("月")|L("火")|L("水")|L("木")|L("金")|L("土")|L("日")|L("年")|L("円")
             |	L("時")|L("分")|L("秒")|L("百")|L("千")|L("万")|L("π")
             |	L("┻")|L("┳")|L("┫")|L("┣")|L("╋")|L("┃")|L("━")|L("┏")|L("┓")|L("┗")|L("┛")
             |	L("×")|L("大")|L("中")|L("小")|L("▲")|L("▼")|L("★")|L("◆")|L("○")|L("●");
 
     //かな記号
-    DEF_STR_RULE(kana_kigou)
+    StringRule kana_kigou
             =	L("「")|L("」")|L("、")|L("・")|L("゛")|L("゜");
 
     //ひらがな
-    DEF_STR_RULE(hiragana)
+    StringRule hiragana
             =	L("を")|L("ぁ")|L("ぃ")|L("ぅ")|L("ぇ")|L("ぉ")|L("ゃ")|L("ゅ")|L("ょ")|L("っ")
             |	L("あ")|L("い")|L("う")|L("え")|L("お")|L("か")|L("き")|L("く")|L("け")|L("こ")
             |	L("さ")|L("し")|L("す")|L("せ")|L("そ")|L("た")|L("ち")|L("つ")|L("て")|L("と")
@@ -64,7 +57,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
             |	L("ぱ")|L("ぴ")|L("ぷ")|L("ぺ")|L("ぽ");
 
     //カタカナ
-    DEF_STR_RULE(katakana)
+    StringRule katakana
             =	L("ヲ")|L("ァ")|L("ィ")|L("ゥ")|L("ェ")|L("ォ")|L("ャ")|L("ュ")|L("ョ")|L("ッ")
             |	L("ア")|L("イ")|L("ウ")|L("エ")|L("オ")|L("カ")|L("キ")|L("ク")|L("ケ")|L("コ")
             |	L("サ")|L("シ")|L("ス")|L("セ")|L("ソ")|L("タ")|L("チ")|L("ツ")|L("テ")|L("ト")
@@ -76,7 +69,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
             |	L("パ")|L("ピ")|L("プ")|L("ペ")|L("ポ")|L("ヴ");
 
     //半角カナ
-    DEF_STR_RULE(han_kana)
+    StringRule han_kana
             =	L("ｦ")|L("ｧ")|L("ｨ")|L("ｩ")|L("ｪ")|L("ｫ")|L("ｬ")|L("ｭ")|L("ｮ")|L("ｯ")
             |	L("ｱ")|L("ｲ")|L("ｳ")|L("ｴ")|L("ｵ")|L("ｶ")|L("ｷ")|L("ｸ")|L("ｹ")|L("ｺ")
             |	L("ｻ")|L("ｼ")|L("ｽ")|L("ｾ")|L("ｿ")|L("ﾀ")|L("ﾁ")|L("ﾂ")|L("ﾃ")|L("ﾄ")
@@ -85,7 +78,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
             |	L("ﾗ")|L("ﾘ")|L("ﾙ")|L("ﾚ")|L("ﾛ")|L("ﾜ")|L("ﾝ")|L("ﾞ")|L("ﾟ");
 
     //使用可能な文字
-    DEF_STR_RULE(printable)
+    StringRule printable
             =	L(" ")|L("!")|L("\"")|L("#")|L("$")|L("%")|L("&")
             |	L("'")|L("(")|L(")")|L("*")
             |	L("+")|L(",")|L("-")|L(".")|L("/")|L(":")|L(";")
@@ -97,44 +90,45 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
             |	graph|kana_kigou|hiragana|katakana|han_kana;
 
     //数値関連
-    DEC_STR_RULE(num_expression);
-    DEC_STR_RULE(num_func);
-    DEC_STR_RULE(num_group);
+    StringRule num_expression, num_func, num_group;
 
     //数値型変数(5文字まで。識別されるのは2文字まで)
-    DEF_STR_RULE(num_var)
+    StringRule num_var
             =   qi::no_skip[sw::alpha >> qi::repeat(0, 4)[sw::alnum]];
 
     //数値型変数(配列)
     //#PENDING DIM分との間の次元数チェック
-    DEF_STR_RULE(num_array_var)
+    StringRule num_array_var
             =   num_var >> L("(") > num_expression >> *(L(",") > num_expression) > L(")");
 
     //数値リテラル
-    DEF_STR_RULE(num_literal)
+    StringRule num_literal
             =   double_;
 
     //数値
-    DEF_STR_RULE(num_value)
+    StringRule num_value
             =   num_func
             |   num_literal
             |   num_array_var
             |   num_var
             |   num_group;
 
+    //単項式
+
+
     //算術式
-    DEF_STR_RULE(arithmetic_operator)
+    StringRule arithmetic_operator
             =   L("+")
             |   L("-")
             |   L("*")
             |   L("/")
             |   L("^");
 
-    DEF_STR_RULE(num_arithmetic_expression)
+    StringRule num_arithmetic_expression
             =   num_value >> *(arithmetic_operator > num_value);
 
     //関係式
-    DEF_STR_RULE(rel_operator)
+    StringRule rel_operator
             =   L("=")
             |   L("<>")
             |   L("><")
@@ -145,8 +139,8 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
             |   L(">=")
             |   L("=>");
 
-    DEC_STR_RULE(str_expression);
-    DEF_STR_RULE(rel_expression)
+    StringRule str_expression;
+    StringRule rel_expression
             =   (str_expression >> *(rel_operator > str_expression))
             |   (num_arithmetic_expression >> *(rel_operator > num_arithmetic_expression));
 
@@ -154,34 +148,34 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     //#PENDING
 
     //数値式
-    DEF_STR_RULE2(num_expression)
+    num_expression
             =   rel_expression.alias();
 
     //数値グループ
-    DEF_STR_RULE2(num_group)
+    num_group
             =   L("(") >> num_expression >> L(")") ;
 
     //文字列変数($を抜いて5文字まで。識別されるのは2文字まで)
-    DEF_STR_RULE(str_var)
+    StringRule str_var
             =   qi::no_skip[sw::alpha >> qi::repeat(0, 4)[sw::alnum]] >> L("$");
 
     //文字列変数(配列)
     //#PENDING DIM分との間の次元数チェック
-    DEF_STR_RULE(str_array_var)
+    StringRule str_array_var
             =   str_var >> L("(") > num_expression >> *(L(",") > num_expression) > L(")");
 
     //文字列リテラル(ダブルクオーテーションを含まない)
-    DEF_STR_RULE(str_literal)
+    StringRule str_literal
             =   *(printable - L("\""));
 
-    DEC_STR_RULE(str_func);
+    StringRule str_func;
 
     //文字列グループ
-    DEF_STR_RULE(str_group)
+    StringRule str_group
             =   L("(") >> str_expression >> L(")");
 
     //文字列値
-    DEF_STR_RULE(str_value)
+    StringRule str_value
             =   str_func
             //2つ目のダブルクオートの前に「-」が付いているのは、行末のダブルクオートは省略できるという仕様への対応
             |   (L("\"") > str_literal > -L("\""))
@@ -190,11 +184,11 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
             |   str_group;
 
     //文字列式
-    DEF_STR_RULE2(str_expression)
+    str_expression
             =   str_value >> *(L("+") > str_value);
 
     //式
-    DEF_STR_RULE(expression)
+    StringRule expression
             =   str_expression | num_expression;
 
     //数値型関数
@@ -210,22 +204,22 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
 
     //GOTO文
     //goとtoの間には空白を許容するため、トークンを分ける
-    DEF_STR_RULE(st_goto)
+    StringRule st_goto
             =   L("go") >> L("to") > linenumber;
 
     //PRINT文
-    DEF_STR_RULE(st_print)
+    StringRule st_print
             =   (L("print")|L("?")) >> expression >> *(L(";") > expression);
 
     //文
-    DEF_STR_RULE(statement)
+    StringRule statement
             =   st_goto
             |   st_print;
 
     //行
-    DEF_STR_RULE(line)
+    StringRule line
             =   linenumber[ref(status.basicLineNumber_) = _1]
-            >  statement
+            >   statement
             >>  *(+L(":") > statement);
 
     bool r = qi::phrase_parse(first, last, line, sw::blank);
