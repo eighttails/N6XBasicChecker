@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <algorithm>
 
 #include <boost/spirit/include/qi.hpp>
 #include <boost/spirit/include/phoenix.hpp>
@@ -94,7 +95,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
 
     //数値型変数(5文字まで。識別されるのは2文字まで)
     StringRule num_var
-            =   qi::no_skip[sw::alpha >> qi::repeat(0, 4)[sw::alnum]];
+            =   qi::lexeme[sw::alpha >> qi::repeat(0, 4)[sw::alnum]];
 
     //数値型変数(配列)
     //#PENDING DIM分との間の次元数チェック
@@ -167,7 +168,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
 
     //文字列変数($を抜いて5文字まで。識別されるのは2文字まで)
     StringRule str_var
-            =   qi::no_skip[sw::alpha >> qi::repeat(0, 4)[sw::alnum]] >> L("$");
+            =   qi::lexeme[sw::alpha >> qi::repeat(0, 4)[sw::alnum]] >> L("$");
 
     //文字列変数(配列)
     //#PENDING DIM分との間の次元数チェック
@@ -212,6 +213,11 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     //行番号
     UintRule linenumber = uint_;
 
+    //代入文
+    StringRule num_assign
+            =   (num_array_var | num_var ) >> L("=") > num_expression;
+    StringRule str_assign
+            =   (str_array_var | str_var ) >> L("=") > str_expression;
     //GOTO文
     //goとtoの間には空白を許容するため、トークンを分ける
     StringRule st_goto
@@ -223,7 +229,9 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
 
     //文
     StringRule statement
-            =   st_goto
+            =   num_assign
+            |   str_assign
+            |   st_goto
             |   st_print;
 
     //行
@@ -272,10 +280,17 @@ void print_info(boost::spirit::info const& what)
 
 bool Checker::parse(const std::string& programList, ParserStatus& stat, bool trace)
 {
+    //作業用プログラムリスト
+    std::string workProgramList = programList;
+    //プリプロセス。
+    //#PENDING 全角を半角に
+    //大文字を小文字に
+    transform(workProgramList.begin (), workProgramList.end (), workProgramList.begin (), tolower);
+
     stat = ParserStatus();
     //プログラムを行ごとに分割
     std::vector<std::string> list;
-    boost::algorithm::split(list, programList, boost::is_any_of(L"\n"));
+    boost::algorithm::split(list, workProgramList, boost::is_any_of(L"\n"));
 
     bool result = true;
     for(size_t i = 0; i < list.size(); i++){
