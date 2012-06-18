@@ -90,12 +90,13 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
             |	sw::digit
             |	graph|kana_kigou|hiragana|katakana|han_kana;
 
+    //数値系--------------------------------------------------------------------------
     //数値関連
     StringRule num_expression, num_func, num_group;
 
     //数値型変数(5文字まで。識別されるのは2文字まで)
     StringRule num_var
-            =   qi::lexeme[sw::alpha >> qi::repeat(0, 4)[sw::alnum]];
+            =   sw::alpha >> qi::repeat(0, 4)[sw::alnum];
 
     //数値型変数(配列)
     //#PENDING DIM分との間の次元数チェック
@@ -166,9 +167,11 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     num_group
             =   L("(") >> num_expression >> L(")") ;
 
+
+    //文字列系--------------------------------------------------------------------------
     //文字列変数($を抜いて5文字まで。識別されるのは2文字まで)
     StringRule str_var
-            =   qi::lexeme[sw::alpha >> qi::repeat(0, 4)[sw::alnum]] >> L("$");
+            =   sw::alpha >> qi::repeat(0, 4)[sw::alnum] >> L("$");
 
     //文字列変数(配列)
     //#PENDING DIM分との間の次元数チェック
@@ -225,7 +228,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
 
     //PRINT文
     StringRule st_print
-            =   (L("print")|L("?")) >> expression >> *(L(";") > expression);
+            =   (L("print")|L("?")) >> expression >> *((L(";") | L(",")) > expression);
 
     //文
     StringRule statement
