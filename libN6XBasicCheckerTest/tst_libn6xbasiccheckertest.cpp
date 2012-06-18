@@ -84,11 +84,15 @@ void LibN6XBasicCheckerTest::testCase1()
     QVERIFY(parse(programList, stat, true));
 
     programList =
-            "10 print\"abcあいう\n"
-            "20 print\"abcあいう\":got10\n" //エラー
+            "10 print\"abcあいう\":got10\n"
+            "20 a=abs(\"aa\")\n"
+            "30 a=asc(-a)\n"
             ;
     QVERIFY(!parse(programList, stat));
-    QVERIFY(stat.errorList_[0].basicLineNumber_ == 20);
+    int i=0;
+    QVERIFY(stat.errorList_[i++].basicLineNumber_ == 10);
+    QVERIFY(stat.errorList_[i++].basicLineNumber_ == 20);
+    QVERIFY(stat.errorList_[i++].basicLineNumber_ == 30);
 
 }
 void LibN6XBasicCheckerTest::testCase2()

@@ -148,7 +148,8 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
 
     StringRule str_expression;
     StringRule rel_expression
-            =   (str_expression >> *(rel_operator > str_expression))
+            //文字列は"文字列式 比較演算子 文字列式"というフォーマットが成立している場合に限り関係式とみなす
+            =   (str_expression >> (rel_operator > str_expression))
             |   (num_arithmetic_expression >> *(rel_operator > num_arithmetic_expression));
 
     //論理式
