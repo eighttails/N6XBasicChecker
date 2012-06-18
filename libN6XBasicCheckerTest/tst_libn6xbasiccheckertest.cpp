@@ -1,6 +1,7 @@
 #include <QtCore/QString>
 #include <QtTest/QtTest>
 #include <string>
+#include <iostream>
 #include "checker.h"
 
 class LibN6XBasicCheckerTest : public QObject
@@ -25,7 +26,16 @@ LibN6XBasicCheckerTest::LibN6XBasicCheckerTest()
 bool LibN6XBasicCheckerTest::parse(const std::string& program, ParserStatus& stat, bool trace)
 {
     Checker checker;
-    return checker.parse(program, stat, trace);
+    bool r = checker.parse(program, stat, trace);
+    if(!r && trace){
+        for(size_t i = 0; i < stat.errorList_.size(); i++){
+            const ErrorInfo& err = stat.errorList_[i];
+            std::cout << "テキスト行:" << err.textLineNumber_
+                      << " BASIC行:" << err.basicLineNumber_
+                      << " " << err.info_ << std::endl;
+        }
+    }
+    return r;
 }
 
 void LibN6XBasicCheckerTest::testCase1()
@@ -68,7 +78,8 @@ void LibN6XBasicCheckerTest::testCase1()
             "90 printa and b:printa or b:print a xor b\n"
             "100 a$=\"1\"\n"
             "110 a=1\n"
-            "120 b=abs(-1):b=abs(a)"
+            "120 b=abs(-1):b=abs(a)\n"
+            "130 b=asc(\"abcあいう\"):b=asc(a$)\n"
             ;
     QVERIFY(parse(programList, stat, true));
 

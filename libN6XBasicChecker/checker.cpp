@@ -105,7 +105,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
 
     //数値リテラル
     StringRule num_literal
-            =   double_;
+            =   double_ - L("nan");
 
     //数値
     StringRule num_value
@@ -182,13 +182,13 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     StringRule str_literal
             =   *(printable - L("\""));
 
-    StringRule str_func;
 
     //文字列グループ
     StringRule str_group
             =   L("(") >> str_expression >> L(")");
 
     //文字列値
+    StringRule str_func;
     StringRule str_value
             =   str_func
             //2つ目のダブルクオートの前に「-」が付いているのは、行末のダブルクオートは省略できるという仕様への対応
@@ -205,9 +205,17 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     StringRule expression
             =   str_expression | num_expression;
 
+    //関数----------------------------------------------------------------------
     //数値型関数
-    //#PENDING
-    //num_func= ...
+    StringRule num_func_abs
+            =   L("abs") >> L("(") > num_expression > L(")");
+
+    StringRule num_func_asc
+            =   L("asc") >> L("(") > str_expression > L(")");
+    num_func
+            =   num_func_abs
+            |   num_func_asc
+            ;
 
     //文字列関数
     //#PENDING
@@ -305,7 +313,7 @@ bool Checker::parse(const std::string& programList, ParserStatus& stat, bool tra
 
         bool r = true;
         try{
-            program_parse(iter, end, stat);
+            r = program_parse(iter, end, stat);
         }
         catch (qi::expectation_failure<std::string::const_iterator> const& x)
         {
@@ -315,8 +323,10 @@ bool Checker::parse(const std::string& programList, ParserStatus& stat, bool tra
                 std::cout << "textLine: " << stat.textLineNumber_ << std::endl;
                 std::cout << "basicline: " << stat.basicLineNumber_ << std::endl;
             }
-            stat.errorList_.push_back(ErrorInfo(stat.textLineNumber_, stat.basicLineNumber_, "構文エラー"));
             r = false;
+        }
+        if(!r){
+            stat.errorList_.push_back(ErrorInfo(stat.textLineNumber_, stat.basicLineNumber_, "構文エラー"));
         }
 
         result &= r;
