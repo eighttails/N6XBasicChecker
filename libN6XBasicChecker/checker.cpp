@@ -105,7 +105,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
 
     //数値リテラル
     StringRule num_literal
-            =   double_ - L("nan");
+            =   double_ - L("nan") - L("inf");
 
     //数値
     StringRule num_value
