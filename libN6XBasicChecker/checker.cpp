@@ -249,6 +249,11 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
             =   L("bload") >> str_expression
                            >> -(L"," >> -num_expression)
                            >> -(L"," > -L("r"));
+    //BSAVE文
+    StringRule st_bsave
+            =   L("bsave") >> str_expression
+                           >> L(",") >> num_expression
+                           >> L(",") >> num_expression;
 
     //GOTO文
     //goとtoの間には空白を許容するため、トークンを分ける
@@ -264,6 +269,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
             =   st_auto
             |   st_bgm
             |   st_bload
+            |   st_bsave
             |   st_goto
             |   st_print
             |   num_assign
