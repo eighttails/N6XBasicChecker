@@ -82,6 +82,7 @@ void LibN6XBasicCheckerTest::testCase1()
             "130 b=asc(\"abcあいう\"):b=asc(a$)\n"
             "140 auto:auto10:auto10,10:auto,10\n"
             "150 bgm 0:bgm1:bgma\n"
+            "160 bloada$:bload\"a\",&ha000,r:bloada$,r:bloada$,&ha000\n"
             ;
     QVERIFY(parse(programList, stat, true));
 

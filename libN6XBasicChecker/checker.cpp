@@ -239,10 +239,16 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
             =   (str_array_var | str_var ) >> L("=") > str_expression;
     //AUTO文
     StringRule st_auto
-            =   L("auto") >> -linenumber >> -(L(",") >> linenumber);
+            =   L("auto") >> -linenumber >> -(L(",") > linenumber);
     //BGM文
     StringRule st_bgm
             =   L("bgm") >> num_expression;
+
+    //BLOAD文
+    StringRule st_bload
+            =   L("bload") >> str_expression
+                           >> -(L"," >> -num_expression)
+                           >> -(L"," > -L("r"));
 
     //GOTO文
     //goとtoの間には空白を許容するため、トークンを分ける
@@ -257,6 +263,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     StringRule statement
             =   st_auto
             |   st_bgm
+            |   st_bload
             |   st_goto
             |   st_print
             |   num_assign
