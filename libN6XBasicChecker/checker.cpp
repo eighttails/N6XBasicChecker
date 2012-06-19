@@ -26,6 +26,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     using qi::int_;
     using qi::uint_;
     using qi::double_;
+    using qi::hex;
     using qi::lit;
     using phx::ref;
 
@@ -107,10 +108,15 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     StringRule num_literal
             =   double_ - L("nan") - L("inf");
 
+    //数値リテラル(16進)
+    StringRule num_hex_literal
+            =   L("&h") >> hex;
+
     //数値
     StringRule num_value
             =   num_func
             |   num_literal
+            |   num_hex_literal
             |   num_array_var
             |   num_var
             |   num_group;
