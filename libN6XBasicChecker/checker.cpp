@@ -225,11 +225,15 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     //行番号
     UintRule linenumber = uint_;
 
+    //ステートメント、コマンド------------------------------------------------
     //代入文
     StringRule num_assign
             =   (num_array_var | num_var ) >> L("=") > num_expression;
     StringRule str_assign
             =   (str_array_var | str_var ) >> L("=") > str_expression;
+    //AUTO文
+    StringRule st_auto
+            =   L("auto") >> -linenumber >> -(L(",") >> linenumber);
     //GOTO文
     //goとtoの間には空白を許容するため、トークンを分ける
     StringRule st_goto
@@ -241,10 +245,11 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
 
     //文
     StringRule statement
-            =   num_assign
-            |   str_assign
+            =   st_auto
             |   st_goto
-            |   st_print;
+            |   st_print
+            |   num_assign
+            |   str_assign;
 
     //行
     StringRule line
