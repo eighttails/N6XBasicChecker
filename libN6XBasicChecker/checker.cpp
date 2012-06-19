@@ -214,9 +214,11 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
 
     //関数----------------------------------------------------------------------
     //数値型関数
+    //ASC
     StringRule num_func_abs
             =   L("abs") >> L("(") > num_expression > L(")");
 
+    //ABS
     StringRule num_func_asc
             =   L("asc") >> L("(") > str_expression > L(")");
     num_func
@@ -225,8 +227,13 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
             ;
 
     //文字列関数
-    //#PENDING
-    //str_func= ...
+    //CHR$
+    StringRule str_func_chr$
+            =   L("chr$") >> L("(") >> num_expression >> L(")");
+
+    str_func
+            =   str_func_chr$
+            ;
 
     //行番号
     UintRule linenumber = uint_;
@@ -255,6 +262,17 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
                            >> L(",") >> num_expression
                            >> L(",") >> num_expression;
 
+    //CIRCLE文
+    StringRule st_circle
+            =   L("circle") >> -L("step") >> L("(")
+                            >> num_expression >> L(",")     //x
+                            >> num_expression >> L(")")     //y
+                            >> L(",") >> num_expression     //r
+                            >> -(L"," >> -num_expression)   //c
+                            >> -(L"," >> -num_expression)   //s
+                            >> -(L"," >> -num_expression)   //e
+                            >> -(L"," >> -num_expression);  //a
+
     //GOTO文
     //goとtoの間には空白を許容するため、トークンを分ける
     StringRule st_goto
@@ -270,6 +288,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
             |   st_bgm
             |   st_bload
             |   st_bsave
+            |   st_circle
             |   st_goto
             |   st_print
             |   num_assign

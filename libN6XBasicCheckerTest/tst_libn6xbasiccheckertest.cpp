@@ -84,6 +84,8 @@ void LibN6XBasicCheckerTest::testCase1()
             "150 bgm 0:bgm1:bgma\n"
             "160 bloada$:bload\"a\",&ha000,r:bloada$,r:bloada$,&ha000\n"
             "160 bsavea$,&ha000,r\n"
+            "170 a$=chr$(13)\n"
+            "180 circle(x,y),r,c,s,e,a:circle step(x,y),r,c,,,a\n"
             ;
     QVERIFY(parse(programList, stat, true));
 
@@ -92,6 +94,8 @@ void LibN6XBasicCheckerTest::testCase1()
             "20 a=abs(\"aa\")\n"
             "30 a=asc(-a)\n"
             "40 auto,\n"
+            "50 circle(x,y),,,,\n"
+            "60 circle(x,y),r,c,s,e,a,a2\n"
             ;
     QVERIFY(!parse(programList, stat));
     int i=0;
@@ -99,6 +103,23 @@ void LibN6XBasicCheckerTest::testCase1()
     QVERIFY(stat.errorList_[i++].basicLineNumber_ == 20);
     QVERIFY(stat.errorList_[i++].basicLineNumber_ == 30);
     QVERIFY(stat.errorList_[i++].basicLineNumber_ == 40);
+    QVERIFY(stat.errorList_[i++].basicLineNumber_ == 50);
+    QVERIFY(stat.errorList_[i++].basicLineNumber_ == 60);
+//    QVERIFY(stat.errorList_[i++].basicLineNumber_ == 70);
+//    QVERIFY(stat.errorList_[i++].basicLineNumber_ == 80);
+//    QVERIFY(stat.errorList_[i++].basicLineNumber_ == 90);
+//    QVERIFY(stat.errorList_[i++].basicLineNumber_ == 100);
+//    QVERIFY(stat.errorList_[i++].basicLineNumber_ == 110);
+//    QVERIFY(stat.errorList_[i++].basicLineNumber_ == 120);
+//    QVERIFY(stat.errorList_[i++].basicLineNumber_ == 130);
+//    QVERIFY(stat.errorList_[i++].basicLineNumber_ == 140);
+//    QVERIFY(stat.errorList_[i++].basicLineNumber_ == 150);
+//    QVERIFY(stat.errorList_[i++].basicLineNumber_ == 160);
+//    QVERIFY(stat.errorList_[i++].basicLineNumber_ == 170);
+//    QVERIFY(stat.errorList_[i++].basicLineNumber_ == 180);
+//    QVERIFY(stat.errorList_[i++].basicLineNumber_ == 190);
+//    QVERIFY(stat.errorList_[i++].basicLineNumber_ == 200);
+//    QVERIFY(stat.errorList_[i++].basicLineNumber_ == 210);
 
 }
 void LibN6XBasicCheckerTest::testCase2()
