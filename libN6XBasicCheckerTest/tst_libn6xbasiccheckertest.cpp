@@ -168,6 +168,18 @@ void LibN6XBasicCheckerTest::testCase2()
             "590 COLOR1+A$=B$\n"
             ;
     QVERIFY(!parse(programList, stat));
+    int i=0;
+    QVERIFY(stat.errorList_[i++].basicLineNumber_ == 500);
+    QVERIFY(stat.errorList_[i++].basicLineNumber_ == 510);
+    QVERIFY(stat.errorList_[i++].basicLineNumber_ == 520);
+    QVERIFY(stat.errorList_[i++].basicLineNumber_ == 530);
+    QVERIFY(stat.errorList_[i++].basicLineNumber_ == 540);
+    //QVERIFY(stat.errorList_[i++].basicLineNumber_ == 550); エミュレータでエラーにならなかったので、テストケースから除外
+    QVERIFY(stat.errorList_[i++].basicLineNumber_ == 560);
+    QVERIFY(stat.errorList_[i++].basicLineNumber_ == 570);
+    QVERIFY(stat.errorList_[i++].basicLineNumber_ == 580);
+    QVERIFY(stat.errorList_[i++].basicLineNumber_ == 590);
+
 }
 
 QTEST_APPLESS_MAIN(LibN6XBasicCheckerTest);
