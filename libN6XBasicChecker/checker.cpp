@@ -271,7 +271,47 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
                             >> -(L"," >> -num_expression)   //c
                             >> -(L"," >> -num_expression)   //s
                             >> -(L"," >> -num_expression)   //e
-                            >> -(L"," >> -num_expression);  //a
+                            >> -(L"," > -num_expression);   //a
+    //CLEAR文
+    StringRule st_clear
+            =   L("clear") >> num_expression
+                           >> -(L(",") > num_expression);
+
+    //CLOAD*文
+    //#PENDING 配列名の存在確認
+    StringRule st_cload_ast
+            =   L("cload") >> L("*") >> num_var;
+
+    //CLOAD文(CLOAD?文も兼ねる)
+    StringRule st_cload
+            =   L("cload") >> -L("?") >> str_expression;
+
+    //CLOSE文
+    StringRule st_close
+            =   L("close") >> -(num_expression
+                                >> *(L(",") >> num_expression));
+    //CLS文
+    StringRule st_cls
+            =   L("cls");
+
+    //COLOR文
+    StringRule st_color
+            =   L("color") >> -num_expression               //f
+                           >> -(L"," >> -num_expression)    //b
+                           >> -(L"," > -num_expression);   //c
+
+    //CONSOLE文
+    StringRule st_console
+            =   L("console") >> -num_expression               //m
+                             >> -(L"," >> -num_expression)    //n
+                             >> -(L"," >> -num_expression)    //f
+                             >> -(L"," >> -num_expression)    //k
+                             >> -(L"," > -num_expression);    //p
+
+    //CONT文
+    //プログラム中に存在し得ないはずだが、一応定義しておく。
+    StringRule st_cont
+            =   L("cont");
 
     //GOTO文
     //goとtoの間には空白を許容するため、トークンを分ける
@@ -289,6 +329,14 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
             |   st_bload
             |   st_bsave
             |   st_circle
+            |   st_clear
+            |   st_cload_ast
+            |   st_cload
+            |   st_close
+            |   st_cls
+            |   st_color
+            |   st_console
+            |   st_cont
             |   st_goto
             |   st_print
             |   num_assign

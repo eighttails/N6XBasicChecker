@@ -86,6 +86,12 @@ void LibN6XBasicCheckerTest::testCase1()
             "160 bsavea$,&ha000,r\n"
             "170 a$=chr$(13)\n"
             "180 circle(x,y),r,c,s,e,a:circle step(x,y),r,c,,,a\n"
+            "190 clear50:clear50,&hA000\n"
+            "200 cloada$:cload?\"abc\n"
+            "210 cload * X\n"
+            "220 close:close 1:close a,b,c:cls\n"
+            "230 color1:color1,2,3:color,,3\n"
+            "230 console1:console1,2,3,4,5:console1,,,,3:cont\n"
             ;
     QVERIFY(parse(programList, stat, true));
 
