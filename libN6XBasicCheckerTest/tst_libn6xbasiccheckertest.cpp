@@ -81,6 +81,7 @@ void LibN6XBasicCheckerTest::testCase1()
             "120 b=abs(-1):b=abs(a)\n"
             "130 b=asc(\"abcあいう\"):b=asc(a$)\n"
             "140 auto:auto10:auto10,10:auto,10\n"
+            "150 bgm 0:bgm1:bgma\n"
             ;
     QVERIFY(parse(programList, stat, true));
 
