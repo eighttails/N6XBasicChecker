@@ -238,8 +238,19 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     StringRule num_func_deffn
             =   L("fn") >> num_var >> L("(") >> num_expression >> L(")");
 
+    //DSKF
+    StringRule num_func_dskf
+            =   L("dskf") >> L("(") >> num_expression
+                          >> -(L(",") >> num_expression) >> L(")");
+
+    //EOF
+    StringRule num_func_eof
+            =   L("eof") >> L("(") >> num_expression >> L(")");
+
     num_func
-            =   num_func_deffn
+            =   num_func_eof
+            |   num_func_dskf
+            |   num_func_deffn
             |   num_func_cvs
             |   num_func_csrlin
             |   num_func_cos
@@ -251,8 +262,15 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     StringRule str_func_chr$
             =   L("chr$") >> L("(") >> num_expression >> L(")");
 
+    //DSKI$
+    StringRule str_func_dski$
+            =   L("dski$") >> L("(") >> num_expression
+                           >> L(",") >> num_expression
+                           >> L(",") >> num_expression > L(")");
+
     str_func
-            =   str_func_chr$
+            =   str_func_dski$
+            |   str_func_chr$
             ;
 
     //行番号
@@ -367,6 +385,23 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     StringRule st_delete
             =   L("delete") >> (linenumber || (L("-") >> -linenumber));
 
+    //DIM文
+    //#PENDING配列変数名の管理
+    StringRule array_var
+            =   str_array_var | num_array_var;
+    StringRule st_dim
+            =   L("dim") >> array_var
+                         >> *(L(",") > array_var);
+    //DSKO$文
+    StringRule st_dsko$
+            =   L("dsko$") >> L("(") >> num_expression
+                           >> L(",") >> num_expression
+                           >> L(",") >> num_expression > L(")");
+
+    //END文
+    StringRule st_end
+            =   L("end");
+
     //GOTO文
     //goとtoの間には空白を許容するため、トークンを分ける
     StringRule st_goto
@@ -380,6 +415,9 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     StringRule statement
             =   st_print
             |   st_goto
+            |   st_end
+            |   st_dsko$
+            |   st_dim
             |   st_delete
             |   st_defusr
             |   st_deffn

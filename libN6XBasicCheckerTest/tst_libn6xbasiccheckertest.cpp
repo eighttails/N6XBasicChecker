@@ -104,6 +104,11 @@ void LibN6XBasicCheckerTest::testCase1()
             "350 a=fna(x)\n"
             "360 def usr = &he000\n"
             "370 delete 370:delete 100-200:delete-150\n"
+            "380 dima(5):dimb(a),c$(1,2,3),d(a,b,c)\n"
+            "390 a=dskf(d):b=dskf(d,0)\n"
+            "400 a$=dski$(a,b,c)\n"
+            "410 dsko$(a,b,c)\n"
+            "420 a=eof(0):end\n"
             ;
     QVERIFY(parse(programList, stat, true));
 
@@ -115,7 +120,7 @@ void LibN6XBasicCheckerTest::testCase1()
             "40 auto,\n"
             "50 circle(x,y),,,,\n"
             "60 circle(x,y),r,c,s,e,a,a2\n"
-            "70 delete"
+            "70 delete\n"
             ;
     QVERIFY(!parse(programList, stat));
     int i=0;
