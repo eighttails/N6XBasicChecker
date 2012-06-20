@@ -225,8 +225,18 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     //COS
     StringRule num_func_cos
             =   L("cos") >> L("(") > num_expression > L(")");
+
+    //CSRLIN
+    StringRule num_func_csrlin
+            =   L("csrlin");
+
+    //CVS
+    StringRule num_func_cvs
+            =   L("cvs") >> L("(") >> str_expression >> L(")");
     num_func
-            =   num_func_cos
+            =   num_func_cvs
+            |   num_func_csrlin
+            |   num_func_cos
             |   num_func_asc
             |   num_func_abs;
 
@@ -321,6 +331,10 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     StringRule st_csave
             =   L("csave") >> str_expression;
 
+    //CSAVE*文
+    StringRule st_csave_ast
+            =   L("csave") >> L("*") >> num_var;
+
     //GOTO文
     //goとtoの間には空白を許容するため、トークンを分ける
     StringRule st_goto
@@ -334,6 +348,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     StringRule statement
             =   st_print
             |   st_goto
+            |   st_csave_ast
             |   st_csave
             |   st_cont
             |   st_console

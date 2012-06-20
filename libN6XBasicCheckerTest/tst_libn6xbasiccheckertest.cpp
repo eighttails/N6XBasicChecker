@@ -94,6 +94,9 @@ void LibN6XBasicCheckerTest::testCase1()
             "230 console1:console1,2,3,4,5:console1,,,,3:cont\n"
             "240 a=cos(1)\n"
             "250 csave\"aaa.bas\n"
+            "260 csave * X\n"
+            "270 a=csrlin\n"
+            "280 a=cvs(a$)\n"
             ;
     QVERIFY(parse(programList, stat, true));
 
