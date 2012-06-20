@@ -100,6 +100,8 @@ void LibN6XBasicCheckerTest::testCase1()
             "310 data1,2,3\n"
             "320 dataabc,def,ghi\n"
             "330 data\"abc def\",\"ghi jkl\n"
+            "340 deffna(x)=2*x^2\n"
+            "350 a=fna(x)\n"
             ;
     QVERIFY(parse(programList, stat, true));
 

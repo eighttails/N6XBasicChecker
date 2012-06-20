@@ -233,8 +233,14 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     //CVS
     StringRule num_func_cvs
             =   L("cvs") >> L("(") >> str_expression >> L(")");
+
+    //DEFFN文で定義された関数
+    StringRule num_func_deffn
+            =   L("fn") >> num_var >> L("(") >> num_expression >> L(")");
+
     num_func
-            =   num_func_cvs
+            =   num_func_deffn
+            |   num_func_cvs
             |   num_func_csrlin
             |   num_func_cos
             |   num_func_asc
@@ -346,6 +352,13 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
             =   L("data") >> -data_element
                           >> *(L(",") > -data_element);
 
+    //DEFFN文
+    //#PENDING 登録された関数名の管理
+    StringRule st_deffn
+            =   L("def") >> L("fn") >> num_var
+                         >> L("(") >> num_var >> L(")") >> L("=")
+                         >> num_expression;
+
     //GOTO文
     //goとtoの間には空白を許容するため、トークンを分ける
     StringRule st_goto
@@ -359,6 +372,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     StringRule statement
             =   st_print
             |   st_goto
+            |   st_deffn
             |   st_data
             |   st_csave_ast
             |   st_csave
