@@ -102,6 +102,7 @@ void LibN6XBasicCheckerTest::testCase1()
             "330 data\"abc def\",\"ghi jkl\n"
             "340 deffna(x)=2*x^2\n"
             "350 a=fna(x)\n"
+            "360 def usr = &he000\n"
             ;
     QVERIFY(parse(programList, stat, true));
 
@@ -158,16 +159,16 @@ void LibN6XBasicCheckerTest::testCase2()
             "180 A=NANDA:B=NORS\n"
             "190 A=-1+2:B=-1.2*2+1:C=+111*2:D=NOTA+NOTB\n"
 //            "200 COLORA$=B$:IFA$=\"A\"+\"B\"THEN110\n"
-//            "210 COLORA$=B$+\"A\"\n"
+            "210 COLORA$=B$+\"A\"\n"
 //            "220 COLOR1+2:COLORA=B:COLORA$=\"AA\"\n"
 //            "230 IFA$<>B$THEN110:IFA$><B$THEN110:IFA$>B$THEN110:IFA$<B$THEN110\n"
 //            "240 IFA$>=B$THEN110:IFA$=>B$THEN110:IFA$<=B$THEN110:IFA$=<B$THEN110\n"
 //            "300 COLOR(((A$=B$)+1)*2):PLAY(\"AA\"+\"BB\"):PLAYA$+(B$+C$):COLOR(A$=B$):COLOR(A$=\"AA\")\n"
 //            "310 COLOR(\"AA\"=A$):COLOR(A$=\"AA\"):COLOR(INKEY$=\"AA\")\n"
             "320 A=(1):B=(-1):C=((1))\n"
-//            "330 COLOR(A$=B$+C$):COLOR(A$+B$=C$):COLOR(\"1\"+A$=B$)\n"
-//            "340 COLOR\"AA\"=A$:COLORA$=\"AA\":COLORINKEY$=\"AA\"\n"
-//            "350 COLORA$=B$+C$:COLORA$+B$=C$:COLOR\"1\"+A$=B$\n"
+            "330 COLOR(A$=B$+C$):COLOR(A$+B$=C$):COLOR(\"1\"+A$=B$)\n"
+            "340 COLOR\"AA\"=A$:COLORA$=\"AA\":COLORINKEY$=\"AA\"\n"
+            "350 COLORA$=B$+C$:COLORA$+B$=C$:COLOR\"1\"+A$=B$\n"
             ;
     QVERIFY(parse(programList, stat, true));
 
