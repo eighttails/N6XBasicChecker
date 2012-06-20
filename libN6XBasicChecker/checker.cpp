@@ -221,10 +221,14 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     //ABS
     StringRule num_func_asc
             =   L("asc") >> L("(") > str_expression > L(")");
+
+    //COS
+    StringRule num_func_cos
+            =   L("cos") >> L("(") > num_expression > L(")");
     num_func
-            =   num_func_abs
+            =   num_func_cos
             |   num_func_asc
-            ;
+            |   num_func_abs;
 
     //文字列関数
     //CHR$
@@ -313,6 +317,10 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     StringRule st_cont
             =   L("cont");
 
+    //CSAVE文
+    StringRule st_csave
+            =   L("csave") >> str_expression;
+
     //GOTO文
     //goとtoの間には空白を許容するため、トークンを分ける
     StringRule st_goto
@@ -324,21 +332,22 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
 
     //文
     StringRule statement
-            =   st_auto
-            |   st_bgm
-            |   st_bload
-            |   st_bsave
-            |   st_circle
-            |   st_clear
+            =   st_print
+            |   st_goto
+            |   st_csave
+            |   st_cont
+            |   st_console
+            |   st_color
+            |   st_cls
+            |   st_close
             |   st_cload_ast
             |   st_cload
-            |   st_close
-            |   st_cls
-            |   st_color
-            |   st_console
-            |   st_cont
-            |   st_goto
-            |   st_print
+            |   st_clear
+            |   st_circle
+            |   st_bsave
+            |   st_bload
+            |   st_bgm
+            |   st_auto
             |   num_assign
             |   str_assign;
 

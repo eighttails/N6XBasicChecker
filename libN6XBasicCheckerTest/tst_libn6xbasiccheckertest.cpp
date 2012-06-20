@@ -65,7 +65,7 @@ void LibN6XBasicCheckerTest::testCase1()
     QVERIFY(stat.errorList_[1].textLineNumber_ ==  5);
     QVERIFY(stat.errorList_[1].basicLineNumber_ == 40);
 
-    //PRINT文
+    //正常系(各関数、ステートメント)
     programList =
             "10 print\"abcあいう\n"
             "20 print\"abcあいう\":goto10\n"
@@ -92,9 +92,12 @@ void LibN6XBasicCheckerTest::testCase1()
             "220 close:close 1:close a,b,c:cls\n"
             "230 color1:color1,2,3:color,,3\n"
             "230 console1:console1,2,3,4,5:console1,,,,3:cont\n"
+            "240 a=cos(1)\n"
+            "250 csave\"aaa.bas\n"
             ;
     QVERIFY(parse(programList, stat, true));
 
+    //エラー
     programList =
             "10 print\"abcあいう\":got10\n"
             "20 a=abs(\"aa\")\n"
