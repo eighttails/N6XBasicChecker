@@ -103,6 +103,7 @@ void LibN6XBasicCheckerTest::testCase1()
             "340 deffna(x)=2*x^2\n"
             "350 a=fna(x)\n"
             "360 def usr = &he000\n"
+            "370 delete 370:delete 100-200:delete-150\n"
             ;
     QVERIFY(parse(programList, stat, true));
 
@@ -114,6 +115,7 @@ void LibN6XBasicCheckerTest::testCase1()
             "40 auto,\n"
             "50 circle(x,y),,,,\n"
             "60 circle(x,y),r,c,s,e,a,a2\n"
+            "70 delete"
             ;
     QVERIFY(!parse(programList, stat));
     int i=0;
@@ -123,7 +125,7 @@ void LibN6XBasicCheckerTest::testCase1()
     QVERIFY(stat.errorList_[i++].basicLineNumber_ == 40);
     QVERIFY(stat.errorList_[i++].basicLineNumber_ == 50);
     QVERIFY(stat.errorList_[i++].basicLineNumber_ == 60);
-//    QVERIFY(stat.errorList_[i++].basicLineNumber_ == 70);
+    QVERIFY(stat.errorList_[i++].basicLineNumber_ == 70);
 //    QVERIFY(stat.errorList_[i++].basicLineNumber_ == 80);
 //    QVERIFY(stat.errorList_[i++].basicLineNumber_ == 90);
 //    QVERIFY(stat.errorList_[i++].basicLineNumber_ == 100);

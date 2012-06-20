@@ -363,6 +363,10 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     StringRule st_defusr
             =   L("def") >> L("usr") >> L("=") >> num_expression;
 
+    //DELETE文
+    StringRule st_delete
+            =   L("delete") >> (linenumber || (L("-") >> -linenumber));
+
     //GOTO文
     //goとtoの間には空白を許容するため、トークンを分ける
     StringRule st_goto
@@ -376,6 +380,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     StringRule statement
             =   st_print
             |   st_goto
+            |   st_delete
             |   st_defusr
             |   st_deffn
             |   st_data
