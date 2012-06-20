@@ -258,9 +258,11 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
             =   (num_array_var | num_var ) >> L("=") > num_expression;
     StringRule str_assign
             =   (str_array_var | str_var ) >> L("=") > str_expression;
+
     //AUTO文
     StringRule st_auto
             =   L("auto") >> -linenumber >> -(L(",") > linenumber);
+
     //BGM文
     StringRule st_bgm
             =   L("bgm") >> num_expression;
@@ -286,6 +288,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
                             >> -(L"," >> -num_expression)   //s
                             >> -(L"," >> -num_expression)   //e
                             >> -(L"," > -num_expression);   //a
+
     //CLEAR文
     StringRule st_clear
             =   L("clear") >> num_expression
@@ -335,6 +338,14 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     StringRule st_csave_ast
             =   L("csave") >> L("*") >> num_var;
 
+    //DATA文
+    StringRule data_element
+            =   +(printable - L("\"") - L(","))
+            |   (L("\"") >> str_literal >> -L("\""));
+    StringRule st_data
+            =   L("data") >> -data_element
+                          >> *(L(",") > -data_element);
+
     //GOTO文
     //goとtoの間には空白を許容するため、トークンを分ける
     StringRule st_goto
@@ -348,6 +359,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     StringRule statement
             =   st_print
             |   st_goto
+            |   st_data
             |   st_csave_ast
             |   st_csave
             |   st_cont
