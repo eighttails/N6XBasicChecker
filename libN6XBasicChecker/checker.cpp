@@ -425,6 +425,15 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     StringRule st_exec
             =   L("exec") >> num_expression;
 
+    //FIELD文
+    StringRule st_field
+            =   L("field") >> -L("#") >> num_expression
+                            >> +(L(",") >> num_expression >> L("as") >> str_var);
+
+    //FILES文
+    StringRule st_files
+            =   L("files") >> -num_expression;
+
     //GOTO文
     //goとtoの間には空白を許容するため、トークンを分ける
     StringRule st_goto
@@ -438,6 +447,8 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     StringRule statement
             =   st_print
             |   st_goto
+            |   st_files
+            |   st_field
             |   st_exec
             |   st_error
             |   st_erase

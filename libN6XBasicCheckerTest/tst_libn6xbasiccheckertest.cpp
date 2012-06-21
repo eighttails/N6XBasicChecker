@@ -108,12 +108,15 @@ void LibN6XBasicCheckerTest::testCase1()
             "390 a=dskf(d):b=dskf(d,0)\n"
             "400 a$=dski$(a,b,c)\n"
             "410 dsko$(a,b,c)\n"
-            "420 a=eof(0):end\n"
+            "420 a=eof(0)\n"
+            "430 end\n"
             "440 erasea(5):eraseb(a),c$(1,2,3),d(a,b,c)\n"
             "450 ERL=450:a=ERL:B=ERR\n"
             "460 error e:error 255\n"
             "470 exec &hA000\n"
             "480 a=exp(x)\n"
+            "490 field#1,a*4asa$:field 1, (a) as a$,10 as b$\n"
+            "500 files:files 1\n"
             ;
     QVERIFY(parse(programList, stat, true));
 
