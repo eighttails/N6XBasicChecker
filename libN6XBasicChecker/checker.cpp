@@ -247,8 +247,17 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     StringRule num_func_eof
             =   L("eof") >> L("(") >> num_expression >> L(")");
 
+    //ERL,ERR
+    //#PENDING ERL,ERRは現状数値変数の定義で代用できるため、定義しない。
+    //変数の代入、参照の管理を実装する際に再検討する。
+
+    //EXP
+    StringRule num_func_exp
+            =   L("exp") >> L("(") >> num_expression >> L(")");
+
     num_func
-            =   num_func_eof
+            =   num_func_exp
+            |   num_func_eof
             |   num_func_dskf
             |   num_func_deffn
             |   num_func_cvs
@@ -392,6 +401,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     StringRule st_dim
             =   L("dim") >> array_var
                          >> *(L(",") > array_var);
+
     //DSKO$文
     StringRule st_dsko$
             =   L("dsko$") >> L("(") >> num_expression
@@ -401,6 +411,19 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     //END文
     StringRule st_end
             =   L("end");
+
+    //ERASE文
+    StringRule st_erase
+            =   L("erase") >> array_var
+                           >> *(L(",") > array_var);
+
+    //ERROR文
+    StringRule st_error
+            =   L("error") >> num_expression;
+
+    //EXEC文
+    StringRule st_exec
+            =   L("exec") >> num_expression;
 
     //GOTO文
     //goとtoの間には空白を許容するため、トークンを分ける
@@ -415,6 +438,9 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     StringRule statement
             =   st_print
             |   st_goto
+            |   st_exec
+            |   st_error
+            |   st_erase
             |   st_end
             |   st_dsko$
             |   st_dim
