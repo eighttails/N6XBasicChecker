@@ -96,8 +96,15 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     StringRule num_expression, num_func, num_group;
 
     //数値型変数(5文字まで。識別されるのは2文字まで)
+    //予約語を含まないようにする。
     StringRule num_var
-            =   sw::alpha >> qi::repeat(0, 4)[sw::alnum];
+            =   sw::alpha >> qi::repeat(0, 4)
+                             [sw::alnum
+                             - L("as")
+                             - L("to")
+                             - L("step")
+                             - L("then")
+                             - L("else")];
 
     //数値型変数(配列)
     //#PENDING DIM分との間の次元数チェック
@@ -428,12 +435,21 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     //FIELD文
     StringRule st_field
             =   L("field") >> -L("#") >> num_expression
-                            >> +(L(",") >> num_expression >> L("as") >> str_var);
+                           >> +(L(",") >> num_expression >> L("as") >> str_var);
 
     //FILES文
     StringRule st_files
             =   L("files") >> -num_expression;
 
+    //FOR文
+    StringRule st_for
+            =   L("for") >> num_var >> L("=")
+                         >> (num_expression)
+                         >> L("to")
+                         >> (num_expression - L("step"))
+                         >> -(L("step") >> num_expression);
+    StringRule st_next
+            =   L("next") >> -num_var;
     //GOTO文
     //goとtoの間には空白を許容するため、トークンを分ける
     StringRule st_goto
@@ -447,6 +463,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     StringRule statement
             =   st_print
             |   st_goto
+            |   st_for  |   st_next
             |   st_files
             |   st_field
             |   st_exec

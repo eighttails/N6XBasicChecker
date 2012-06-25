@@ -115,9 +115,13 @@ void LibN6XBasicCheckerTest::testCase1()
             "460 error e:error 255\n"
             "470 exec &hA000\n"
             "480 a=exp(x)\n"
-            "490 field#1,a*4asa$:field 1, (a) as a$,10 as b$\n"
+            "490 field#1,a*4asa$:field 1, aasa$,10 as b$\n"
             "500 files:files 1\n"
-            ;
+            "510 fori=0to10:next\n"
+            "520 forj=xtoy:nextj\n"
+            "530 fork=xtoystepy\n"
+            "540 fork=xt+1toys+1stepy-1\n";
+
     QVERIFY(parse(programList, stat, true));
 
     //エラー
