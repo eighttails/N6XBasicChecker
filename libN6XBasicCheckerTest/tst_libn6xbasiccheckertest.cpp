@@ -144,7 +144,7 @@ void LibN6XBasicCheckerTest::testCase1()
             "750 key1,a$\n"
             "760 kill a$\n"
             "770 lcopy2\n"
-            "780 a$=left$(b$,2)\n"
+            "780 a$=left$(b$,2):a$=right$(b$,2)\n"
             "790 a=len(a$)\n"
             "800 leta=1:leta$=\"aaa\"\n"
             "810 lfiles2\n"
@@ -166,6 +166,9 @@ void LibN6XBasicCheckerTest::testCase1()
             "970 lprinta$;\"abcあいう\";b$;(a$+b$)\n"
             "980 lset a$=\"aaa\n"
             "990 rset a$=\"aaa\n"
+            "1000 menu\n"
+            "1010 merge f$\n"
+            "1020 a$=mid$(b$,2):a$=mid$(b$,2,2)\n"
             ;
 
     QVERIFY(parse(programList, stat, true));

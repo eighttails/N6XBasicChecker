@@ -347,8 +347,20 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     StringRule str_func_left$
             =   L("left$") >> L("(") >> str_expression >> L(",") >> num_expression >> L(")");
 
+    //MID$
+    StringRule str_func_mid$
+            =   L("mid$") >> L("(") >> str_expression
+                          >> L(",") >> num_expression
+                          >> -(L(",") >> num_expression)
+                          >> L(")");
+
+    //RIGHT$
+    StringRule str_func_right$
+            =   L("right$") >> L("(") >> str_expression >> L(",") >> num_expression >> L(")");
     str_func
-            =   str_func_left$
+            =   str_func_right$
+            |   str_func_mid$
+            |   str_func_left$
             |   str_func_inkey$
             |   str_func_hex$
             |   str_func_grp$
@@ -644,6 +656,14 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     StringRule st_lset
             =   L("lset") >> str_assign;
 
+    //MENU文
+    StringRule st_menu
+            =   L("menu");
+
+    //MERGE文
+    StringRule st_merge
+            =   L("merge") >> str_expression;
+
     //PRINT文
     StringRule st_print
             =   (L("print")|L("?")) >> expression >> *((L(";") | L(",")) > expression);
@@ -656,6 +676,8 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     statement
             =   st_rset
             |   st_print
+            |   st_merge
+            |   st_menu
             |   st_lset
             |   st_lprint
             |   st_locate
