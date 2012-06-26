@@ -146,7 +146,17 @@ void LibN6XBasicCheckerTest::testCase1()
             "770 lcopy2\n"
             "780 a$=left$(b$,2)\n"
             "790 a=len(a$)\n"
-            "780 leta=1:leta$=\"aaa\"\n"
+            "800 leta=1:leta$=\"aaa\"\n"
+            "810 lfiles2\n"
+            "820 line(0,0)-(16,16)\n"
+            "830 linestep(0,0)-step(16,16),1,b\n"
+            "840 linestep(0,0)-step(16,16),,bf\n"
+            "850 list 830:list 100-200:list-150\n"
+            "860 list l,840\n"
+            "870 list v,a:listv,a$\n"
+            "880 llist 830:llist 100-200:llist-150\n"
+            "890 llist l,840\n"
+            "900 llist v,a:llistv,a$\n"
             ;
 
     QVERIFY(parse(programList, stat, true));

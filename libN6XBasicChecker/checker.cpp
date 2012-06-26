@@ -568,6 +568,44 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     StringRule st_let
             =   L("let") >> (str_assign | num_assign);
 
+    //LFILES文
+    StringRule st_lfiles
+            =   L("lfiles") >> num_expression;
+
+    //LINE文
+    StringRule st_line
+            =   L("line") >> -L("step")
+                           >> L("(") >> num_expression >> L(",") >> num_expression >> L(")")
+                           >> L("-") >> -L("step")
+                           >> L("(") >> num_expression >> L(",") >> num_expression >> L(")")
+                           >> -(L(",") >> -num_expression) //色
+                           >> -(L(",") >> (L("bf") | L("b")));
+
+    //LIST文
+    StringRule st_list
+            =   L("list") >> (linenumber || (L("-") >> -linenumber));
+
+    //LIST L文
+    StringRule st_list_l
+            =   L("list") >> L("l") >> -(L(",") >> linenumber);
+
+    //LIST V文
+    StringRule st_list_v
+            =   L("list") >> L("v") >> -(L(",")
+                                         >> (str_array_var | str_var | num_array_var | num_var));
+    //LLIST文
+    StringRule st_llist
+            =   L("llist") >> (linenumber || (L("-") >> -linenumber));
+
+    //LLIST L文
+    StringRule st_llist_l
+            =   L("llist") >> L("l") >> -(L(",") >> linenumber);
+
+    //LLIST V文
+    StringRule st_llist_v
+            =   L("llist") >> L("v") >> -(L(",")
+                                         >> (str_array_var | str_var | num_array_var | num_var));
+
     //PRINT文
     StringRule st_print
             =   (L("print")|L("?")) >> expression >> *((L(";") | L(",")) > expression);
@@ -575,6 +613,14 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     //文
     statement
             =   st_print
+            |   st_llist_v
+            |   st_llist_l
+            |   st_llist
+            |   st_list_v
+            |   st_list_l
+            |   st_list
+            |   st_line
+            |   st_lfiles
             |   st_let
             |   st_lcopy
             |   st_kill
