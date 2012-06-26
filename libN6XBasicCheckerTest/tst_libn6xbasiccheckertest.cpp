@@ -127,6 +127,9 @@ void LibN6XBasicCheckerTest::testCase1()
             "580 get@(0,0)-(15,15),d$\n"
             "590 getstep(0,0)-step(15,15),d\n"
             "600 get@step(0,0)-step(15,15),d$\n"
+            "610 gosub 610:return\n"
+            "620 a$=grp$(80)\n"
+            "630 a$=hex$(i)\n"
             ;
 
     QVERIFY(parse(programList, stat, true));
@@ -226,6 +229,6 @@ void LibN6XBasicCheckerTest::testCase2()
 
 }
 
-QTEST_APPLESS_MAIN(LibN6XBasicCheckerTest);
+QTEST_APPLESS_MAIN(LibN6XBasicCheckerTest)
 
 #include "tst_libn6xbasiccheckertest.moc"

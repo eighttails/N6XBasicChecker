@@ -284,8 +284,16 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
                            >> L(",") >> num_expression
                            >> L(",") >> num_expression > L(")");
 
+    //GRP$
+    StringRule str_func_grp$
+            =   L("grp$") >> L("(") >> num_expression >> L(")");
+
+    StringRule str_func_hex$
+            =   L("hex$") >> L("(") >> num_expression >> L(")");
     str_func
-            =   str_func_dski$
+            =   str_func_hex$
+            |   str_func_grp$
+            |   str_func_dski$
             |   str_func_chr$
             ;
 
@@ -441,7 +449,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     StringRule st_files
             =   L("files") >> -num_expression;
 
-    //FOR文
+    //FOR〜NEXT文
     StringRule st_for
             =   L("for") >> num_var >> L("=")
                          >> (num_expression)
@@ -468,6 +476,13 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
                          >> L("-") >> -L("step")
                          >> L("(") >> num_expression >> L(",") >> num_expression >> L(")")
                          >> L(",") >> (str_expression | num_var);
+
+    //GOSUB〜RETURN文
+    StringRule st_gosub
+            =   L("gosub") >> linenumber;
+    StringRule st_return
+            =   L("return");
+
     //GOTO文
     //goとtoの間には空白を許容するため、トークンを分ける
     StringRule st_goto
@@ -481,6 +496,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     StringRule statement
             =   st_print
             |   st_goto
+            |   st_gosub | st_return
             |   st_get_at
             |   st_get
             |   st_fre
