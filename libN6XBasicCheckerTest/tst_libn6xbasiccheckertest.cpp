@@ -130,6 +130,11 @@ void LibN6XBasicCheckerTest::testCase1()
             "610 gosub 610:return\n"
             "620 a$=grp$(80)\n"
             "630 a$=hex$(i)\n"
+            "640 ifa=5then640\n"
+            "650 ifa=5thengoto640\n"
+            "660 ifa=xgoto660\n"
+            "670 ifa=xthena=10else670\n"
+            "680 ifa=xthena=10elsea=100\n"
             ;
 
     QVERIFY(parse(programList, stat, true));
@@ -187,11 +192,11 @@ void LibN6XBasicCheckerTest::testCase2()
             "170 A=1^2:A=1-2:A=1*2:A=1/2:A=1+2:A=1AND2:A=1OR2\n"
             "180 A=NANDA:B=NORS\n"
             "190 A=-1+2:B=-1.2*2+1:C=+111*2:D=NOTA+NOTB\n"
-//            "200 COLORA$=B$:IFA$=\"A\"+\"B\"THEN110\n"
+            "200 COLORA$=B$:IFA$=\"A\"+\"B\"THEN110\n"
             "210 COLORA$=B$+\"A\"\n"
-//            "220 COLOR1+2:COLORA=B:COLORA$=\"AA\"\n"
-//            "230 IFA$<>B$THEN110:IFA$><B$THEN110:IFA$>B$THEN110:IFA$<B$THEN110\n"
-//            "240 IFA$>=B$THEN110:IFA$=>B$THEN110:IFA$<=B$THEN110:IFA$=<B$THEN110\n"
+            "220 COLOR1+2:COLORA=B:COLORA$=\"AA\"\n"
+            "230 IFA$<>B$THEN110:IFA$><B$THEN110:IFA$>B$THEN110:IFA$<B$THEN110\n"
+            "240 IFA$>=B$THEN110:IFA$=>B$THEN110:IFA$<=B$THEN110:IFA$=<B$THEN110\n"
 //            "300 COLOR(((A$=B$)+1)*2):PLAY(\"AA\"+\"BB\"):PLAYA$+(B$+C$):COLOR(A$=B$):COLOR(A$=\"AA\")\n"
 //            "310 COLOR(\"AA\"=A$):COLOR(A$=\"AA\"):COLOR(INKEY$=\"AA\")\n"
             "320 A=(1):B=(-1):C=((1))\n"

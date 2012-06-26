@@ -102,6 +102,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
                              [sw::alnum
                              - L("as")
                              - L("to")
+                             - L("goto")
                              - L("step")
                              - L("then")
                              - L("else")];
@@ -112,8 +113,19 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
             =   num_var >> L("(") > num_expression >> *(L(",") > num_expression) > L(")");
 
     //数値リテラル
+    StringRule sign
+            =   L("+") | L("-");
+
+    StringRule fractional_constant
+            =  *sw::digit >> '.' >> +sw::digit
+                             |  +sw::digit >> -L(".");
+
+    StringRule exponent_part
+            =   (L("e") | L("E")) >> -sign >> +sw::digit;
+
     StringRule num_literal
-            =   double_ - L("nan") - L("inf");
+            =   -sign >> (fractional_constant >> !exponent_part
+                          | +sw::digit >> exponent_part);
 
     //数値リテラル(16進)
     StringRule num_hex_literal
@@ -301,6 +313,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     UintRule linenumber = uint_;
 
     //ステートメント、コマンド------------------------------------------------
+    StringRule statement;
     //代入文
     StringRule num_assign
             =   (num_array_var | num_var ) >> L("=") > num_expression;
@@ -363,7 +376,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     StringRule st_color
             =   L("color") >> -num_expression               //f
                            >> -(L"," >> -num_expression)    //b
-                           >> -(L"," > -num_expression);   //c
+                           >> -(L"," > -num_expression);    //c
 
     //CONSOLE文
     StringRule st_console
@@ -488,13 +501,23 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     StringRule st_goto
             =   L("go") >> L("to") > linenumber;
 
+    //IF文
+    StringRule st_if
+            =   L("if") >> rel_expression
+                        >> ((L("then") >> statement)
+                            | (L("then") >> linenumber)
+                            | st_goto)
+                        >> -((L("else") >> statement)
+                            | (L("else") >> linenumber));
+
     //PRINT文
     StringRule st_print
             =   (L("print")|L("?")) >> expression >> *((L(";") | L(",")) > expression);
 
     //文
-    StringRule statement
+    statement
             =   st_print
+            |   st_if
             |   st_goto
             |   st_gosub | st_return
             |   st_get_at
