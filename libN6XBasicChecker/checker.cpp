@@ -693,6 +693,17 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
             =   L("on") >> num_expression >> L("goto")
                         >> linenumber
                         >> *(L(",") > linenumber);
+
+    //OPEN文
+    StringRule st_open
+            =   L("open") >> str_expression
+                          >> -(L("for") >> (L("input") | L("output") | L("append")))
+                          >> L("as") >> -L("#") >> num_expression;
+
+    //OUT文
+    StringRule st_out
+            =   L("out") >> num_expression >> L(",") >> num_expression;
+
     //PRINT文
     StringRule st_print
             =   (L("print")|L("?")) >> expression >> *((L(";") | L(",")) > expression);
@@ -705,6 +716,8 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     statement
             =   st_rset
             |   st_print
+            |   st_out
+            |   st_open
             |   st_on_goto
             |   st_on_gosub
             |   st_on_error_goto

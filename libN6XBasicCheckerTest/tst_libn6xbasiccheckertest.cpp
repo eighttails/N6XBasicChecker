@@ -175,6 +175,9 @@ void LibN6XBasicCheckerTest::testCase1()
             "1060 on error goto 1060\n"
             "1070 onagosub100,110,120\n"
             "1080 onagoto100,110,120\n"
+            "1090 open f$as1:openf$as#1\n"
+            "1100 open\"a.bas\"forappendas#1\n"
+            "1110 out&h93,2\n"
             ;
 
     QVERIFY(parse(programList, stat, true));
