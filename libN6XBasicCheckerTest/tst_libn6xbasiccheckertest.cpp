@@ -164,6 +164,8 @@ void LibN6XBasicCheckerTest::testCase1()
             "950 a=log(10)\n"
             "960 a=lpos(0)\n"
             "970 lprinta$;\"abcあいう\";b$;(a$+b$)\n"
+            "980 lset a$=\"aaa\n"
+            "990 rset a$=\"aaa\n"
             ;
 
     QVERIFY(parse(programList, stat, true));

@@ -640,13 +640,23 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     StringRule st_lprint
             =   (L("lprint")|L("?")) >> expression >> *((L(";") | L(",")) > expression);
 
+    //LSET文
+    StringRule st_lset
+            =   L("lset") >> str_assign;
+
     //PRINT文
     StringRule st_print
             =   (L("print")|L("?")) >> expression >> *((L(";") | L(",")) > expression);
 
+    //RSET文
+    StringRule st_rset
+            =   L("rset") >> str_assign;
+
     //文
     statement
-            =   st_print
+            =   st_rset
+            |   st_print
+            |   st_lset
             |   st_lprint
             |   st_locate
             |   st_load
