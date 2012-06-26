@@ -138,6 +138,8 @@ void LibN6XBasicCheckerTest::testCase1()
             "690 a$=inkey$\n"
             "700 a=inp(100)\n"
             "710 input a$:input \"input:\";a$,b$:input a$;b$(1)\n"
+            "720 input #1,N,R:input #-1,N,R\n"
+            "730 a=int(1.5)\n"
             ;
 
     QVERIFY(parse(programList, stat, true));

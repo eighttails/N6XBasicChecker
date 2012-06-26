@@ -278,8 +278,12 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     StringRule num_func_inp
             =   L("inp") >> L("(") >> num_expression >> L(")");
 
+    //INT
+    StringRule num_func_int
+            =   L("int") >> L("(") >> num_expression >> L(")");
     num_func
-            =   num_func_inp
+            =   num_func_int
+            |   num_func_inp
             |   num_func_exp
             |   num_func_eof
             |   num_func_dskf
@@ -526,6 +530,11 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
                            >> (str_array_var | str_var)
                            >> *(L(",") >> (str_array_var | str_var));
 
+    //INPUT#文
+    StringRule st_input_sharp
+            =   L("input") >> L("#") >> num_expression
+                           >> +(L(",") >> (num_array_var | num_var));
+
     //PRINT文
     StringRule st_print
             =   (L("print")|L("?")) >> expression >> *((L(";") | L(",")) > expression);
@@ -533,6 +542,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     //文
     statement
             =   st_print
+            |   st_input_sharp
             |   st_input
             |   st_if
             |   st_goto
