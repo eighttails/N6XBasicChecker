@@ -124,7 +124,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
             =   (L("e") | L("E")) >> -sign >> +sw::digit;
 
     StringRule num_literal
-            =   -sign >> (fractional_constant >> !exponent_part
+            =   -sign >> (fractional_constant >> -exponent_part
                           | +sw::digit >> exponent_part);
 
     //数値リテラル(16進)
