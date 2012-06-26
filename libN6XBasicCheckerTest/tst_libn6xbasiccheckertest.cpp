@@ -135,6 +135,9 @@ void LibN6XBasicCheckerTest::testCase1()
             "660 ifa=xgoto660\n"
             "670 ifa=xthena=10else670\n"
             "680 ifa=xthena=10elsea=100\n"
+            "690 a$=inkey$\n"
+            "700 a=inp(100)\n"
+            "710 input a$:input \"input:\";a$,b$:input a$;b$(1)\n"
             ;
 
     QVERIFY(parse(programList, stat, true));
