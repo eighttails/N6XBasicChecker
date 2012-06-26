@@ -87,7 +87,7 @@ void LibN6XBasicCheckerTest::testCase1()
             "180 a$=chr$(13)\n"
             "190 circle(x,y),r,c,s,e,a:circle step(x,y),r,c,,,a\n"
             "200 clear50:clear50,&hA000\n"
-            "210 cloada$:cload?\"abc\n"
+            "210 cload:cloada$:cload?\"abc\n"
             "220 cload * X\n"
             "230 close:close 1:close a,b,c:cls\n"
             "240 color1:color1,2,3:color,,3\n"
@@ -157,6 +157,13 @@ void LibN6XBasicCheckerTest::testCase1()
             "880 llist 830:llist 100-200:llist-150\n"
             "890 llist l,840\n"
             "900 llist v,a:llistv,a$\n"
+            "910 loada$:loada$,r\n"
+            "920 a=loc(0)\n"
+            "930 locate1,2:locate1,2,1:locate,,1\n"
+            "940 a=lof(0)\n"
+            "950 a=log(10)\n"
+            "960 a=lpos(0)\n"
+            "970 lprinta$;\"abcあいう\";b$;(a$+b$)\n"
             ;
 
     QVERIFY(parse(programList, stat, true));
@@ -170,6 +177,7 @@ void LibN6XBasicCheckerTest::testCase1()
             "50 circle(x,y),,,,\n"
             "60 circle(x,y),r,c,s,e,a,a2\n"
             "70 delete\n"
+            "80 locate,,"
             ;
     QVERIFY(!parse(programList, stat));
     int i=0;
@@ -180,7 +188,7 @@ void LibN6XBasicCheckerTest::testCase1()
     QVERIFY(stat.errorList_[i++].basicLineNumber_ == 50);
     QVERIFY(stat.errorList_[i++].basicLineNumber_ == 60);
     QVERIFY(stat.errorList_[i++].basicLineNumber_ == 70);
-//    QVERIFY(stat.errorList_[i++].basicLineNumber_ == 80);
+    QVERIFY(stat.errorList_[i++].basicLineNumber_ == 80);
 //    QVERIFY(stat.errorList_[i++].basicLineNumber_ == 90);
 //    QVERIFY(stat.errorList_[i++].basicLineNumber_ == 100);
 //    QVERIFY(stat.errorList_[i++].basicLineNumber_ == 110);

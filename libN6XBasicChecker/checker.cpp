@@ -285,8 +285,29 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     //LEN
     StringRule num_func_len
             =   L("len") >> L("(") >> str_expression >> L(")");
+
+    //LOC
+    StringRule num_func_loc
+            =   L("loc") >> L("(") >> num_expression >> L(")");
+
+    //LOF
+    StringRule num_func_lof
+            =   L("lof") >> L("(") >> num_expression >> L(")");
+
+    //LOG
+    StringRule num_func_log
+            =   L("log") >> L("(") >> num_expression >> L(")");
+
+    //LPOS
+    StringRule num_func_lpos
+            =   L("lpos") >> L("(") >> num_expression >> L(")");
+
     num_func
-            =   num_func_len
+            =   num_func_lpos
+            |   num_func_log
+            |   num_func_lof
+            |   num_func_loc
+            |   num_func_len
             |   num_func_int
             |   num_func_inp
             |   num_func_exp
@@ -388,7 +409,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
 
     //CLOAD文(CLOAD?文も兼ねる)
     StringRule st_cload
-            =   L("cload") >> -L("?") >> str_expression;
+            =   L("cload") >> -L("?") >> -str_expression;
 
     //CLOSE文
     StringRule st_close
@@ -606,6 +627,19 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
             =   L("llist") >> L("v") >> -(L(",")
                                          >> (str_array_var | str_var | num_array_var | num_var));
 
+    //LOAD文
+    StringRule st_load
+            =   L("load") >> str_expression >> -(L(",") >> L("r"));
+
+    //LOCATE文
+    StringRule st_locate
+            =   L("locate") >> -num_expression
+                          >> -(L(",") >> -num_expression)
+                          >> -(L(",") >> num_expression);
+    //PRINT文
+    StringRule st_lprint
+            =   (L("lprint")|L("?")) >> expression >> *((L(";") | L(",")) > expression);
+
     //PRINT文
     StringRule st_print
             =   (L("print")|L("?")) >> expression >> *((L(";") | L(",")) > expression);
@@ -613,6 +647,9 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     //文
     statement
             =   st_print
+            |   st_lprint
+            |   st_locate
+            |   st_load
             |   st_llist_v
             |   st_llist_l
             |   st_llist
