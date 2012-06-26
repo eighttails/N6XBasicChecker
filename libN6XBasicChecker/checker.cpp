@@ -103,6 +103,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
                              - L("as")
                              - L("to")
                              - L("goto")
+                             - L("gosub")
                              - L("step")
                              - L("then")
                              - L("else")];
@@ -681,6 +682,17 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     StringRule st_on_error_goto
             =   L("on") >> L("error") >> st_goto;
 
+    //ON GOSUB文
+    StringRule st_on_gosub
+            =   L("on") >> num_expression >> L("gosub")
+                        >> linenumber
+                        >> *(L(",") > linenumber);
+
+    //ON GOTO文
+    StringRule st_on_goto
+            =   L("on") >> num_expression >> L("goto")
+                        >> linenumber
+                        >> *(L(",") > linenumber);
     //PRINT文
     StringRule st_print
             =   (L("print")|L("?")) >> expression >> *((L(";") | L(",")) > expression);
@@ -693,6 +705,8 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     statement
             =   st_rset
             |   st_print
+            |   st_on_goto
+            |   st_on_gosub
             |   st_on_error_goto
             |   st_new
             |   st_name

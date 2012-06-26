@@ -173,6 +173,8 @@ void LibN6XBasicCheckerTest::testCase1()
             "1040 new\n"
             "1050 a$=oct$(i)\n"
             "1060 on error goto 1060\n"
+            "1070 onagosub100,110,120\n"
+            "1080 onagoto100,110,120\n"
             ;
 
     QVERIFY(parse(programList, stat, true));
