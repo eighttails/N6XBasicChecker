@@ -354,11 +354,16 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
                           >> -(L(",") >> num_expression)
                           >> L(")");
 
+    //OCT$
+    StringRule str_func_oct$
+            =   L("oct$") >> L("(") >> num_expression >> L(")");
+
     //RIGHT$
     StringRule str_func_right$
             =   L("right$") >> L("(") >> str_expression >> L(",") >> num_expression >> L(")");
     str_func
             =   str_func_right$
+            |   str_func_oct$
             |   str_func_mid$
             |   str_func_left$
             |   str_func_inkey$
@@ -664,6 +669,14 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     StringRule st_merge
             =   L("merge") >> str_expression;
 
+    //NAME文
+    StringRule st_name
+            =   L("name") >> str_expression >> L("as") >> str_expression;
+
+    //NEW文(こんなのプログラム中に有るのか？)
+    StringRule st_new
+            =   L("new");
+
     //PRINT文
     StringRule st_print
             =   (L("print")|L("?")) >> expression >> *((L(";") | L(",")) > expression);
@@ -676,6 +689,8 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     statement
             =   st_rset
             |   st_print
+            |   st_new
+            |   st_name
             |   st_merge
             |   st_menu
             |   st_lset

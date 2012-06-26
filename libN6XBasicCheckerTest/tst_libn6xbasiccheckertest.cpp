@@ -169,6 +169,9 @@ void LibN6XBasicCheckerTest::testCase1()
             "1000 menu\n"
             "1010 merge f$\n"
             "1020 a$=mid$(b$,2):a$=mid$(b$,2,2)\n"
+            "1030 name a$asb$\n"
+            "1040 new\n"
+            "1050 a$=oct$(i)\n"
             ;
 
     QVERIFY(parse(programList, stat, true));
