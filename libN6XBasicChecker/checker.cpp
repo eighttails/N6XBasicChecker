@@ -450,6 +450,24 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
                          >> -(L("step") >> num_expression);
     StringRule st_next
             =   L("next") >> -num_var;
+
+    //FRE文
+    StringRule st_fre
+            =   L("fre") >> L("(") >> expression >> L(")");
+
+    //GET文
+    StringRule st_get
+            =   L("get") >> -L("#") >> num_expression
+                         >> -(L(",") >> num_expression);
+
+    //GET@文
+    //#PENDING 配列変数名の管理
+    StringRule st_get_at
+            =   L("get") >> -L("@") >> -L("step")
+                         >> L("(") >> num_expression >> L(",") >> num_expression >> L(")")
+                         >> L("-") >> -L("step")
+                         >> L("(") >> num_expression >> L(",") >> num_expression >> L(")")
+                         >> L(",") >> (str_expression | num_var);
     //GOTO文
     //goとtoの間には空白を許容するため、トークンを分ける
     StringRule st_goto
@@ -463,6 +481,9 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     StringRule statement
             =   st_print
             |   st_goto
+            |   st_get_at
+            |   st_get
+            |   st_fre
             |   st_for  |   st_next
             |   st_files
             |   st_field

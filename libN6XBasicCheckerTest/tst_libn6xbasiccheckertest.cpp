@@ -77,7 +77,7 @@ void LibN6XBasicCheckerTest::testCase1()
             "80 printnot(a$=\"1\"):printnot-a=1:print-a\n"
             "90 printa and b:printa or b:print a xor b\n"
             "100 a$=\"1\"\n"
-            "110 a=1:a=&h0a\n"
+            "110 a=1:a=&h0a:as=1:to=1\n"
             "120 b=abs(-1):b=abs(a)\n"
             "130 b=asc(\"abcあいう\"):b=asc(a$)\n"
             "140 auto:auto10:auto10,10:auto,10\n"
@@ -120,7 +120,14 @@ void LibN6XBasicCheckerTest::testCase1()
             "510 fori=0to10:next\n"
             "520 forj=xtoy:nextj\n"
             "530 fork=xtoystepy\n"
-            "540 fork=xt+1toys+1stepy-1\n";
+            "540 fork=xt+1toys+1stepy-1\n"
+            "550 fre(0):fre(a$)\n"
+            "560 get1,pr:get#1,pr\n"
+            "570 get(0,0)-(15,15),d\n"
+            "580 get@(0,0)-(15,15),d$\n"
+            "590 getstep(0,0)-step(15,15),d\n"
+            "600 get@step(0,0)-step(15,15),d$\n"
+            ;
 
     QVERIFY(parse(programList, stat, true));
 
