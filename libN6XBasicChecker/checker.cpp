@@ -677,6 +677,10 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     StringRule st_new
             =   L("new");
 
+    //ON ERROR GOTO文
+    StringRule st_on_error_goto
+            =   L("on") >> L("error") >> st_goto;
+
     //PRINT文
     StringRule st_print
             =   (L("print")|L("?")) >> expression >> *((L(";") | L(",")) > expression);
@@ -689,6 +693,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     statement
             =   st_rset
             |   st_print
+            |   st_on_error_goto
             |   st_new
             |   st_name
             |   st_merge

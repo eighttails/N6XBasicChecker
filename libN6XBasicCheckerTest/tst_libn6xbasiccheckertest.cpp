@@ -172,6 +172,7 @@ void LibN6XBasicCheckerTest::testCase1()
             "1030 name a$asb$\n"
             "1040 new\n"
             "1050 a$=oct$(i)\n"
+            "1060 on error goto 1060\n"
             ;
 
     QVERIFY(parse(programList, stat, true));
