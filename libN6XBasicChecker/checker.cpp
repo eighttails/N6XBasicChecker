@@ -281,8 +281,13 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     //INT
     StringRule num_func_int
             =   L("int") >> L("(") >> num_expression >> L(")");
+
+    //LEN
+    StringRule num_func_len
+            =   L("len") >> L("(") >> str_expression >> L(")");
     num_func
-            =   num_func_int
+            =   num_func_len
+            |   num_func_int
             |   num_func_inp
             |   num_func_exp
             |   num_func_eof
@@ -309,14 +314,21 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     StringRule str_func_grp$
             =   L("grp$") >> L("(") >> num_expression >> L(")");
 
+    //HEX$
     StringRule str_func_hex$
             =   L("hex$") >> L("(") >> num_expression >> L(")");
 
+    //INKEY$
     StringRule str_func_inkey$
             =   L("inkey$");
 
+    //LEFT$
+    StringRule str_func_left$
+            =   L("left$") >> L("(") >> str_expression >> L(",") >> num_expression >> L(")");
+
     str_func
-            =   str_func_inkey$
+            =   str_func_left$
+            |   str_func_inkey$
             |   str_func_hex$
             |   str_func_grp$
             |   str_func_dski$
@@ -534,6 +546,27 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     StringRule st_input_sharp
             =   L("input") >> L("#") >> num_expression
                            >> +(L(",") >> (num_array_var | num_var));
+    //KANJI文
+    StringRule st_kanji
+            =   L("kanji") >> -L("step")
+                           >> L("(") >> num_expression >> L(",") >> num_expression >> L(")")
+                           >> L(",") >> num_expression //色
+                           >> +(L(",") >> (expression));
+    //KEY文
+    StringRule st_key
+            =   L("key") >> num_expression >> L(",") >> str_expression;
+
+    //KILL文
+    StringRule st_kill
+            =   L("kill") >> str_expression;
+
+    //LCOPY文
+    StringRule st_lcopy
+            =   L("lcopy") >> num_expression;
+
+    //LET文
+    StringRule st_let
+            =   L("let") >> (str_assign | num_assign);
 
     //PRINT文
     StringRule st_print
@@ -542,6 +575,11 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     //文
     statement
             =   st_print
+            |   st_let
+            |   st_lcopy
+            |   st_kill
+            |   st_key
+            |   st_kanji
             |   st_input_sharp
             |   st_input
             |   st_if

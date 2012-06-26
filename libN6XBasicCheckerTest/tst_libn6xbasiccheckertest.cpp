@@ -140,6 +140,13 @@ void LibN6XBasicCheckerTest::testCase1()
             "710 input a$:input \"input:\";a$,b$:input a$;b$(1)\n"
             "720 input #1,N,R:input #-1,N,R\n"
             "730 a=int(1.5)\n"
+            "740 kanjistep(0,0),15,1000,\"あいう\",a,a$\n"
+            "750 key1,a$\n"
+            "760 kill a$\n"
+            "770 lcopy2\n"
+            "780 a$=left$(b$,2)\n"
+            "790 a=len(a$)\n"
+            "780 leta=1:leta$=\"aaa\"\n"
             ;
 
     QVERIFY(parse(programList, stat, true));
