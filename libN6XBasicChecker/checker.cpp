@@ -303,8 +303,18 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     StringRule num_func_lpos
             =   L("lpos") >> L("(") >> num_expression >> L(")");
 
+    //PAD
+    StringRule num_func_pad
+            =   L("pad") >> L("(") >> num_expression >> L(")");
+
+    //PEEK
+    StringRule num_func_peek
+            =   L("peek") >> num_expression;
+
     num_func
-            =   num_func_lpos
+            =   num_func_peek
+            |   num_func_pad
+            |   num_func_lpos
             |   num_func_log
             |   num_func_lof
             |   num_func_loc
@@ -704,6 +714,24 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     StringRule st_out
             =   L("out") >> num_expression >> L(",") >> num_expression;
 
+    //PAINT文
+    StringRule st_paint
+            =   L("paint") >> -L("step")
+                           >> L("(") >> num_expression >> L(",") >> num_expression >> L(")")
+                           >> -(L(",") >> -num_expression) //領域色
+                           >> -(L(",") >> num_expression); //境界色
+
+    //PALET文
+    StringRule st_palet
+            =   L("palet") >> -(num_expression >> L(",") >> num_expression);
+
+    //PLAY文
+    //#PENDING MML構文チェック
+    StringRule st_play
+            =   L("play") >> str_expression
+                          >> qi::repeat(0, 4)[(L(",") >> -str_expression)]
+                          >> -(L(",") >> str_expression);
+
     //PRINT文
     StringRule st_print
             =   (L("print")|L("?")) >> expression >> *((L(";") | L(",")) > expression);
@@ -716,6 +744,9 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     statement
             =   st_rset
             |   st_print
+            |   st_play
+            |   st_palet
+            |   st_paint
             |   st_out
             |   st_open
             |   st_on_goto

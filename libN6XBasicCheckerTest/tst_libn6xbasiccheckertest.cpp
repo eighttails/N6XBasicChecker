@@ -178,6 +178,11 @@ void LibN6XBasicCheckerTest::testCase1()
             "1090 open f$as1:openf$as#1\n"
             "1100 open\"a.bas\"forappendas#1\n"
             "1110 out&h93,2\n"
+            "1120 a=pad(0)\n"
+            "1130 paint step(0,0),,1\n"
+            "1140 palet:palet15,1\n"
+            "1150 a=peek&hA000\n"
+            "1160 play a$:play\"cde\",,,,b$\n"
             ;
 
     QVERIFY(parse(programList, stat, true));
