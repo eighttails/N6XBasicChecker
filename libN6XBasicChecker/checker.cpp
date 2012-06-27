@@ -311,8 +311,14 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     StringRule num_func_peek
             =   L("peek") >> num_expression;
 
+    //POINT
+    StringRule num_func_point
+            =   L("point") >> -L("step")
+                           >> L("(") >> num_expression >> L(",") >> num_expression >> L(")");
+
     num_func
-            =   num_func_peek
+            =   num_func_point
+            |   num_func_peek
             |   num_func_pad
             |   num_func_lpos
             |   num_func_log
@@ -731,6 +737,9 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
             =   L("play") >> str_expression
                           >> qi::repeat(0, 4)[(L(",") >> -str_expression)]
                           >> -(L(",") >> str_expression);
+    //POKE文
+    StringRule st_poke
+            =   L("poke") >> num_expression >> L(",") >> num_expression;
 
     //PRINT文
     StringRule st_print
@@ -744,6 +753,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     statement
             =   st_rset
             |   st_print
+            |   st_poke
             |   st_play
             |   st_palet
             |   st_paint

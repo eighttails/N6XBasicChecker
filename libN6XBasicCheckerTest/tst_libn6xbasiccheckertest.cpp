@@ -183,6 +183,8 @@ void LibN6XBasicCheckerTest::testCase1()
             "1140 palet:palet15,1\n"
             "1150 a=peek&hA000\n"
             "1160 play a$:play\"cde\",,,,b$\n"
+            "1170 a=pointstep(0,0)\n"
+            "1180 poke &HA000,0\n"
             ;
 
     QVERIFY(parse(programList, stat, true));
