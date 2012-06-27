@@ -187,6 +187,9 @@ void LibN6XBasicCheckerTest::testCase1()
             "1180 poke &HA000,0\n"
             "1190 a=pos(0)\n"
             "1200 psetstep(0,0),1:presetstep(0,0)\n"
+            "1210 print#1,a;b;c:print#1,CHR$(34);a$;CHR$(34);b$:print#1,a,b\n"
+            "1220 put#1,pr:put1,pr\n"
+            "1230 put(0,0),d:put@(0,0),d,or:put@step(0,0),d,and\n"
             ;
 
     QVERIFY(parse(programList, stat, true));

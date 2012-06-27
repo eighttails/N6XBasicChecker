@@ -755,12 +755,28 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     StringRule st_print
             =   (L("print")|L("?")) >> expression >> *((L(";") | L(",")) > expression);
 
+    //PRINT#文
+    StringRule st_print_sharp
+            =   L("print") >> L("#") >> num_expression
+                           >> L(",") >> expression
+                           >> *((L(";") | L(",")) > expression);
+
     //PSET文
     StringRule st_pset
             =   L("pset") >> -L("step")
                           >> L("(") >> num_expression >> L(",") >> num_expression >> L(")")
                           >> -(L(",") >> num_expression); //色
+    //PUT文
+    StringRule st_put
+            =   L("put") >> -L("#") >> num_expression
+                         >> -(L(",") >> num_expression);
 
+    //PUT@文
+    StringRule st_put_at
+            =   L("put") >> -L("@") >> -L("step")
+                         >> L("(") >> num_expression >> L(",") >> num_expression >> L(")")
+                         >> L(",") >> (num_var | str_expression)
+                         >> -(L(",") >> (L("xor") | L("and") | L("or") | L("pset") | L("preset"))); //色
     //RSET文
     StringRule st_rset
             =   L("rset") >> str_assign;
@@ -768,7 +784,10 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     //文
     statement
             =   st_rset
+            |   st_put_at
+            |   st_put
             |   st_pset
+            |   st_print_sharp
             |   st_print
             |   st_preset
             |   st_poke
