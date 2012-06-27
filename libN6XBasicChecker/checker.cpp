@@ -102,6 +102,11 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
                              [sw::alnum
                              - L("as")
                              - L("to")
+                             - L("and")
+                             - L("xor")
+                             - L("or")
+                             - L("eqv")
+                             - L("imp")
                              - L("goto")
                              - L("gosub")
                              - L("step")
@@ -182,7 +187,9 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     StringRule logical_operator
             =   L("and")
             |   L("xor")
-            |   L("or");
+            |   L("or")
+            |   L("eqv")
+            |   L("imp");
     StringRule logical_expression
             =   (rel_expression >> *(logical_operator > rel_expression));
 
