@@ -316,8 +316,13 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
             =   L("point") >> -L("step")
                            >> L("(") >> num_expression >> L(",") >> num_expression >> L(")");
 
+    //POS
+    StringRule num_func_pos
+            =   L("pos") >> L("(") >> num_expression >> L(")");
+
     num_func
-            =   num_func_point
+            =   num_func_pos
+            |   num_func_point
             |   num_func_peek
             |   num_func_pad
             |   num_func_lpos
@@ -741,9 +746,20 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     StringRule st_poke
             =   L("poke") >> num_expression >> L(",") >> num_expression;
 
+    //PRESET文
+    StringRule st_preset
+            =   L("preset") >> -L("step")
+                            >> L("(") >> num_expression >> L(",") >> num_expression >> L(")");
+
     //PRINT文
     StringRule st_print
             =   (L("print")|L("?")) >> expression >> *((L(";") | L(",")) > expression);
+
+    //PSET文
+    StringRule st_pset
+            =   L("pset") >> -L("step")
+                          >> L("(") >> num_expression >> L(",") >> num_expression >> L(")")
+                          >> -(L(",") >> num_expression); //色
 
     //RSET文
     StringRule st_rset
@@ -752,7 +768,9 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     //文
     statement
             =   st_rset
+            |   st_pset
             |   st_print
+            |   st_preset
             |   st_poke
             |   st_play
             |   st_palet

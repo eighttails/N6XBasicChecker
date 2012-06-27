@@ -185,6 +185,8 @@ void LibN6XBasicCheckerTest::testCase1()
             "1160 play a$:play\"cde\",,,,b$\n"
             "1170 a=pointstep(0,0)\n"
             "1180 poke &HA000,0\n"
+            "1190 a=pos(0)\n"
+            "1200 psetstep(0,0),1:presetstep(0,0)\n"
             ;
 
     QVERIFY(parse(programList, stat, true));
