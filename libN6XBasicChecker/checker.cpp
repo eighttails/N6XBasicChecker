@@ -777,6 +777,16 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
                          >> L("(") >> num_expression >> L(",") >> num_expression >> L(")")
                          >> L(",") >> (num_var | str_expression)
                          >> -(L(",") >> (L("xor") | L("and") | L("or") | L("pset") | L("preset"))); //色
+
+    //READ文
+    StringRule st_read
+            =   L("read") >> (str_array_var | str_var | num_array_var | num_var)
+                         >> *(L(",") >> (str_array_var | str_var | num_array_var | num_var));
+
+    //REM文
+    StringRule st_rem
+            =   (L("rem") | L("'")) >> *printable;
+
     //RSET文
     StringRule st_rset
             =   L("rset") >> str_assign;
@@ -784,6 +794,8 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     //文
     statement
             =   st_rset
+            |   st_rem
+            |   st_read
             |   st_put_at
             |   st_put
             |   st_pset

@@ -190,6 +190,9 @@ void LibN6XBasicCheckerTest::testCase1()
             "1210 print#1,a;b;c:print#1,CHR$(34);a$;CHR$(34);b$:print#1,a,b\n"
             "1220 put#1,pr:put1,pr\n"
             "1230 put(0,0),d:put@(0,0),d,or:put@step(0,0),d,and\n"
+            "1240 read a,b$,c(0),d$(0)\n"
+            "1250 a=0:'コメント\n"
+            "1260 remコメント\n"
             ;
 
     QVERIFY(parse(programList, stat, true));
