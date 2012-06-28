@@ -71,7 +71,7 @@ void LibN6XBasicCheckerTest::testCase1()
             "20 print\"abcあいう\":goto10\n"
             "30 ?\"abcあいう\"\n"
             "40 printabcde $:printabcde\n"
-            "50 printa$;\"abcあいう\";b$;(a$+b$)\n"
+            "50 printa$;\"abcあいう\";b$;spc(10);(a$+b$)\n"
             "60 printa$(1);b$(1,2,3),\"abcあいう\n"
             "70 print(a$=\"1\"):print(a+b=1)\n"
             "80 printnot(a$=\"1\"):printnot-a=1:print-a\n"
@@ -207,6 +207,19 @@ void LibN6XBasicCheckerTest::testCase1()
             "1380 a=sin(0)\n"
             "1390 sound 8,i\n"
             "1400 a$=space$(x)+\"*\"\n"
+            "1410 a=sqr(100)\n"
+            "1420 stop\n"
+            "1430 a=stick(0)\n"
+            "1440 a=strig(0)\n"
+            "1450 a$=str$(x)+\"*\"\n"
+            "1460 talk a$\n"
+            "1470 a=tan(0)\n"
+            "1480 x=time\n"
+            "1490 a=usr(b):b$=usr(c$)\n"
+            "1500 a=val(a$)\n"
+            "1510 tron:troff\n"
+            "1520 wait &hc0,155,253\n"
+            "1530 width:width80:width80,25\n"
             ;
 
     QVERIFY(parse(programList, stat, true));

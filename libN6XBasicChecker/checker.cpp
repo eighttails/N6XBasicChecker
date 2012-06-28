@@ -347,8 +347,44 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     StringRule num_func_sin
             =   L("sin") >> L("(") >> num_expression >> L(")");
 
+    //SQR
+    StringRule num_func_sqr
+            =   L("sqr") >> L("(") >> num_expression >> L(")");
+
+    //STICK
+    StringRule num_func_stick
+            =   L("stick") >> L("(") >> num_expression >> L(")");
+
+    //STRIG
+    StringRule num_func_strig
+            =   L("strig") >> L("(") >> num_expression >> L(")");
+
+    //TAN
+    StringRule num_func_tan
+            =   L("tan") >> L("(") >> num_expression >> L(")");
+
+    //TIME
+    StringRule num_func_time
+            =   L("time");
+
+    //USR(数値を返す場合)
+    StringRule num_func_usr
+            =   L("usr") >> L("(") >> num_expression >> L(")");
+
+    //VAL
+    StringRule num_func_val
+            =   L("val") >> L("(") >> str_expression >> L(")");
+
+    //数値関数
     num_func
-            =   num_func_sin
+            =   num_func_val
+            |   num_func_usr
+            |   num_func_time
+            |   num_func_tan
+            |   num_func_strig
+            |   num_func_stick
+            |   num_func_sqr
+            |   num_func_sin
             |   num_func_sgn
             |   num_func_screen
             |   num_func_roll
@@ -419,8 +455,19 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     StringRule str_func_space$
             =   L("space$") >> L("(") >> num_expression >> L(")");
 
+    //STR$
+    StringRule str_func_str$
+            =   L("str$") >> L("(") >> num_expression >> L(")");
+
+    //USR(文字列を返す場合)
+    StringRule str_func_usr
+            =   L("usr") >> L("(") >> str_expression >> L(")");
+
+    //文字列関数
     str_func
-            =   str_func_space$
+            =   str_func_usr
+            |   str_func_str$
+            |   str_func_space$
             |   str_func_right$
             |   str_func_oct$
             |   str_func_mid$
@@ -712,9 +759,17 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
             =   L("locate") >> -num_expression
                           >> -(L(",") >> -num_expression)
                           >> -(L(",") >> num_expression);
-    //PRINT文
+
+    //LPRINT文
+    //SPC,TAB関数はPRINT,LPRINT中でのみ使える。
+    StringRule str_func_spc
+            =   L("spc") >> L("(") >> num_expression >> L(")");
+    StringRule str_func_tab
+            =   L("spc") >> L("(") >> num_expression >> L(")");
+    StringRule str_print //PRINT対象文字列
+            =   expression | str_func_spc | str_func_tab;
     StringRule st_lprint
-            =   (L("lprint")|L("?")) >> expression >> *((L(";") | L(",")) > expression);
+            =   (L("lprint")|L("?")) >> str_print >> *((L(";") | L(",")) > str_print);
 
     //LSET文
     StringRule st_lset
@@ -790,7 +845,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
 
     //PRINT文
     StringRule st_print
-            =   (L("print")|L("?")) >> expression >> *((L(";") | L(",")) > expression);
+            =   (L("print")|L("?")) >> str_print >> *((L(";") | L(",")) > str_print);
 
     //PRINT#文
     StringRule st_print_sharp
@@ -865,9 +920,43 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     StringRule st_sound
             =   L("sound") >> num_expression >> L(",") >> num_expression;
 
+    //STOP文
+    StringRule st_stop
+            =   L("stop");
+
+    //TALK文
+    //#PENDING TALK文構文チェック
+    StringRule st_talk
+            =   L("talk") >> str_expression;
+
+    //TROFF文
+    StringRule st_troff
+            =   L("troff");
+
+    //TRON文
+    StringRule st_tron
+            =   L("tron");
+
+    //WAIT文
+    StringRule st_wait
+            =   L("wait") >> num_expression
+                          >> L(",") >> -num_expression
+                          >> -(L"," > num_expression);
+
+    //WIDTH文
+    StringRule st_width
+            =   L("width") >> -num_expression
+                           >> -(L"," > num_expression);
+
     //文
     statement
-            =   st_sound
+            =   st_width
+            |   st_wait
+            |   st_tron
+            |   st_troff
+            |   st_talk
+            |   st_stop
+            |   st_sound
             |   st_screen
             |   st_save
             |   st_run
