@@ -327,8 +327,33 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     StringRule num_func_pos
             =   L("pos") >> L("(") >> num_expression >> L(")");
 
+    //RND
+    StringRule num_func_rnd
+            =   L("rnd") >> L("(") >> num_expression >> L(")");
+
+    //ROLL
+    StringRule num_func_roll
+            =   L("roll") >> L("(") >> num_expression >> L(")");
+
+    //SCREEN
+    StringRule num_func_screen
+            =   L("screen") >> L("(") >> num_expression >> L(",") >> num_expression >> L(")");
+
+    //SGN
+    StringRule num_func_sgn
+            =   L("sgn") >> L("(") >> num_expression >> L(")");
+
+    //SIN
+    StringRule num_func_sin
+            =   L("sin") >> L("(") >> num_expression >> L(")");
+
     num_func
-            =   num_func_pos
+            =   num_func_sin
+            |   num_func_sgn
+            |   num_func_screen
+            |   num_func_roll
+            |   num_func_rnd
+            |   num_func_pos
             |   num_func_point
             |   num_func_peek
             |   num_func_pad
@@ -794,13 +819,58 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     StringRule st_rem
             =   (L("rem") | L("'")) >> *printable;
 
+    //RENUM文
+    StringRule st_renum
+            =   L("renum") >> -linenumber >> -(L(",") >> linenumber);
+
+    //RESTORE文
+    StringRule st_restore
+            =   L("restore") >> linenumber;
+
+    //RESUME文
+    StringRule st_resume
+            =   L("resume") >> -(L("0") | L("next") | linenumber);
+
+    //ROLL文
+    StringRule st_roll
+            =   L("roll") >> -num_expression
+                          >> L(",") >> -num_expression
+                          >> -(L(",") >> L("y"));
+
     //RSET文
     StringRule st_rset
             =   L("rset") >> str_assign;
 
+    //RUN文
+    StringRule st_run
+            =   L("run") >> -(linenumber
+                              |(str_expression >> -(L(",") >> L("r"))));
+
+    //SAVE文
+    StringRule st_save
+            =   L("save") >> str_expression >> -(L(",") >> L("a"));
+
+    //SCREEN文
+    StringRule st_screen
+            =   L("screen") >> -num_expression               //m
+                            >> -(L"," >> -num_expression)    //a
+                            >> -(L"," > num_expression);     //V
+
+    //SOUND文
+    StringRule st_sound
+            =   L("sound") >> num_expression >> L(",") >> num_expression;
+
     //文
     statement
-            =   st_rset
+            =   st_sound
+            |   st_screen
+            |   st_save
+            |   st_run
+            |   st_rset
+            |   st_roll
+            |   st_resume
+            |   st_restore
+            |   st_renum
             |   st_rem
             |   st_read
             |   st_put_at

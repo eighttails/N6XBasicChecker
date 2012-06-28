@@ -193,6 +193,19 @@ void LibN6XBasicCheckerTest::testCase1()
             "1240 read a,b$,c(0),d$(0)\n"
             "1250 a=0:'コメント\n"
             "1260 remコメント\n"
+            "1270 renum:renum10:renum,20:renum10,10\n"
+            "1280 restore 1280\n"
+            "1290 resume:resume0:resumenext:resume1290\n"
+            "1300 a=rnd(0)\n"
+            "1310 roll 0,-1:roll0,1,y\n"
+            "1320 a=rnd(0)\n"
+            "1330 run:run1330:run\"a.bas\":run\"a.bas\",r\n"
+            "1240 save\"a.bas\":save\"a.bas\",a\n"
+            "1250 screen:screen1,2,1:screen,,1\n"
+            "1260 a=screen(0,0)\n"
+            "1270 a=sgn(0)\n"
+            "1270 a=sin(0)\n"
+            "1280 sound 8,i\n"
             ;
 
     QVERIFY(parse(programList, stat, true));
