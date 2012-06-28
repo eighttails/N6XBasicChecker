@@ -200,12 +200,13 @@ void LibN6XBasicCheckerTest::testCase1()
             "1310 roll 0,-1:roll0,1,y\n"
             "1320 a=rnd(0)\n"
             "1330 run:run1330:run\"a.bas\":run\"a.bas\",r\n"
-            "1240 save\"a.bas\":save\"a.bas\",a\n"
-            "1250 screen:screen1,2,1:screen,,1\n"
-            "1260 a=screen(0,0)\n"
-            "1270 a=sgn(0)\n"
-            "1270 a=sin(0)\n"
-            "1280 sound 8,i\n"
+            "1340 save\"a.bas\":save\"a.bas\",a\n"
+            "1350 screen:screen1,2,1:screen,,1\n"
+            "1360 a=screen(0,0)\n"
+            "1370 a=sgn(0)\n"
+            "1380 a=sin(0)\n"
+            "1390 sound 8,i\n"
+            "1400 a$=space$(x)+\"*\"\n"
             ;
 
     QVERIFY(parse(programList, stat, true));

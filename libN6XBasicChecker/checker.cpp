@@ -415,8 +415,13 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     //RIGHT$
     StringRule str_func_right$
             =   L("right$") >> L("(") >> str_expression >> L(",") >> num_expression >> L(")");
+    //SPACE$
+    StringRule str_func_space$
+            =   L("space$") >> L("(") >> num_expression >> L(")");
+
     str_func
-            =   str_func_right$
+            =   str_func_space$
+            |   str_func_right$
             |   str_func_oct$
             |   str_func_mid$
             |   str_func_left$
