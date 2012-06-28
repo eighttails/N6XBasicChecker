@@ -243,15 +243,15 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     //数値型関数
     //ASC
     StringRule num_func_abs
-            =   L("abs") >> L("(") > num_expression > L(")");
+            =   L("abs") >> L("(") > num_expression >> L(")");
 
     //ABS
     StringRule num_func_asc
-            =   L("asc") >> L("(") > str_expression > L(")");
+            =   L("asc") >> L("(") > str_expression >> L(")");
 
     //COS
     StringRule num_func_cos
-            =   L("cos") >> L("(") > num_expression > L(")");
+            =   L("cos") >> L("(") > num_expression >> L(")");
 
     //CSRLIN
     StringRule num_func_csrlin
@@ -259,20 +259,20 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
 
     //CVS
     StringRule num_func_cvs
-            =   L("cvs") >> L("(") >> str_expression >> L(")");
+            =   L("cvs") >> L("(") > str_expression >> L(")");
 
     //DEFFN文で定義された関数
     StringRule num_func_deffn
-            =   L("fn") >> num_var >> L("(") >> num_expression >> L(")");
+            =   L("fn") >> num_var >> L("(") > num_expression >> L(")");
 
     //DSKF
     StringRule num_func_dskf
-            =   L("dskf") >> L("(") >> num_expression
+            =   L("dskf") >> L("(") > num_expression
                           >> -(L(",") >> num_expression) >> L(")");
 
     //EOF
     StringRule num_func_eof
-            =   L("eof") >> L("(") >> num_expression >> L(")");
+            =   L("eof") >> L("(") > num_expression >> L(")");
 
     //ERL,ERR
     //#PENDING ERL,ERRは現状数値変数の定義で代用できるため、定義しない。
@@ -280,39 +280,39 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
 
     //EXP
     StringRule num_func_exp
-            =   L("exp") >> L("(") >> num_expression >> L(")");
+            =   L("exp") >> L("(") > num_expression >> L(")");
 
     //INP
     StringRule num_func_inp
-            =   L("inp") >> L("(") >> num_expression >> L(")");
+            =   L("inp") >> L("(") > num_expression >> L(")");
 
     //INT
     StringRule num_func_int
-            =   L("int") >> L("(") >> num_expression >> L(")");
+            =   L("int") >> L("(") > num_expression >> L(")");
 
     //LEN
     StringRule num_func_len
-            =   L("len") >> L("(") >> str_expression >> L(")");
+            =   L("len") >> L("(") > str_expression >> L(")");
 
     //LOC
     StringRule num_func_loc
-            =   L("loc") >> L("(") >> num_expression >> L(")");
+            =   L("loc") >> L("(") > num_expression >> L(")");
 
     //LOF
     StringRule num_func_lof
-            =   L("lof") >> L("(") >> num_expression >> L(")");
+            =   L("lof") >> L("(") > num_expression >> L(")");
 
     //LOG
     StringRule num_func_log
-            =   L("log") >> L("(") >> num_expression >> L(")");
+            =   L("log") >> L("(") > num_expression >> L(")");
 
     //LPOS
     StringRule num_func_lpos
-            =   L("lpos") >> L("(") >> num_expression >> L(")");
+            =   L("lpos") >> L("(") > num_expression >> L(")");
 
     //PAD
     StringRule num_func_pad
-            =   L("pad") >> L("(") >> num_expression >> L(")");
+            =   L("pad") >> L("(") > num_expression >> L(")");
 
     //PEEK
     StringRule num_func_peek
@@ -321,59 +321,61 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     //POINT
     StringRule num_func_point
             =   L("point") >> -L("step")
-                           >> L("(") >> num_expression >> L(",") >> num_expression >> L(")");
+                           >> L("(") > num_expression >> L(",") >> num_expression >> L(")");
 
     //POS
     StringRule num_func_pos
-            =   L("pos") >> L("(") >> num_expression >> L(")");
+            =   L("pos") >> L("(") > num_expression >> L(")");
 
     //RND
     StringRule num_func_rnd
-            =   L("rnd") >> L("(") >> num_expression >> L(")");
+            =   L("rnd") >> L("(") > num_expression >> L(")");
 
     //ROLL
     StringRule num_func_roll
-            =   L("roll") >> L("(") >> num_expression >> L(")");
+            =   L("roll") >> L("(") > num_expression >> L(")");
 
     //SCREEN
     StringRule num_func_screen
-            =   L("screen") >> L("(") >> num_expression >> L(",") >> num_expression >> L(")");
+            =   L("screen") >> L("(") > num_expression >> L(",") >> num_expression >> L(")");
 
     //SGN
     StringRule num_func_sgn
-            =   L("sgn") >> L("(") >> num_expression >> L(")");
+            =   L("sgn") >> L("(") > num_expression >> L(")");
 
     //SIN
     StringRule num_func_sin
-            =   L("sin") >> L("(") >> num_expression >> L(")");
+            =   L("sin") >> L("(") > num_expression >> L(")");
 
     //SQR
     StringRule num_func_sqr
-            =   L("sqr") >> L("(") >> num_expression >> L(")");
+            =   L("sqr") >> L("(") > num_expression >> L(")");
 
     //STICK
     StringRule num_func_stick
-            =   L("stick") >> L("(") >> num_expression >> L(")");
+            =   L("stick") >> L("(") > num_expression >> L(")");
 
     //STRIG
     StringRule num_func_strig
-            =   L("strig") >> L("(") >> num_expression >> L(")");
+            =   L("strig") >> L("(") > num_expression >> L(")");
 
     //TAN
     StringRule num_func_tan
-            =   L("tan") >> L("(") >> num_expression >> L(")");
+            =   L("tan") >> L("(") > num_expression >> L(")");
 
     //TIME
     StringRule num_func_time
             =   L("time");
 
     //USR(数値を返す場合)
+    //USR関数は引数に文字列を取るものと数字を取るものがあるため、
+    //L("(") >> num_expressionのようにバックトラックを可能にしておく。
     StringRule num_func_usr
             =   L("usr") >> L("(") >> num_expression >> L(")");
 
     //VAL
     StringRule num_func_val
-            =   L("val") >> L("(") >> str_expression >> L(")");
+            =   L("val") >> L("(") > str_expression >> L(")");
 
     //数値関数
     num_func
@@ -413,21 +415,21 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     //文字列関数
     //CHR$
     StringRule str_func_chr$
-            =   L("chr$") >> L("(") >> num_expression >> L(")");
+            =   L("chr$") >> L("(") > num_expression >> L(")");
 
     //DSKI$
     StringRule str_func_dski$
-            =   L("dski$") >> L("(") >> num_expression
+            =   L("dski$") >> L("(") > num_expression
                            >> L(",") >> num_expression
                            >> L(",") >> num_expression > L(")");
 
     //GRP$
     StringRule str_func_grp$
-            =   L("grp$") >> L("(") >> num_expression >> L(")");
+            =   L("grp$") >> L("(") > num_expression >> L(")");
 
     //HEX$
     StringRule str_func_hex$
-            =   L("hex$") >> L("(") >> num_expression >> L(")");
+            =   L("hex$") >> L("(") > num_expression >> L(")");
 
     //INKEY$
     StringRule str_func_inkey$
@@ -435,31 +437,33 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
 
     //LEFT$
     StringRule str_func_left$
-            =   L("left$") >> L("(") >> str_expression >> L(",") >> num_expression >> L(")");
+            =   L("left$") >> L("(") > str_expression >> L(",") >> num_expression >> L(")");
 
     //MID$
     StringRule str_func_mid$
-            =   L("mid$") >> L("(") >> str_expression
+            =   L("mid$") >> L("(") > str_expression
                           >> L(",") >> num_expression
                           >> -(L(",") >> num_expression)
                           >> L(")");
 
     //OCT$
     StringRule str_func_oct$
-            =   L("oct$") >> L("(") >> num_expression >> L(")");
+            =   L("oct$") >> L("(") > num_expression >> L(")");
 
     //RIGHT$
     StringRule str_func_right$
-            =   L("right$") >> L("(") >> str_expression >> L(",") >> num_expression >> L(")");
+            =   L("right$") >> L("(") > str_expression >> L(",") >> num_expression >> L(")");
     //SPACE$
     StringRule str_func_space$
-            =   L("space$") >> L("(") >> num_expression >> L(")");
+            =   L("space$") >> L("(") > num_expression >> L(")");
 
     //STR$
     StringRule str_func_str$
-            =   L("str$") >> L("(") >> num_expression >> L(")");
+            =   L("str$") >> L("(") > num_expression >> L(")");
 
     //USR(文字列を返す場合)
+    //USR関数は引数に文字列を取るものと数字を取るものがあるため、
+    //L("(") >> str_expressionのようにバックトラックを可能にしておく。
     StringRule str_func_usr
             =   L("usr") >> L("(") >> str_expression >> L(")");
 
@@ -501,8 +505,8 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     //BLOAD文
     StringRule st_bload
             =   L("bload") >> str_expression
-                           >> -(L"," >> -num_expression)
-                           >> -(L"," > -L("r"));
+                           >> -(L(",") >> -num_expression)
+                           >> -(L(",") > -L("r"));
     //BSAVE文
     StringRule st_bsave
             =   L("bsave") >> str_expression
@@ -515,10 +519,10 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
                             >> num_expression >> L(",")     //x
                             >> num_expression >> L(")")     //y
                             >> L(",") >> num_expression     //r
-                            >> -(L"," >> -num_expression)   //c
-                            >> -(L"," >> -num_expression)   //s
-                            >> -(L"," >> -num_expression)   //e
-                            >> -(L"," > -num_expression);   //a
+                            >> -(L(",") >> -num_expression)   //c
+                            >> -(L(",") >> -num_expression)   //s
+                            >> -(L(",") >> -num_expression)   //e
+                            >> -(L(",") > -num_expression);   //a
 
     //CLEAR文
     StringRule st_clear
@@ -545,16 +549,16 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     //COLOR文
     StringRule st_color
             =   L("color") >> -num_expression               //f
-                           >> -(L"," >> -num_expression)    //b
-                           >> -(L"," > -num_expression);    //c
+                           >> -(L(",") >> -num_expression)  //b
+                           >> -(L(",") > -num_expression);  //c
 
     //CONSOLE文
     StringRule st_console
             =   L("console") >> -num_expression               //m
-                             >> -(L"," >> -num_expression)    //n
-                             >> -(L"," >> -num_expression)    //f
-                             >> -(L"," >> -num_expression)    //k
-                             >> -(L"," > -num_expression);    //p
+                             >> -(L(",") >> -num_expression)    //n
+                             >> -(L(",") >> -num_expression)    //f
+                             >> -(L(",") >> -num_expression)    //k
+                             >> -(L(",") > -num_expression);    //p
 
     //CONT文
     //プログラム中に存在し得ないはずだが、一応定義しておく。
@@ -719,11 +723,11 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     //LINE文
     StringRule st_line
             =   L("line") >> -L("step")
-                           >> L("(") >> num_expression >> L(",") >> num_expression >> L(")")
-                           >> L("-") >> -L("step")
-                           >> L("(") >> num_expression >> L(",") >> num_expression >> L(")")
-                           >> -(L(",") >> -num_expression) //色
-                           >> -(L(",") >> (L("bf") | L("b")));
+                          >> L("(") >> num_expression >> L(",") >> num_expression >> L(")")
+                          >> L("-") >> -L("step")
+                          >> L("(") >> num_expression >> L(",") >> num_expression >> L(")")
+                          >> -(L(",") >> -num_expression) //色
+                          >> -(L(",") >> (L("bf") | L("b")));
 
     //LIST文
     StringRule st_list
@@ -737,6 +741,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     StringRule st_list_v
             =   L("list") >> L("v") >> -(L(",")
                                          >> (str_array_var | str_var | num_array_var | num_var));
+
     //LLIST文
     StringRule st_llist
             =   L("llist") >> (linenumber || (L("-") >> -linenumber));
@@ -913,8 +918,8 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     //SCREEN文
     StringRule st_screen
             =   L("screen") >> -num_expression               //m
-                            >> -(L"," >> -num_expression)    //a
-                            >> -(L"," > num_expression);     //V
+                            >> -(L(",") >> -num_expression)    //a
+                            >> -(L(",") > num_expression);     //V
 
     //SOUND文
     StringRule st_sound
@@ -941,12 +946,12 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     StringRule st_wait
             =   L("wait") >> num_expression
                           >> L(",") >> -num_expression
-                          >> -(L"," > num_expression);
+                          >> -(L(",") > num_expression);
 
     //WIDTH文
     StringRule st_width
             =   L("width") >> -num_expression
-                           >> -(L"," > num_expression);
+                           >> -(L(",") > num_expression);
 
     //文
     statement
