@@ -26,6 +26,7 @@ HEADERS += \
     checker.h
 
 SOURCES += \
-    checker.cpp
+    checker.cpp \
+    checker2.cpp
 
 

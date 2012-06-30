@@ -1064,6 +1064,8 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
 
 Checker::Checker()
 {
+    //全角半角テーブルを構築
+    makeZenHanMap();
 }
 
 struct printer
@@ -1096,7 +1098,8 @@ bool Checker::parse(const std::string& programList, ParserStatus& stat, bool tra
     //作業用プログラムリスト
     std::string workProgramList = programList;
     //プリプロセス。
-    //#PENDING 全角を半角に
+    //全角を半角に
+    convZenHan(workProgramList);
     //大文字を小文字に
     transform(workProgramList.begin (), workProgramList.end (), workProgramList.begin (), tolower);
 

@@ -1,6 +1,7 @@
 #ifndef CHECKER_H
 #define CHECKER_H
 
+#include <map>
 #include <string>
 #include <vector>
 
@@ -55,7 +56,16 @@ class Checker
 {
 public:
     Checker();
+    //構文解析
     bool parse(const std::string& programList, ParserStatus& stat, bool trace = false);
+private:
+    //全角→半角変換
+    void convZenHan(std::string& programList);
+    void replaceString(std::string& str, const std::string& from, std::string to);
+
+    //全角半角変換マップ
+    void makeZenHanMap();
+    std::map<std::string, std::string> zenhanMap_;
 };
 
 #endif // CHECKER_H

@@ -4,11 +4,10 @@
 #
 #-------------------------------------------------
 
-QT       += core
 
-QT       -= gui
+QT       -= core gui
 
-TARGET = N6XBasicCheckerMain
+TARGET = N6XBasicChecker
 CONFIG   += console
 CONFIG   -= app_bundle
 
@@ -21,7 +20,7 @@ else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../libN6XBasicCheck
 else:symbian: LIBS += -llibN6XBasicChecker
 else:unix: LIBS += -L$$OUT_PWD/../libN6XBasicChecker/ -llibN6XBasicChecker
 
-INCLUDEPATH += $$PWD/../libN6XBasicChecker
+INCLUDEPATH += $$PWD/../libN6XBasicChecker $$PWD/../babel
 DEPENDPATH += $$PWD/../libN6XBasicChecker
 
 win32:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../libN6XBasicChecker/release/libN6XBasicChecker.lib
