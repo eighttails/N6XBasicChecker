@@ -1,7 +1,10 @@
+#include "babel.cpp"
+
 #include <QtCore/QString>
 #include <QtTest/QtTest>
 #include <string>
 #include <iostream>
+#include <fstream>
 #include "checker.h"
 
 class LibN6XBasicCheckerTest : public QObject
@@ -16,6 +19,7 @@ private:
 private Q_SLOTS:
     void testCase1();
     void testCase2();
+    void testCase3();
 
 };
 
@@ -197,7 +201,7 @@ void LibN6XBasicCheckerTest::testCase1()
             "1280 restore 1280\n"
             "1290 resume:resume0:resumenext:resume1290\n"
             "1300 a=rnd(0)\n"
-            "1310 roll 0,-1:roll0,1,y\n"
+            "1310 roll:roll 0,-1:roll0,1,y\n"
             "1320 a=rnd(0)\n"
             "1330 run:run1330:run\"a.bas\":run\"a.bas\",r\n"
             "1340 save\"a.bas\":save\"a.bas\",a\n"
@@ -275,6 +279,7 @@ void LibN6XBasicCheckerTest::testCase1()
 //    QVERIFY(stat.errorList_[i++].basicLineNumber_ == 210);
 
 }
+
 void LibN6XBasicCheckerTest::testCase2()
 {
     //えすびさんに提供してもらったテストケース
@@ -335,6 +340,33 @@ void LibN6XBasicCheckerTest::testCase2()
 
 }
 
-QTEST_APPLESS_MAIN(LibN6XBasicCheckerTest)
+void LibN6XBasicCheckerTest::testCase3()
+{
+    babel::init_babel();
+    //tst_libn6xbasiccheckertesttestのバイナリと同階層にある
+    //listというディレクトリ内のBASICリストファイルを順次パースする。
+    //listディレクトリ内に配置するBASICリストファイルは自分で用意すること。
+    //Hashiさんのサイトに掲載されているBASICリストをまとめて回帰テストするためのテストケース。
+    QString listPath = qApp->applicationDirPath() + QDir::separator() + "list";
+
+    QDir dir(listPath);
+    QVERIFY(dir.exists());
+
+    QStringList files;
+    files = dir.entryList(QStringList("*.txt"),
+                                 QDir::Files | QDir::NoSymLinks);
+
+    foreach(QString file, files){
+        std::ifstream fst((listPath + QDir::separator() + file).toLocal8Bit());
+        std::string sjisList((std::istreambuf_iterator<char>(fst)), std::istreambuf_iterator<char>());
+        std::string utf8List = babel::sjis_to_utf8(sjisList);
+
+        ParserStatus stat;
+        QVERIFY2(parse(utf8List, stat, true), (QString("error in ") + file).toLocal8Bit());
+    }
+
+}
+
+QTEST_MAIN(LibN6XBasicCheckerTest)
 
 #include "tst_libn6xbasiccheckertest.moc"

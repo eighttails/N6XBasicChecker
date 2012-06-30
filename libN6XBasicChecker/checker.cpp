@@ -899,7 +899,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     //ROLL文
     StringRule st_roll
             =   L("roll") >> -num_expression
-                          >> L(",") >> -num_expression
+                          >> -(L(",") >> -num_expression)
                           >> -(L(",") >> L("y"));
 
     //RSET文

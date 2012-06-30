@@ -1,4 +1,4 @@
-#include "babel.h"
+#include "babel.cpp"
 
 
 int main(int argc, char *argv[])
