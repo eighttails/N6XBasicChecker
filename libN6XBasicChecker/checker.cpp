@@ -102,6 +102,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
                              [sw::alnum
                              - L("as")
                              - L("to")
+                             - L("mod")
                              - L("and")
                              - L("xor")
                              - L("or")
@@ -526,7 +527,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
 
     //CLEAR文
     StringRule st_clear
-            =   L("clear") >> num_expression
+            =   L("clear") >> -num_expression
                            >> -(L(",") > num_expression);
 
     //CLOAD*文
@@ -677,7 +678,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
 
     //IF文
     StringRule st_if
-            =   L("if") >> rel_expression
+            =   L("if") >> logical_expression
                         >> ((L("then") >> statement)
                             | (L("then") >> linenumber)
                             | st_goto)

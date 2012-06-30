@@ -90,7 +90,7 @@ void LibN6XBasicCheckerTest::testCase1()
             "170 bsavea$,&ha000,r\n"
             "180 a$=chr$(13)\n"
             "190 circle(x,y),r,c,s,e,a:circle step(x,y),r,c,,,a\n"
-            "200 clear50:clear50,&hA000\n"
+            "200 clear:clear50:clear50,&hA000\n"
             "210 cload:cloada$:cload?\"abc\n"
             "220 cload * X\n"
             "230 close:close 1:close a,b,c:cls\n"

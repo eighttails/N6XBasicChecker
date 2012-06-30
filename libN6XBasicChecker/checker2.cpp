@@ -101,6 +101,9 @@ void Checker::makeZenHanMap()
     zenhanMap_["ｙ"] = "y";
     zenhanMap_["Ｚ"] = "Z";
     zenhanMap_["ｚ"] = "z";
+
+    zenhanMap_["\r\n"] = "\n";
+
 }
 
 void Checker::replaceString( std::string& str, const std::string& from, std::string to )
