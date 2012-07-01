@@ -74,7 +74,7 @@ void LibN6XBasicCheckerTest::testCase1()
             "10 print\"abcあいう\n"
             "20 print\"abcあいう\":print\"abc\"a\"abc\"a$:printa$\"abc\"a\"abc\":goto10\n"
             "30 ?\"abcあいう\"\n"
-            "40 printabcde $:printabcde\n"
+            "40 printabcde $:printabcde:printa;printa,\n"
             "50 printa$;\"abcあいう\";b$;spc(10);(a$+b$)\n"
             "60 printa$(1);b$(1,2,3),\"abcあいう\n"
             "70 print(a$=\"1\"):print(a+b=1)\n"

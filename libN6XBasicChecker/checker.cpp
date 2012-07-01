@@ -786,7 +786,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     StringRule str_print
             =   str_print_sub | expression | str_func_spc | str_func_tab;
     StringRule st_lprint
-            =   (L("lprint")|L("?")) >> str_print >> *((L(";") | L(",")) > str_print);
+            =   (L("lprint")|L("?")) >> str_print >> *((L(";") | L(",")) >> -str_print);
 
     //LSET文
     StringRule st_lset
@@ -862,7 +862,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
 
     //PRINT文
     StringRule st_print
-            =   (L("print")|L("?")) >> str_print >> *((L(";") | L(",")) > str_print);
+            =   (L("print")|L("?")) >> str_print >> *((L(";") | L(",")) >> -str_print);
 
     //PRINT#文
     StringRule st_print_sharp
