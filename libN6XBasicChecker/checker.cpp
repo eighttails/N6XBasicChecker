@@ -44,7 +44,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
 
     //かな記号
     StringRule kana_kigou
-            =	L("「")|L("」")|L("、")|L("・")|L("゛")|L("゜")|L("ー");
+            =	L("「")|L("」")|L("、")|L("。")|L("・")|L("゛")|L("゜")|L("ー");
 
     //ひらがな
     StringRule hiragana
@@ -777,16 +777,11 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
             =   L("spc") >> L("(") >> num_expression >> L(")");
     StringRule str_func_tab
             =   L("spc") >> L("(") >> num_expression >> L(")");
-    //PRINT対象文字列の一部
-    //ダブルクオートで囲まれた文字列と変数の間はセミコロンが不要という仕様への対応
-    StringRule str_print_sub
-            =   (+(var >> str_quoted) >> -var)
-            |   (+(str_quoted >> var) >> -str_quoted);
     //PRINT対象文字列
     StringRule str_print
-            =   str_print_sub | expression | str_func_spc | str_func_tab;
+            =   expression | str_func_spc | str_func_tab;
     StringRule st_lprint
-            =   (L("lprint")|L("?")) >> str_print >> *((L(";") | L(",")) >> -str_print);
+            =   (L("lprint")|L("?")) >> str_print >> *((L(";") | L(",")) || str_print);
 
     //LSET文
     StringRule st_lset
@@ -862,7 +857,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
 
     //PRINT文
     StringRule st_print
-            =   (L("print")|L("?")) >> str_print >> *((L(";") | L(",")) >> -str_print);
+            =   (L("print")|L("?")) >> str_print >> *((L(";") | L(",")) || str_print);
 
     //PRINT#文
     StringRule st_print_sharp
