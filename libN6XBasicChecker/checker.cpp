@@ -679,9 +679,9 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
             =   L("return");
 
     //GOTO文
-    //goとtoの間には空白を許容するため、トークンを分ける
+    //PC-6000Techknowによると、「g o t o」でも通るため、トークンを分ける
     StringRule st_goto
-            =   L("go") >> L("to") > linenumber;
+            =   L("g") >> L("o")  >> L("t") >> L("o") > linenumber;
 
     //IF文
     StringRule st_if
@@ -718,7 +718,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
 
     //LCOPY文
     StringRule st_lcopy
-            =   L("lcopy") >> num_expression;
+            =   L("lcopy") >> -num_expression;
 
     //LET文
     StringRule st_let
@@ -765,9 +765,9 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     StringRule st_load
             =   L("load") >> str_expression >> -(L(",") >> L("r"));
 
-    //LOCATE文
+    //LOCATE文(LOCATE@にも対応)
     StringRule st_locate
-            =   L("locate") >> -num_expression
+            =   L("locate") >> -L("@") >> -num_expression
                           >> -(L(",") >> -num_expression)
                           >> -(L(",") >> num_expression);
 
@@ -855,9 +855,9 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
             =   L("preset") >> -L("step")
                             >> L("(") >> num_expression >> L(",") >> num_expression >> L(")");
 
-    //PRINT文
+    //PRINT文(PRINT@にも対応)
     StringRule st_print
-            =   (L("print")|L("?")) >> *((L(";") | L(",")) || str_print);
+            =   (L("print")|L("?")) >> -L("@") >> *((L(";") | L(",")) || str_print);
 
     //PRINT#文
     StringRule st_print_sharp
@@ -1057,8 +1057,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     //行
     StringRule line
             =   linenumber[ref(status.basicLineNumber_) = _1]
-            >   statement
-            >>  *(L(":") > -statement);
+            >   +(L(":") || statement);
 
     bool r = qi::phrase_parse(first, last, line, sw::blank);
 
