@@ -652,7 +652,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
                          >> (num_expression - L("step"))
                          >> -(L("step") >> num_expression);
     StringRule st_next
-            =   L("next") >> -num_var;
+            =   L("next") >> -(num_var >> *(L(",") > num_var));
 
     //FRE文
     StringRule st_fre

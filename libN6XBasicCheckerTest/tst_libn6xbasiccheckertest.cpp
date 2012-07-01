@@ -123,7 +123,7 @@ void LibN6XBasicCheckerTest::testCase1()
             "500 files:files 1\n"
             "510 fori=0to10:next\n"
             "520 forj=xtoy:nextj\n"
-            "530 fork=xtoystepy\n"
+            "530 fork=xtoystepy:forn=xtoystepy:nextn,k\n"
             "540 fork=xt+1toys+1stepy-1\n"
             "550 fre(0):fre(a$)\n"
             "560 get1,pr:get#1,pr\n"
