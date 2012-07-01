@@ -1058,7 +1058,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     StringRule line
             =   linenumber[ref(status.basicLineNumber_) = _1]
             >   statement
-            >>  *(+L(":") > statement);
+            >>  *(L(":") > -statement);
 
     bool r = qi::phrase_parse(first, last, line, sw::blank);
 

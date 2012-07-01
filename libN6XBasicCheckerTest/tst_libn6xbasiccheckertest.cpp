@@ -81,7 +81,7 @@ void LibN6XBasicCheckerTest::testCase1()
             "80 printnot(a$=\"1\"):printnot-a=1:print-a\n"
             "90 printa and b:printa or b:print a xor b:printainpb:printaeqvb\n"
             "100 a$=\"1\"\n"
-            "110 a=1:a=&h0a:as=1:to=1:a=1.0e-3:a=1e3\n"
+            "110 a=1:a=&h0a:as=1:to=1:a=1.0e-3:a=1e3:\n"
             "120 b=abs(-1):b=abs(a)\n"
             "130 b=asc(\"abcあいう\"):b=asc(a$)\n"
             "140 auto:auto10:auto10,10:auto,10\n"
