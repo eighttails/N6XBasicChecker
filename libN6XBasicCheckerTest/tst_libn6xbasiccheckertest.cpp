@@ -72,7 +72,7 @@ void LibN6XBasicCheckerTest::testCase1()
     //正常系(各関数、ステートメント)
     programList =
             "10 print\"abcあいう\n"
-            "20 print\"abcあいう\":goto10\n"
+            "20 print\"abcあいう\":print\"abc\"a\"abc\"a$:printa$\"abc\"a\"abc\":goto10\n"
             "30 ?\"abcあいう\"\n"
             "40 printabcde $:printabcde\n"
             "50 printa$;\"abcあいう\";b$;spc(10);(a$+b$)\n"

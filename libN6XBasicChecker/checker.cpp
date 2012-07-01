@@ -217,6 +217,9 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     StringRule str_literal
             =   *(printable - L("\""));
 
+    //文字列リテラル(ダブルクオーテーションを含む)
+    StringRule str_quoted
+            =   L("\"") > str_literal > -L("\"");
 
     //文字列グループ
     StringRule str_group
@@ -227,7 +230,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     StringRule str_value
             =   str_func
             //2つ目のダブルクオートの前に「-」が付いているのは、行末のダブルクオートは省略できるという仕様への対応
-            |   (L("\"") > str_literal > -L("\""))
+            |   str_quoted
             |   str_array_var
             |   str_var
             |   str_group;
@@ -239,6 +242,10 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     //式
     StringRule expression
             =   str_expression | num_expression;
+
+    //変数
+    StringRule var
+            =   str_array_var | str_var | num_array_var | num_var;
 
     //関数----------------------------------------------------------------------
     //数値型関数
@@ -679,7 +686,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     //IF文
     StringRule st_if
             =   L("if") >> logical_expression
-                        >> ((L("then") >> statement)
+                        >> ((L("then") >> statement >> *(L(":") >> statement))
                             | (L("then") >> linenumber)
                             | st_goto)
                         >> -((L("else") >> statement)
@@ -740,8 +747,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
 
     //LIST V文
     StringRule st_list_v
-            =   L("list") >> L("v") >> -(L(",")
-                                         >> (str_array_var | str_var | num_array_var | num_var));
+            =   L("list") >> L("v") >> -(L(",") >> var);
 
     //LLIST文
     StringRule st_llist
@@ -753,8 +759,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
 
     //LLIST V文
     StringRule st_llist_v
-            =   L("llist") >> L("v") >> -(L(",")
-                                         >> (str_array_var | str_var | num_array_var | num_var));
+            =   L("llist") >> L("v") >> -(L(",") >> var);
 
     //LOAD文
     StringRule st_load
@@ -772,8 +777,14 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
             =   L("spc") >> L("(") >> num_expression >> L(")");
     StringRule str_func_tab
             =   L("spc") >> L("(") >> num_expression >> L(")");
-    StringRule str_print //PRINT対象文字列
-            =   expression | str_func_spc | str_func_tab;
+    //PRINT対象文字列の一部
+    //ダブルクオートで囲まれた文字列と変数の間はセミコロンが不要という仕様への対応
+    StringRule str_print_sub
+            =   (+(var >> str_quoted) >> -var)
+            |   (+(str_quoted >> var) >> -str_quoted);
+    //PRINT対象文字列
+    StringRule str_print
+            =   str_print_sub | expression | str_func_spc | str_func_tab;
     StringRule st_lprint
             =   (L("lprint")|L("?")) >> str_print >> *((L(";") | L(",")) > str_print);
 
