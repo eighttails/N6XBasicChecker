@@ -44,7 +44,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
 
     //かな記号
     StringRule kana_kigou
-            =	L("「")|L("」")|L("、")|L("・")|L("゛")|L("゜");
+            =	L("「")|L("」")|L("、")|L("・")|L("゛")|L("゜")|L("ー");
 
     //ひらがな
     StringRule hiragana
@@ -730,8 +730,8 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
 
     //LINE文
     StringRule st_line
-            =   L("line") >> -L("step")
-                          >> L("(") >> num_expression >> L(",") >> num_expression >> L(")")
+            =   L("line") >> -(-L("step")
+                          >> L("(") >> num_expression >> L(",") >> num_expression >> L(")"))
                           >> L("-") >> -L("step")
                           >> L("(") >> num_expression >> L(",") >> num_expression >> L(")")
                           >> -(L(",") >> -num_expression) //色
