@@ -290,6 +290,10 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     StringRule num_func_exp
             =   L("exp") >> L("(") > num_expression >> L(")");
 
+    //FRE
+    StringRule num_func_fre
+            =   L("fre") >> L("(") >> expression >> L(")");
+
     //INP
     StringRule num_func_inp
             =   L("inp") >> L("(") > num_expression >> L(")");
@@ -410,6 +414,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
             |   num_func_len
             |   num_func_int
             |   num_func_inp
+            |   num_func_fre
             |   num_func_exp
             |   num_func_eof
             |   num_func_dskf
@@ -653,10 +658,6 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
                          >> -(L("step") >> num_expression);
     StringRule st_next
             =   L("next") >> -(num_var >> *(L(",") > num_var));
-
-    //FRE文
-    StringRule st_fre
-            =   L("fre") >> L("(") >> expression >> L(")");
 
     //GET文
     StringRule st_get
@@ -1022,7 +1023,6 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
             |   st_gosub | st_return
             |   st_get_at
             |   st_get
-            |   st_fre
             |   st_for  |   st_next
             |   st_files
             |   st_field

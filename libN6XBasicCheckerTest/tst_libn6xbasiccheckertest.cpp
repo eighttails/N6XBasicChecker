@@ -125,7 +125,7 @@ void LibN6XBasicCheckerTest::testCase1()
             "520 forj=xtoy:nextj\n"
             "530 fork=xtoystepy:forn=xtoystepy:nextn,k\n"
             "540 fork=xt+1toys+1stepy-1\n"
-            "550 fre(0):fre(a$)\n"
+            "550 a=fre(0):a=fre(a$)\n"
             "560 get1,pr:get#1,pr\n"
             "570 get(0,0)-(15,15),d\n"
             "580 get@(0,0)-(15,15),d$\n"
