@@ -198,7 +198,7 @@ void LibN6XBasicCheckerTest::testCase1()
             "1250 a=0:'コメント\n"
             "1260 rem コメント\n"
             "1270 renum:renum10:renum,20:renum10,10\n"
-            "1280 restore 1280\n"
+            "1280 restore:restore 1280\n"
             "1290 resume:resume0:resumenext:resume1290\n"
             "1300 a=rnd(0)\n"
             "1310 roll:roll 0,-1:roll0,1,y\n"
@@ -264,19 +264,6 @@ void LibN6XBasicCheckerTest::testCase1()
     QVERIFY(stat.errorList_[i++].basicLineNumber_ == 60);
     QVERIFY(stat.errorList_[i++].basicLineNumber_ == 70);
     QVERIFY(stat.errorList_[i++].basicLineNumber_ == 80);
-//    QVERIFY(stat.errorList_[i++].basicLineNumber_ == 90);
-//    QVERIFY(stat.errorList_[i++].basicLineNumber_ == 100);
-//    QVERIFY(stat.errorList_[i++].basicLineNumber_ == 110);
-//    QVERIFY(stat.errorList_[i++].basicLineNumber_ == 120);
-//    QVERIFY(stat.errorList_[i++].basicLineNumber_ == 130);
-//    QVERIFY(stat.errorList_[i++].basicLineNumber_ == 140);
-//    QVERIFY(stat.errorList_[i++].basicLineNumber_ == 150);
-//    QVERIFY(stat.errorList_[i++].basicLineNumber_ == 160);
-//    QVERIFY(stat.errorList_[i++].basicLineNumber_ == 170);
-//    QVERIFY(stat.errorList_[i++].basicLineNumber_ == 180);
-//    QVERIFY(stat.errorList_[i++].basicLineNumber_ == 190);
-//    QVERIFY(stat.errorList_[i++].basicLineNumber_ == 200);
-//    QVERIFY(stat.errorList_[i++].basicLineNumber_ == 210);
 
 }
 

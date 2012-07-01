@@ -897,7 +897,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
 
     //RESTORE文
     StringRule st_restore
-            =   L("restore") >> linenumber;
+            =   L("restore") >> -linenumber;
 
     //RESUME文
     StringRule st_resume
