@@ -844,7 +844,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     //PLAY文
     //#PENDING MML構文チェック
     StringRule st_play
-            =   L("play") >> str_expression
+            =   L("play") >> -str_expression
                           >> qi::repeat(0, 4)[(L(",") >> -str_expression)]
                           >> -(L(",") >> str_expression);
     //POKE文
