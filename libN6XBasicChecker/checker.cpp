@@ -11,30 +11,53 @@
 
 #include "checker.h"
 
-namespace qi    = boost::spirit::qi;
-namespace phx   = boost::phoenix;
-namespace sw    = qi::standard_wide;
+namespace spirit    = boost::spirit;
+namespace qi        = boost::spirit::qi;
+namespace phx       = boost::phoenix;
+namespace sw        = qi::standard_wide;
+
+using sw::char_;
+using qi::_1;
+using qi::int_;
+using qi::uint_;
+using qi::double_;
+using qi::hex;
+using qi::lit;
+using phx::ref;
+
+typedef std::string::const_iterator Iterator;
+typedef qi::rule<Iterator, unsigned()> UintRule;
+typedef qi::rule<Iterator, int()> IntRule;
+typedef qi::rule<Iterator, float()> FloatRule;
+typedef qi::rule<Iterator, sw::blank_type> StringRule;
 
 //リテラルパーサー
-#define L(a)    lit(a)
+#define L(a)    (sw::string(a))
 
-template <typename Iterator>
-bool program_parse(Iterator first, Iterator last, ParserStatus& status)
+//部分パーサー
+//Spiritのルールは通常先頭から最長一致でマッチしてしまうため、
+//一部の構文に使われる予約語が変数名の一部として認識されてしまう。
+//例えば、forx=ytoz は、ytozが変数名として認識されてしまう。
+//苦肉の策として、for[任意の文字列]toという構文を定義しておき、
+//後から当関数にて[任意の文字列]を数値式としてパースする。
+//渡された部分文字列を何としてパースするかは引数ruleとして渡される。
+bool partial_parse(std::string const& part, ParserStatus& status, StringRule const& rule)
 {
-    using sw::char_;
-    using qi::_1;
-    using qi::int_;
-    using qi::uint_;
-    using qi::double_;
-    using qi::hex;
-    using qi::lit;
-    using phx::ref;
+    std::string::const_iterator first = part.begin();
+    std::string::const_iterator last = part.end();
 
-    typedef qi::rule<Iterator, unsigned()> UintRule;
-    typedef qi::rule<Iterator, int()> IntRule;
-    typedef qi::rule<Iterator, float()> FloatRule;
-    typedef qi::rule<Iterator, sw::blank_type> StringRule;
+    bool r = qi::phrase_parse(first, last, rule, sw::blank);
 
+    if (!r || first != last) {
+        status.errorList_.push_back(ErrorInfo(status.textLineNumber_, status.basicLineNumber_, (boost::format("部分構文エラー(%1%)") % part).str()));
+        return false;
+    }
+
+    return true;
+}
+
+bool program_parse(const std::string& program, ParserStatus& status)
+{
     //グラフィック文字
     StringRule graph
             =   L("月")|L("火")|L("水")|L("木")|L("金")|L("土")|L("日")|L("年")|L("円")
@@ -89,30 +112,16 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
             |	L("|")|L("}")|L("~")
             |	sw::alpha
             |	sw::digit
-            |	graph|kana_kigou|hiragana|katakana|han_kana;
+            |	graph|kana_kigou|hiragana|katakana|han_kana
+            ;
 
     //数値系--------------------------------------------------------------------------
     //数値関連
     StringRule num_expression, num_func, num_group;
 
     //数値型変数(5文字まで。識別されるのは2文字まで)
-    //予約語を含まないようにする。
     StringRule num_var
-            =   sw::alpha >> qi::repeat(0, 4)
-                             [sw::alnum
-                             - L("as")
-                             - L("to")
-                             - L("mod")
-                             - L("and")
-                             - L("xor")
-                             - L("or")
-                             - L("eqv")
-                             - L("imp")
-                             - L("goto")
-                             - L("gosub")
-                             - L("step")
-                             - L("then")
-                             - L("else")];
+            =   sw::alpha >> qi::repeat(0, 4)[sw::alnum];
 
     //数値型変数(配列)
     //#PENDING DIM分との間の次元数チェック
@@ -124,7 +133,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
             =   L("+") | L("-");
 
     StringRule fractional_constant
-            =  *sw::digit >> '.' >> +sw::digit
+            =  *sw::digit >> -L(".") >> +sw::digit
                              |  +sw::digit >> -L(".");
 
     StringRule exponent_part
@@ -507,6 +516,10 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     StringRule str_assign
             =   (str_array_var | str_var ) >> L("=") > str_expression;
 
+    //グラフィック用２次元座標
+    StringRule coord_2d
+            =   L("(") >> num_expression >> L(",") >> num_expression >> L(")");
+
     //AUTO文
     StringRule st_auto
             =   L("auto") >> -linenumber >> -(L(",") > linenumber);
@@ -643,19 +656,24 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     //FIELD文
     StringRule st_field
             =   L("field") >> -L("#") >> num_expression
-                           >> +(L(",") >> num_expression >> L("as") >> str_var);
+                           >> +(L(",") >> *(sw::alpha >> !L("as")) >> L("as") >> str_var);
 
     //FILES文
     StringRule st_files
             =   L("files") >> -num_expression;
 
     //FOR〜NEXT文
+    //Spiritのルールは通常先頭から最長一致でマッチしてしまうため、
+    //一部の構文に使われる予約語が変数名の一部として認識されてしまう。
+    //例えば、forx=ytoz は、ytozが変数名として認識されてしまう。
+    //苦肉の策として、for[任意の文字列]toという構文を定義しておき、
+    //後からpartial_parse関数にて[任意の文字列]を数値式としてパースする。
     StringRule st_for
-            =   L("for") >> num_var >> L("=")
-                         >> (num_expression)
-                         >> L("to")
-                         >> (num_expression - L("step"))
-                         >> -(L("step") >> num_expression);
+            =   L("for") > num_var >> L("=")
+                                      > qi::as_string[(*(char_ - lit("to")))][phx::bind(&partial_parse, _1, ref(status), num_expression)]
+                                   >> L("to")
+                                      > qi::as_string[(*(char_ - lit("step") - lit(":")))][phx::bind(&partial_parse, _1, ref(status), num_expression)]
+                                   >> -(L("step") >> num_expression);
     StringRule st_next
             =   L("next") >> -(num_var >> *(L(",") > num_var));
 
@@ -668,9 +686,9 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     //#PENDING 配列変数名の管理
     StringRule st_get_at
             =   L("get") >> -L("@") >> -L("step")
-                         >> L("(") >> num_expression >> L(",") >> num_expression >> L(")")
+                         >> coord_2d
                          >> L("-") >> -L("step")
-                         >> L("(") >> num_expression >> L(",") >> num_expression >> L(")")
+                         >> coord_2d
                          >> L(",") >> (str_expression | num_var);
 
     //GOSUB〜RETURN文
@@ -706,7 +724,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     //KANJI文
     StringRule st_kanji
             =   L("kanji") >> -L("step")
-                           >> L("(") >> num_expression >> L(",") >> num_expression >> L(")")
+                           >> coord_2d
                            >> L(",") >> num_expression //色
                            >> +(L(",") >> (expression));
     //KEY文
@@ -732,9 +750,9 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     //LINE文
     StringRule st_line
             =   L("line") >> -(-L("step")
-                          >> L("(") >> num_expression >> L(",") >> num_expression >> L(")"))
+                          >> coord_2d)
                           >> L("-") >> -L("step")
-                          >> L("(") >> num_expression >> L(",") >> num_expression >> L(")")
+                          >> coord_2d
                           >> -(L(",") >> -num_expression) //色
                           >> -(L(",") >> (L("bf") | L("b")));
 
@@ -833,7 +851,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     //PAINT文
     StringRule st_paint
             =   L("paint") >> -L("step")
-                           >> L("(") >> num_expression >> L(",") >> num_expression >> L(")")
+                           >> coord_2d
                            >> -(L(",") >> -num_expression) //領域色
                            >> -(L(",") >> num_expression); //境界色
 
@@ -854,7 +872,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     //PRESET文
     StringRule st_preset
             =   L("preset") >> -L("step")
-                            >> L("(") >> num_expression >> L(",") >> num_expression >> L(")");
+                            >> coord_2d;
 
     //PRINT文(PRINT@にも対応)
     StringRule st_print
@@ -869,7 +887,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     //PSET文
     StringRule st_pset
             =   L("pset") >> -L("step")
-                          >> L("(") >> num_expression >> L(",") >> num_expression >> L(")")
+                          >> coord_2d
                           >> -(L(",") >> num_expression); //色
     //PUT文
     StringRule st_put
@@ -879,7 +897,7 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
     //PUT@文
     StringRule st_put_at
             =   L("put") >> -L("@") >> -L("step")
-                         >> L("(") >> num_expression >> L(",") >> num_expression >> L(")")
+                         >> coord_2d
                          >> L(",") >> (num_var | str_expression)
                          >> -(L(",") >> (L("xor") | L("and") | L("or") | L("pset") | L("preset"))); //色
 
@@ -1059,6 +1077,9 @@ bool program_parse(Iterator first, Iterator last, ParserStatus& status)
             =   linenumber[ref(status.basicLineNumber_) = _1]
             >   +(L(":") || statement);
 
+    std::string::const_iterator first = program.begin();
+    std::string::const_iterator last = program.end();
+
     bool r = qi::phrase_parse(first, last, line, sw::blank);
 
     if (!r || first != last) {
@@ -1119,12 +1140,11 @@ bool Checker::parse(const std::string& programList, ParserStatus& stat, bool tra
         stat.inclementLine();
         const std::string line = list[i];
         if (line.empty()) continue;
-        // 1行の構文解析結果を判定
-        std::string::const_iterator iter = line.begin(), end = line.end();
 
+        // 1行の構文解析結果を判定
         bool r = true;
         try{
-            r = program_parse(iter, end, stat);
+            r = program_parse(line, stat);
         }
         catch (qi::expectation_failure<std::string::const_iterator> const& x)
         {

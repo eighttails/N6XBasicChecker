@@ -123,7 +123,7 @@ void LibN6XBasicCheckerTest::testCase1()
             "500 files:files 1\n"
             "510 fori=0to10:next\n"
             "520 forj=xtoy:nextj\n"
-            "530 fork=xtoystepy:forn=xtoystepy:nextn,k\n"
+            "530 fork=xytoytstepy:forn=xotoyostepy:nextn,k\n"
             "540 fork=xt+1toys+1stepy-1\n"
             "550 a=fre(0):a=fre(a$)\n"
             "560 get1,pr:get#1,pr\n"
@@ -253,6 +253,7 @@ void LibN6XBasicCheckerTest::testCase1()
             "60 circle(x,y),r,c,s,e,a,a2\n"
             "70 delete\n"
             "80 locate,,"
+            "90 fori=xあtoy\n"
             ;
     QVERIFY(!parse(programList, stat));
     int i=0;
@@ -264,6 +265,7 @@ void LibN6XBasicCheckerTest::testCase1()
     QVERIFY(stat.errorList_[i++].basicLineNumber_ == 60);
     QVERIFY(stat.errorList_[i++].basicLineNumber_ == 70);
     QVERIFY(stat.errorList_[i++].basicLineNumber_ == 80);
+    QVERIFY(stat.errorList_[i++].basicLineNumber_ == 90);
 
 }
 
