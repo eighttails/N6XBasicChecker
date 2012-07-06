@@ -323,6 +323,9 @@ void LibN6XBasicCheckerTest::testCase2()
     QVERIFY(stat.errorList_[i++].basicLineNumber_ == 540);
     //QVERIFY(stat.errorList_[i++].basicLineNumber_ == 550); エミュレータでエラーにならなかったので、テストケースから除外
     QVERIFY(stat.errorList_[i++].basicLineNumber_ == 560);
+    QVERIFY(stat.errorList_[i++].basicLineNumber_ == 560);
+    QVERIFY(stat.errorList_[i++].basicLineNumber_ == 560);
+    QVERIFY(stat.errorList_[i++].basicLineNumber_ == 570);
     QVERIFY(stat.errorList_[i++].basicLineNumber_ == 570);
     QVERIFY(stat.errorList_[i++].basicLineNumber_ == 580);
     QVERIFY(stat.errorList_[i++].basicLineNumber_ == 590);
