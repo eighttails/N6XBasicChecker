@@ -43,6 +43,7 @@ typedef qi::rule<Iterator, sw::blank_type> StringRule;
 //渡された部分文字列を何としてパースするかは引数ruleとして渡される。
 bool partial_parse(std::string const& part, ParserStatus& status, StringRule const& rule)
 {
+    //std::cout<<part<<std::endl;
     std::string::const_iterator first = part.begin();
     std::string::const_iterator last = part.end();
 
@@ -512,7 +513,9 @@ bool program_parse(const std::string& program, ParserStatus& status)
     StringRule statement;
     //代入文
     StringRule num_assign
-            =   (num_array_var | num_var ) >> L("=") > num_expression;
+            =   (num_array_var | num_var ) >> L("=")
+                                              > qi::as_string[*(char_ - lit(":"))]
+                                              [phx::bind(&partial_parse, _1, ref(status), num_expression)];
     StringRule str_assign
             =   (str_array_var | str_var ) >> L("=") > str_expression;
 
@@ -658,7 +661,7 @@ bool program_parse(const std::string& program, ParserStatus& status)
             =   L("field") >> -L("#")
                            >> num_expression
                            >> +(L(",")
-                                >> qi::as_string[(*(char_ - lit("as")))][phx::bind(&partial_parse, _1, ref(status), num_expression)]
+                                >> qi::as_string[*(char_ - lit("as"))][phx::bind(&partial_parse, _1, ref(status), num_expression)]
                                 >> L("as") >> str_var);
 
     //FILES文
@@ -673,9 +676,9 @@ bool program_parse(const std::string& program, ParserStatus& status)
     //後からpartial_parse関数にて[任意の文字列]を数値式としてパースする。
     StringRule st_for
             =   L("for") > num_var >> L("=")
-                                      > qi::as_string[(*(char_ - lit("to")))][phx::bind(&partial_parse, _1, ref(status), num_expression)]
+                                      > qi::as_string[*(char_ - lit("to"))][phx::bind(&partial_parse, _1, ref(status), num_expression)]
                                    >> L("to")
-                                      > qi::as_string[(*(char_ - lit("step") - lit(":")))][phx::bind(&partial_parse, _1, ref(status), num_expression)]
+                                      > qi::as_string[*(char_ - lit("step") - lit(":"))][phx::bind(&partial_parse, _1, ref(status), num_expression)]
                                    >> -(L("step") >> num_expression);
     StringRule st_next
             =   L("next") >> -(num_var >> *(L(",") > num_var));
@@ -707,7 +710,7 @@ bool program_parse(const std::string& program, ParserStatus& status)
 
     //IF文
     StringRule st_if
-            =   L("if") >> qi::as_string[(*(char_ - lit("then") - lit("goto") - lit("else")))]
+            =   L("if") >> qi::as_string[*(char_ - lit("then") - lit("goto") - lit("else"))]
                            [phx::bind(&partial_parse, _1, ref(status), logical_expression)]
                         >> ((L("then") >> statement >> *(L(":") >> statement))
                             | (L("then") >> linenumber)
