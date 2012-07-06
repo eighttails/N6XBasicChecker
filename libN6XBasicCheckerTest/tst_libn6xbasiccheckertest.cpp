@@ -252,20 +252,20 @@ void LibN6XBasicCheckerTest::testCase1()
             "50 circle(x,y),,,,\n"
             "60 circle(x,y),r,c,s,e,a,a2\n"
             "70 delete\n"
-            "80 locate,,"
+            "80 locate,,\n"
             "90 fori=xあtoy\n"
             ;
     QVERIFY(!parse(programList, stat));
     int i=0;
-    QVERIFY(stat.errorList_[i++].basicLineNumber_ == 10);
-    QVERIFY(stat.errorList_[i++].basicLineNumber_ == 20);
-    QVERIFY(stat.errorList_[i++].basicLineNumber_ == 30);
-    QVERIFY(stat.errorList_[i++].basicLineNumber_ == 40);
-    QVERIFY(stat.errorList_[i++].basicLineNumber_ == 50);
-    QVERIFY(stat.errorList_[i++].basicLineNumber_ == 60);
-    QVERIFY(stat.errorList_[i++].basicLineNumber_ == 70);
-    QVERIFY(stat.errorList_[i++].basicLineNumber_ == 80);
-    QVERIFY(stat.errorList_[i++].basicLineNumber_ == 90);
+    QCOMPARE(stat.errorList_[i++].basicLineNumber_, 10);
+    QCOMPARE(stat.errorList_[i++].basicLineNumber_, 20);
+    QCOMPARE(stat.errorList_[i++].basicLineNumber_, 30);
+    QCOMPARE(stat.errorList_[i++].basicLineNumber_, 40);
+    QCOMPARE(stat.errorList_[i++].basicLineNumber_, 50);
+    QCOMPARE(stat.errorList_[i++].basicLineNumber_, 60);
+    QCOMPARE(stat.errorList_[i++].basicLineNumber_, 70);
+    QCOMPARE(stat.errorList_[i++].basicLineNumber_, 80);
+    QCOMPARE(stat.errorList_[i++].basicLineNumber_, 90);
 
 }
 

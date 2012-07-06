@@ -655,8 +655,11 @@ bool program_parse(const std::string& program, ParserStatus& status)
 
     //FIELD文
     StringRule st_field
-            =   L("field") >> -L("#") >> num_expression
-                           >> +(L(",") >> *(sw::alpha >> !L("as")) >> L("as") >> str_var);
+            =   L("field") >> -L("#")
+                           >> num_expression
+                           >> +(L(",")
+                                >> qi::as_string[(*(char_ - lit("as")))][phx::bind(&partial_parse, _1, ref(status), num_expression)]
+                                >> L("as") >> str_var);
 
     //FILES文
     StringRule st_files
@@ -704,7 +707,8 @@ bool program_parse(const std::string& program, ParserStatus& status)
 
     //IF文
     StringRule st_if
-            =   L("if") >> logical_expression
+            =   L("if") >> qi::as_string[(*(char_ - lit("then") - lit("goto") - lit("else")))]
+                           [phx::bind(&partial_parse, _1, ref(status), logical_expression)]
                         >> ((L("then") >> statement >> *(L(":") >> statement))
                             | (L("then") >> linenumber)
                             | st_goto)
@@ -828,13 +832,17 @@ bool program_parse(const std::string& program, ParserStatus& status)
 
     //ON GOSUB文
     StringRule st_on_gosub
-            =   L("on") >> num_expression >> L("gosub")
+            =   L("on") >> qi::as_string[*(char_ - lit("gosub"))]
+                           [phx::bind(&partial_parse, _1, ref(status), num_expression)]
+                        >> L("gosub")
                         >> linenumber
                         >> *(L(",") > linenumber);
 
     //ON GOTO文
     StringRule st_on_goto
-            =   L("on") >> num_expression >> L("goto")
+            =   L("on") >> qi::as_string[*(char_ - lit("goto"))]
+                           [phx::bind(&partial_parse, _1, ref(status), num_expression)]
+                        >> L("goto")
                         >> linenumber
                         >> *(L(",") > linenumber);
 
