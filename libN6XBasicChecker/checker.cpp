@@ -224,6 +224,7 @@ bool program_parse(const std::string& program, ParserStatus& status)
             =   str_var >> L("(") > num_expression >> *(L(",") > num_expression) > L(")");
 
     //文字列リテラル(ダブルクオーテーションを含まない)
+    //2つ目のダブルクオートの前に「-」が付いているのは、行末のダブルクオートは省略できるという仕様への対応
     StringRule str_literal
             =   *(printable - L("\""));
 
@@ -239,7 +240,6 @@ bool program_parse(const std::string& program, ParserStatus& status)
     StringRule str_func;
     StringRule str_value
             =   str_func
-            //2つ目のダブルクオートの前に「-」が付いているのは、行末のダブルクオートは省略できるという仕様への対応
             |   str_quoted
             |   str_array_var
             |   str_var
