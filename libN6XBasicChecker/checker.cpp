@@ -739,7 +739,7 @@ bool program_parse(const std::string& program, ParserStatus& status)
     //INPUT#文
     StringRule st_input_sharp
             =   L("input") >> L("#") >> num_expression
-                           >> +(L(",") >> (num_array_var | num_var));
+                           >> +(L(",") >> var);
     //KANJI文
     StringRule st_kanji
             =   L("kanji") >> -L("step")
