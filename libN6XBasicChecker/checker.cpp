@@ -120,9 +120,17 @@ bool program_parse(const std::string& program, ParserStatus& status)
     //数値関連
     StringRule num_expression, num_func, num_group;
 
+    //予約語
+    StringRule reserved
+            =   lit("and")
+            |   lit("xor")
+            |   lit("or")
+            |   lit("eqv")
+            |   lit("imp")
+            |   lit("mod");
     //数値型変数(5文字まで。識別されるのは2文字まで)
     StringRule num_var
-            =   sw::alpha >> qi::repeat(0, 4)[sw::alnum];
+            =   sw::alpha >> qi::repeat(0, 4)[sw::alnum - reserved];
 
     //数値型変数(配列)
     //#PENDING DIM分との間の次元数チェック
@@ -709,12 +717,15 @@ bool program_parse(const std::string& program, ParserStatus& status)
             =   L("g") >> L("o")  >> L("t") >> L("o") > linenumber;
 
     //IF文
+    StringRule st_then
+            =   (L("then") >> statement >> *(L(":") >> statement))
+            |   (L("then") >> linenumber)
+            |   st_goto;
     StringRule st_if
-            =   L("if") >> qi::as_string[*(char_ - lit("then") - lit("goto") - lit("else"))]
+            =   L("if") >> qi::as_string[*(char_ - lit("then") - lit("goto"))]
                            [phx::bind(&partial_parse, _1, ref(status), logical_expression)]
-                        >> ((L("then") >> statement >> *(L(":") >> statement))
-                            | (L("then") >> linenumber)
-                            | st_goto)
+                        >> qi::as_string[*(char_ - lit("else"))]
+                           [phx::bind(&partial_parse, _1, ref(status), st_then)]
                         >> -((L("else") >> statement)
                             | (L("else") >> linenumber));
 
@@ -831,22 +842,24 @@ bool program_parse(const std::string& program, ParserStatus& status)
 
     //ON ERROR GOTO文
     StringRule st_on_error_goto
-            =   L("on") >> L("error") >> st_goto;
+            =   L("on") >> L("error") > st_goto;
 
     //ON GOSUB文
     StringRule st_on_gosub
-            =   L("on") >> qi::as_string[*(char_ - lit("gosub"))]
+            =   L("on") >> !L("error")
+                        >> qi::as_string[*(char_ - lit("gosub") - lit("goto"))]
                            [phx::bind(&partial_parse, _1, ref(status), num_expression)]
                         >> L("gosub")
-                        >> linenumber
+                        > -linenumber
                         >> *(L(",") > linenumber);
 
     //ON GOTO文
     StringRule st_on_goto
-            =   L("on") >> qi::as_string[*(char_ - lit("goto"))]
+            =   L("on") >> !L("error")
+                        >> qi::as_string[*(char_ - lit("goto") - lit("gosub"))]
                            [phx::bind(&partial_parse, _1, ref(status), num_expression)]
                         >> L("goto")
-                        >> linenumber
+                        > -linenumber
                         >> *(L(",") > linenumber);
 
     //OPEN文

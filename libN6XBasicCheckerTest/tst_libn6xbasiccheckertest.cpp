@@ -266,7 +266,6 @@ void LibN6XBasicCheckerTest::testCase1()
     QCOMPARE(stat.errorList_[i++].basicLineNumber_, 70);
     QCOMPARE(stat.errorList_[i++].basicLineNumber_, 80);
     QCOMPARE(stat.errorList_[i++].basicLineNumber_, 90);
-
 }
 
 void LibN6XBasicCheckerTest::testCase2()
