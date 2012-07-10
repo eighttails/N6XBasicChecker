@@ -129,6 +129,7 @@ bool program_parse(const std::string& program, ParserStatus& status)
             |   lit("imp")
             |   lit("mod");
     //数値型変数(5文字まで。識別されるのは2文字まで)
+    //変数に予約語が含まれないようにする
     StringRule num_var
             =   sw::alpha >> qi::repeat(0, 4)[sw::alnum - reserved];
 
@@ -851,7 +852,7 @@ bool program_parse(const std::string& program, ParserStatus& status)
                            [phx::bind(&partial_parse, _1, ref(status), num_expression)]
                         >> L("gosub")
                         > -linenumber
-                        >> *(L(",") > linenumber);
+                        >> *(L(",") > -linenumber);
 
     //ON GOTO文
     StringRule st_on_goto
@@ -860,7 +861,7 @@ bool program_parse(const std::string& program, ParserStatus& status)
                            [phx::bind(&partial_parse, _1, ref(status), num_expression)]
                         >> L("goto")
                         > -linenumber
-                        >> *(L(",") > linenumber);
+                        >> *(L(",") > -linenumber);
 
     //OPEN文
     StringRule st_open
