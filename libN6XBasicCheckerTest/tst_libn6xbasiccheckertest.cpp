@@ -62,6 +62,7 @@ void LibN6XBasicCheckerTest::testCase1()
             "30 goto 30\n"
             "40 goto-40\n"     //エラー
             ;
+    stat = ParserStatus();
     QVERIFY(!parse(programList, stat));
     QVERIFY(stat.errorList_.size() == 2);
     QVERIFY(stat.errorList_[0].textLineNumber_ ==  2);
@@ -226,6 +227,7 @@ void LibN6XBasicCheckerTest::testCase1()
             "1530 width:width80:width80,25\n"
             ;
 
+    stat = ParserStatus();
     QVERIFY(parse(programList, stat, true));
 
     //正常系(全角)
@@ -255,6 +257,7 @@ void LibN6XBasicCheckerTest::testCase1()
             "80 locate,,\n"
             "90 fori=xあtoy\n"
             ;
+    stat = ParserStatus();
     QVERIFY(!parse(programList, stat));
     int i=0;
     QCOMPARE(stat.errorList_[i++].basicLineNumber_, 10);
@@ -298,6 +301,7 @@ void LibN6XBasicCheckerTest::testCase2()
             "340 COLOR\"AA\"=A$:COLORA$=\"AA\":COLORINKEY$=\"AA\"\n"
             "350 COLORA$=B$+C$:COLORA$+B$=C$:COLOR\"1\"+A$=B$\n"
             ;
+    stat = ParserStatus();
     QVERIFY(parse(programList, stat, true));
 
     //異常系
@@ -313,6 +317,7 @@ void LibN6XBasicCheckerTest::testCase2()
             "580 COLOR(\"AA\"<>A):COLOR(A$><1):COLOR(INKEY$<=1)\n"
             "590 COLOR1+A$=B$\n"
             ;
+    stat = ParserStatus();
     QVERIFY(!parse(programList, stat));
     int i=0;
     QVERIFY(stat.errorList_[i++].basicLineNumber_ == 500);

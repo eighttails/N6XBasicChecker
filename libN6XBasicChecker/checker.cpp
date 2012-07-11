@@ -1161,7 +1161,6 @@ bool Checker::parse(const std::string& programList, ParserStatus& stat, bool tra
     //大文字を小文字に
     transform(workProgramList.begin (), workProgramList.end (), workProgramList.begin (), tolower);
 
-    stat = ParserStatus();
     //プログラムを行ごとに分割
     std::vector<std::string> list;
     boost::algorithm::split(list, workProgramList, boost::is_any_of(L"\n"));
