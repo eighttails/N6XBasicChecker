@@ -493,6 +493,10 @@ bool program_parse(const std::string& program, ParserStatus& status)
     StringRule str_func_str$
             =   L("str$") >> L("(") > num_expression >> L(")");
 
+    //TIME$
+    StringRule str_func_time$
+            =   L("time$") >> L("(") > num_expression >> L(")");
+
     //USR(文字列を返す場合)
     //USR関数は引数に文字列を取るものと数字を取るものがあるため、
     //L("(") >> str_expressionのようにバックトラックを可能にしておく。
@@ -502,6 +506,7 @@ bool program_parse(const std::string& program, ParserStatus& status)
     //文字列関数
     str_func
             =   str_func_usr
+            |   str_func_time$
             |   str_func_str$
             |   str_func_space$
             |   str_func_right$
@@ -613,7 +618,7 @@ bool program_parse(const std::string& program, ParserStatus& status)
 
     //DATA文
     StringRule data_element
-            =   +(printable - L("\"") - L(","))
+            =   +(printable - L("\"") - L(",") - L(":"))
             |   (L("\"") >> str_literal >> -L("\""));
     StringRule st_data
             =   L("data") >> -data_element

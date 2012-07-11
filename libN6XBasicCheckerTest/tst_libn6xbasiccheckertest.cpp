@@ -218,7 +218,7 @@ void LibN6XBasicCheckerTest::testCase1()
             "1450 a$=str$(x)+\"*\"\n"
             "1460 talk a$\n"
             "1470 a=tan(0)\n"
-            "1480 x=time\n"
+            "1480 x=time:x$=time$\n"
             "1490 a=usr(b):b$=usr(c$)\n"
             "1500 a=val(a$)\n"
             "1510 tron:troff\n"
