@@ -18,14 +18,14 @@ SOURCES += main.cpp
 #WindowsではBOOSTDIR環境変数をセット
 win32:INCLUDEPATH += $(BOOSTDIR)/include/boost-1_50
 
-win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../libN6XBasicChecker/release/ -llibN6XBasicChecker -lboost_program_options
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../libN6XBasicChecker/debug/ -llibN6XBasicChecker -lboost_program_options
-else:symbian: LIBS += -llibN6XBasicChecker
-else:unix: LIBS += -L$$OUT_PWD/../libN6XBasicChecker/ -llibN6XBasicChecker -lboost_program_options
+win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../libN6XBasicChecker/release/ -lN6XBasicChecker -L$(BOOSTDIR)/lib/ -lboost_program_options-mgw47-mt-1_50
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../libN6XBasicChecker/debug/ -lN6XBasicChecker -L$(BOOSTDIR)/lib/ -lboost_program_options-mgw47-mt-d-1_50
+else:symbian: LIBS += -lN6XBasicChecker
+else:unix: LIBS += -L$$OUT_PWD/../libN6XBasicChecker/ -lN6XBasicChecker -lboost_program_options
 
 INCLUDEPATH += $$PWD/../libN6XBasicChecker $$PWD/../babel
 DEPENDPATH += $$PWD/../libN6XBasicChecker
 
 win32:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../libN6XBasicChecker/release/libN6XBasicChecker.a
 else:win32:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../libN6XBasicChecker/debug/libN6XBasicChecker.a
-else:unix:!symbian: PRE_TARGETDEPS += $$OUT_PWD/../libN6XBasicChecker/liblibN6XBasicChecker.a
+else:unix:!symbian: PRE_TARGETDEPS += $$OUT_PWD/../libN6XBasicChecker/libN6XBasicChecker.a

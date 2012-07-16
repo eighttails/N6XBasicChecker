@@ -34,7 +34,9 @@ int main(int argc, char *argv[])
 
     // ヘルプ表示指定があるか、必須引数が抜けていた場合、ヘルプ表示して終了
     if (argmap.count("help") || !argmap.count("address") || !argmap.count("port")) {
-        std::cerr << utf8_to_local(opt) << std::endl;
+        std::stringstream s;
+        s << opt;
+        std::cerr << utf8_to_local(s.str()) << std::endl;
         return 1;
     }
 
