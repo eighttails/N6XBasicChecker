@@ -14,7 +14,11 @@
 namespace spirit    = boost::spirit;
 namespace qi        = boost::spirit::qi;
 namespace phx       = boost::phoenix;
+#ifdef WIN32
+namespace sw        = qi::standard;
+#else
 namespace sw        = qi::standard_wide;
+#endif
 
 using sw::char_;
 using qi::_1;
