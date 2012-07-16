@@ -1,5 +1,3 @@
-#include "babel.cpp"
-
 #include <QtCore/QString>
 #include <QtTest/QtTest>
 #include <string>
@@ -7,6 +5,7 @@
 #include <fstream>
 #include "checker.h"
 
+#include "babel.cpp"
 #ifdef WIN32
 #define utf8_to_local(a) babel::utf8_to_sjis(a)
 #else
