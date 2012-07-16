@@ -7,6 +7,12 @@
 #include <fstream>
 #include "checker.h"
 
+#ifdef WIN32
+#define utf8_to_local(a) babel::utf8_to_sjis(a)
+#else
+#define utf8_to_local(a) a
+#endif
+
 class LibN6XBasicCheckerTest : public QObject
 {
     Q_OBJECT
@@ -34,9 +40,9 @@ bool LibN6XBasicCheckerTest::parse(const std::string& program, ParserStatus& sta
     if(!r && trace){
         for(size_t i = 0; i < stat.errorList_.size(); i++){
             const ErrorInfo& err = stat.errorList_[i];
-            std::cout << "テキスト行:" << err.textLineNumber_
-                      << " BASIC行:" << err.basicLineNumber_
-                      << " " << err.info_ << std::endl;
+            std::cout << utf8_to_local("テキスト行:") << err.textLineNumber_
+                      << utf8_to_local(" BASIC行:") << err.basicLineNumber_
+                      << " " << utf8_to_local(err.info_) << std::endl;
         }
     }
     return r;

@@ -6,12 +6,12 @@
 
 QT       -= core gui
 
-TARGET = libN6XBasicChecker
+TARGET = N6XBasicChecker
 TEMPLATE = lib
 CONFIG += staticlib
 
-PRECOMPILED_HEADER = pch.h
-QMAKE_CXXFLAGS = -std=c++0x
+#WindowsではBOOSTDIR環境変数をセット
+win32:INCLUDEPATH += $(BOOSTDIR)/include/boost-1_50
 
 unix:!symbian {
     maemo5 {
