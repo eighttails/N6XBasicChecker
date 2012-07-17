@@ -58,6 +58,8 @@ public:
     Checker();
     //構文解析
     bool parse(const std::string& programList, ParserStatus& stat, bool trace = false);
+
+    static const char* version(){ return "1.0"; }
 private:
     //全角→半角変換
     void convZenHan(std::string& programList);

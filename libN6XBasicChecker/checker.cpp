@@ -54,7 +54,7 @@ bool partial_parse(std::string const& part, ParserStatus& status, StringRule con
     bool r = qi::phrase_parse(first, last, rule, sw::blank);
 
     if (!r || first != last) {
-        status.errorList_.push_back(ErrorInfo(status.textLineNumber_, status.basicLineNumber_, (boost::format("部分構文エラー(%1%)") % part).str()));
+        status.errorList_.push_back(ErrorInfo(status.textLineNumber_, status.basicLineNumber_, (boost::format("部分シンタックスエラー(%1%)") % part).str()));
         return false;
     }
 
@@ -1191,7 +1191,7 @@ bool Checker::parse(const std::string& programList, ParserStatus& stat, bool tra
             r = false;
         }
         if(!r){
-            stat.errorList_.push_back(ErrorInfo(stat.textLineNumber_, stat.basicLineNumber_, "構文エラー"));
+            stat.errorList_.push_back(ErrorInfo(stat.textLineNumber_, stat.basicLineNumber_, "シンタックスエラー"));
         }
 
         result &= r;
