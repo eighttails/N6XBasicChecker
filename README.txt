@@ -108,12 +108,14 @@ Qtには依存していません。
 ■Windows
 ・Qt SDKをダウンロードしてインストール
 http://qt.nokia.com/downloads/sdk-windows-cpp
+
 ・MinGWをインストール
 http://sourceforge.net/projects/mingw/files/Installer/mingw-get-inst/
 ここから最新版のインストーラをダウンロードします。
 （執筆時点ではmingw-get-inst-20120426）
 インストーラーでは「C++ compiler」と「MSYS Basic Sytem」にチェックを入れます。
 環境変数PATHにC:\MinGW\bin および C:\MinGW\msys\1.0\bin を追加します。
+
 ・BOOST　1.50をビルド、インストール
 http://sourceforge.net/projects/boost/files/boost/1.50.0/boost_1_50_0.zip/download
 ここからboost 1.50をダウンロードし、解凍します。
@@ -124,6 +126,7 @@ MinGW Shellから解凍したフォルダに移動し、
 ここでprefixに指定したフォルダを環境変数BOOSTDIRにセットします。
 私はMSYS配下にライブラリを置きたくなかったのでこうしていますが、
 MSYS以下に置いて使いたい人は、prefixや環境変数も不要だと思います。多分。
+
 ・N6XBasicCheckerのビルド
 N6XBasicCheckerのソースを解凍して、N6XBasicChecker.proをQt Creatorで開きます。
 後は普通にビルドすればOKです。
