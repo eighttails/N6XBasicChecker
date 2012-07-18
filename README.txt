@@ -129,6 +129,8 @@ MSYS以下に置いて使いたい人は、prefixや環境変数も不要だと�
 
 ・N6XBasicCheckerのビルド
 N6XBasicCheckerのソースを解凍して、N6XBasicChecker.proをQt Creatorで開きます。
+「プロジェクト」モードの概要−ツールチェインをMinGW(32bit)に変更します。
+これでコンパイラをQt付属のものではなく、先ほどインストールしたMinGWのものに変更します。
 後は普通にビルドすればOKです。
 
 ■Linux
