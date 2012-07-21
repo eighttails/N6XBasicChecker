@@ -19,6 +19,8 @@ namespace po = boost::program_options;
 
 int main(int argc, char *argv[])
 {
+    babel::init_babel();
+
     po::options_description desc("オプション");
     desc.add_options()
             ("help,h", "ヘルプを表示")
@@ -77,7 +79,7 @@ int main(int argc, char *argv[])
         //パース実行
         Checker checker;
         ParserStatus stat;
-        bool r = checker.parse(utf8List, stat);
+        bool r = checker.parse(utf8List, stat, true);
 
         //エラー表示
         if(!stat.errorList_.empty()){
