@@ -18,7 +18,10 @@ SOURCES += \
     tst_libn6xbasiccheckertest.cpp
 
 #WindowsではBOOSTDIR環境変数をセット
-win32:INCLUDEPATH += $(BOOSTDIR)/include/boost-1_50
+win32{
+INCLUDEPATH += $(BOOSTDIR)/include/boost-1_50
+QMAKE_LFLAGS = -static-libgcc -static-libstdc++
+}
 
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../libN6XBasicChecker/release/ -lN6XBasicChecker
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../libN6XBasicChecker/debug/ -lN6XBasicChecker
