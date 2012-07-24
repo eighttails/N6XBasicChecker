@@ -61,7 +61,10 @@ int main(int argc, char *argv[])
     if(vm.count("input-file")){
         //ファイル読み込み
         std::vector<std::string> fileNames = vm["input-file"].as<std::vector<std::string> >();
-
+        if(fileNames.size() != 1){
+            std::cout << utf8_to_local("ファイル名は１つのみ指定可能です。") << std::endl;
+            return -1;
+        }
         for (size_t i = 0; i < fileNames.size(); i++){
             std::ifstream fst;
             std::string fileName = fileNames[i];
