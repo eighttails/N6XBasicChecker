@@ -23,7 +23,7 @@ int main(int argc, char *argv[])
             ;
     po::options_description hidden("不可視オプション");
     hidden.add_options()
-            ("input-file", po::value<std::string>(), "input file")
+            ("input-file", po::value<std::vector<std::string> >(), "input file")
             ;
 
     //無名のオプションはファイル名として処理される
@@ -56,41 +56,46 @@ int main(int argc, char *argv[])
         return 0;
     }
 
-
+    bool ret = true;
     // コマンドライン引数から変数に取り込み
     if(vm.count("input-file")){
         //ファイル読み込み
-        std::string fileName = vm["input-file"].as<std::string>();
-        std::ifstream fst;
-        fst.open(fileName.c_str());
-        if(fst.fail()){
-            std::cout << utf8_to_local("ファイルのオープンに失敗しました。") << std::endl;
-            return -1;
-        }
-        std::string sjisList((std::istreambuf_iterator<char>(fst)), std::istreambuf_iterator<char>());
-        std::wstring unocodeList = babel::sjis_to_unicode(sjisList);
+        std::vector<std::string> fileNames = vm["input-file"].as<std::vector<std::string> >();
 
-        //パース実行
-        Checker checker;
-        ParserStatus stat;
-        bool r = checker.parse(unocodeList, stat, true);
+        for (size_t i = 0; i < fileNames.size(); i++){
+            std::ifstream fst;
+            std::string fileName = fileNames[i];
+            std::cout << utf8_to_local("解析中: ") << fileName << std::endl;
+            fst.open(fileName.c_str());
+            if(fst.fail()){
+                std::cout << utf8_to_local("ファイルのオープンに失敗しました。") << std::endl;
+                return -1;
+            }
+            std::string sjisList((std::istreambuf_iterator<char>(fst)), std::istreambuf_iterator<char>());
+            std::wstring unocodeList = babel::sjis_to_unicode(sjisList);
 
-        //エラー表示
-        if(!stat.errorList_.empty()){
-            std::cout << utf8_to_local("エラー:") << std::endl;
-        }
-        for(size_t i = 0; i < stat.errorList_.size(); i++){
-            const ErrorInfo& err = stat.errorList_[i];
-            std::cout << utf8_to_local("テキスト行:") << err.textLineNumber_
-                      << utf8_to_local(" BASIC行:") <<
-                         ((err.basicLineNumber_ == -1) ? utf8_to_local("N/A") : boost::lexical_cast<std::string>(err.basicLineNumber_))
-                      << " " << unicode_to_local(err.info_) << std::endl;
-        }
-        std::cout << utf8_to_local("Ok") << std::endl;
+            //パース実行
+            Checker checker;
+            ParserStatus stat;
+            bool r = checker.parse(unocodeList, stat, true);
 
-        return r ? 0 : -1;
+            //エラー表示
+            if(!stat.errorList_.empty()){
+                std::cout << utf8_to_local("エラー:") << std::endl;
+            }
+            for(size_t i = 0; i < stat.errorList_.size(); i++){
+                const ErrorInfo& err = stat.errorList_[i];
+                std::cout << utf8_to_local("テキスト行:") << err.textLineNumber_
+                          << utf8_to_local(" BASIC行:") <<
+                             ((err.basicLineNumber_ == -1) ? utf8_to_local("N/A") : boost::lexical_cast<std::string>(err.basicLineNumber_))
+                          << " " << unicode_to_local(err.info_) << std::endl;
+            }
+            std::cout << utf8_to_local("Ok") << std::endl;
+
+            ret &= r;
+        }
     }
 
-    return 0;
+    return ret ? 0 : -1;
 }
 
