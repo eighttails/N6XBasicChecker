@@ -3,14 +3,9 @@
 #include <string>
 #include <iostream>
 #include <fstream>
-#include "checker.h"
 
-#include "babel.cpp"
-#ifdef WIN32
-#define utf8_to_local(a) babel::utf8_to_sjis(a)
-#else
-#define utf8_to_local(a) a
-#endif
+#include "checker.h"
+#include "babelwrap.h"
 
 class LibN6XBasicCheckerTest : public QObject
 {
@@ -20,7 +15,7 @@ public:
     LibN6XBasicCheckerTest();
 
 private:
-    bool parse(const std::string& program, ParserStatus& stat, bool trace = false);
+    bool parse(const std::wstring& program, ParserStatus& stat, bool trace = false);
 private Q_SLOTS:
     void testCase1();
     void testCase2();
@@ -32,7 +27,7 @@ LibN6XBasicCheckerTest::LibN6XBasicCheckerTest()
 {
 }
 
-bool LibN6XBasicCheckerTest::parse(const std::string& program, ParserStatus& stat, bool trace)
+bool LibN6XBasicCheckerTest::parse(const std::wstring& program, ParserStatus& stat, bool trace)
 {
     Checker checker;
     bool r = checker.parse(program, stat, trace);
@@ -41,7 +36,7 @@ bool LibN6XBasicCheckerTest::parse(const std::string& program, ParserStatus& sta
             const ErrorInfo& err = stat.errorList_[i];
             std::cout << utf8_to_local("テキスト行:") << err.textLineNumber_
                       << utf8_to_local(" BASIC行:") << err.basicLineNumber_
-                      << " " << utf8_to_local(err.info_) << std::endl;
+                      << " " << unicode_to_local(err.info_) << std::endl;
         }
     }
     return r;
@@ -50,10 +45,10 @@ bool LibN6XBasicCheckerTest::parse(const std::string& program, ParserStatus& sta
 void LibN6XBasicCheckerTest::testCase1()
 {
     ParserStatus stat;
-    std::string programList;
+    std::wstring programList;
     //正常系
     programList =
-            "10 goto 10: go to10\n"
+            L"10 goto 10: go to10\n"
             "\n"
             "20 goto 20\n"
             ;
@@ -61,7 +56,7 @@ void LibN6XBasicCheckerTest::testCase1()
 
     //エラー行判定
     programList =
-            "10 goto 10: go to10\n"
+            L"10 goto 10: go to10\n"
             "20 goo 20\n"       //エラー
             "\n"
             "30 goto 30\n"
@@ -77,7 +72,7 @@ void LibN6XBasicCheckerTest::testCase1()
 
     //正常系(各関数、ステートメント)
     programList =
-            "10 print\"abcあいう\n"
+            L"10 print\"abcあいう\n"
             "20 print\"abcあいう\":print\"abc\"a\"abc\"a$:printa$\"abc\"a\"abc\":goto10\n"
             "30 ?\"abcあいう\"\n"
             "40 printabcde $:printabcde:printa;:printa,\n"
@@ -237,7 +232,7 @@ void LibN6XBasicCheckerTest::testCase1()
 
     //正常系(全角)
     programList =
-            "１０　ｐｒｉｎｔ”ａｂｃあいう\n"
+            L"１０　ｐｒｉｎｔ”ａｂｃあいう\n"
             "２０　ｐｒｉｎｔ”ａｂｃあいう”：ｇｏｔｏ１０\n"
             "３０　？”ａｂｃあいう”\n"
             "４０　ｐｒｉｎｔａｂｃｄｅ　＄：ｐｒｉｎｔａｂｃｄｅ\n"
@@ -252,7 +247,7 @@ void LibN6XBasicCheckerTest::testCase1()
 
     //エラー
     programList =
-            "10 print\"abcあいう\":got10\n"
+            L"10 print\"abcあいう\":got10\n"
             "20 a=abs(\"aa\")\n"
             "30 a=asc(-a)\n"
             "40 auto,\n"
@@ -260,7 +255,7 @@ void LibN6XBasicCheckerTest::testCase1()
             "60 circle(x,y),r,c,s,e,a,a2\n"
             "70 delete\n"
             "80 locate,,\n"
-            "90 fori=xあtoy\n"
+            "90 fori=x:toy\n"
             ;
     stat = ParserStatus();
     QVERIFY(!parse(programList, stat));
@@ -282,10 +277,10 @@ void LibN6XBasicCheckerTest::testCase2()
     //モード4までの対応とのことだが、構文系のテストとして利用させていただきます。
 
     ParserStatus stat;
-    std::string programList;
+    std::wstring programList;
     //正常系
     programList =
-            "110 A=1:A$=\"11\":C=EXP(1):D$=MID$(INKEY$,1,2)\n"
+            L"110 A=1:A$=\"11\":C=EXP(1):D$=MID$(INKEY$,1,2)\n"
             "120 A$=\"11\"+\"33\":B$=INKEY$+LEFT$(\"aa\",1)\n"
             "130 A$=\"1\"+\"a\"+\"BB\"+LEFT$(\"AA\",1)+MID$(B$,1,2)+\"11\"\n"
             "140 A=1+3+B+CSRLIN+STICK(0)\n"
@@ -311,7 +306,7 @@ void LibN6XBasicCheckerTest::testCase2()
 
     //異常系
     programList =
-            "500 A$=\"1\",\"b\":B$=\"AA\"+\n"
+            L"500 A$=\"1\",\"b\":B$=\"AA\"+\n"
             "510 A=1+:B=111TO\n"
             "520 COLORA$=B$+1:COLORB$+1=A$\n"
             "530 COLORA$=B$*1:COLORB$*1=A$\n"
@@ -360,10 +355,10 @@ void LibN6XBasicCheckerTest::testCase3()
     foreach(QString file, files){
         std::ifstream fst((listPath + QDir::separator() + file).toLocal8Bit());
         std::string sjisList((std::istreambuf_iterator<char>(fst)), std::istreambuf_iterator<char>());
-        std::string utf8List = babel::sjis_to_utf8(sjisList);
+        std::wstring unicodeList = babel::sjis_to_unicode(sjisList);
 
         ParserStatus stat;
-        QVERIFY2(parse(utf8List, stat, true), (QString("error in ") + file).toLocal8Bit());
+        QVERIFY2(parse(unicodeList, stat, true), (QString("error in ") + file).toLocal8Bit());
     }
 
 }

@@ -7,15 +7,9 @@
 #include <boost/program_options.hpp>
 namespace po = boost::program_options;
 
-#include "babel.cpp"
-
 #include "checker.h"
+#include "babelwrap.h"
 
-#ifdef WIN32
-#define utf8_to_local(a) babel::utf8_to_sjis(a)
-#else
-#define utf8_to_local(a) a
-#endif
 
 int main(int argc, char *argv[])
 {
@@ -74,12 +68,12 @@ int main(int argc, char *argv[])
             return -1;
         }
         std::string sjisList((std::istreambuf_iterator<char>(fst)), std::istreambuf_iterator<char>());
-        std::string utf8List = babel::sjis_to_utf8(sjisList);
+        std::wstring unocodeList = babel::sjis_to_unicode(sjisList);
 
         //パース実行
         Checker checker;
         ParserStatus stat;
-        bool r = checker.parse(utf8List, stat, true);
+        bool r = checker.parse(unocodeList, stat, true);
 
         //エラー表示
         if(!stat.errorList_.empty()){
@@ -90,7 +84,7 @@ int main(int argc, char *argv[])
             std::cout << utf8_to_local("テキスト行:") << err.textLineNumber_
                       << utf8_to_local(" BASIC行:") <<
                          ((err.basicLineNumber_ == -1) ? utf8_to_local("N/A") : boost::lexical_cast<std::string>(err.basicLineNumber_))
-                      << " " << utf8_to_local(err.info_) << std::endl;
+                      << " " << unicode_to_local(err.info_) << std::endl;
         }
         std::cout << utf8_to_local("Ok") << std::endl;
 

@@ -13,6 +13,8 @@ CONFIG += staticlib
 #WindowsではBOOSTDIR環境変数をセット
 win32:INCLUDEPATH += $(BOOSTDIR)/include/boost-1_50
 
+INCLUDEPATH += $$PWD/../babel
+
 unix:!symbian {
     maemo5 {
         target.path = /opt/usr/lib
@@ -23,10 +25,13 @@ unix:!symbian {
 }
 
 HEADERS += \
-    checker.h
+    checker.h \
+    babelwrap.h \
+    spiritwrap.h
 
 SOURCES += \
     checker.cpp \
-    checker2.cpp
+    checker2.cpp \
+    babelwrap.cpp
 
 

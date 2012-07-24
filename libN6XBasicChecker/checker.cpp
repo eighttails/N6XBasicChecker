@@ -2,41 +2,7 @@
 #include <string>
 #include <algorithm>
 
-#include <boost/spirit/include/qi.hpp>
-#include <boost/spirit/include/phoenix.hpp>
-#include <boost/spirit/include/phoenix_stl.hpp>
-
-#include <boost/format.hpp>
-#include <boost/algorithm/string.hpp>
-
-#include "checker.h"
-
-namespace spirit    = boost::spirit;
-namespace qi        = boost::spirit::qi;
-namespace phx       = boost::phoenix;
-#ifdef WIN32
-namespace sw        = qi::standard_wide;
-#else
-namespace sw        = qi::standard_wide;
-#endif
-
-using sw::char_;
-using qi::_1;
-using qi::int_;
-using qi::uint_;
-using qi::double_;
-using qi::hex;
-using qi::lit;
-using phx::ref;
-
-typedef std::string::const_iterator Iterator;
-typedef qi::rule<Iterator, unsigned()> UintRule;
-typedef qi::rule<Iterator, int()> IntRule;
-typedef qi::rule<Iterator, float()> FloatRule;
-typedef qi::rule<Iterator, sw::blank_type> StringRule;
-
-//リテラルパーサー
-#define L(a)    (sw::string(a))
+#include "spiritwrap.h"
 
 //部分パーサー
 //Spiritのルールは通常先頭から最長一致でマッチしてしまうため、
@@ -45,23 +11,22 @@ typedef qi::rule<Iterator, sw::blank_type> StringRule;
 //苦肉の策として、for[任意の文字列]toという構文を定義しておき、
 //後から当関数にて[任意の文字列]を数値式としてパースする。
 //渡された部分文字列を何としてパースするかは引数ruleとして渡される。
-bool partial_parse(std::string const& part, ParserStatus& status, StringRule const& rule)
+bool partial_parse(std::wstring const& part, ParserStatus& status, StringRule const& rule)
 {
-    //std::cout<<part<<std::endl;
-    std::string::const_iterator first = part.begin();
-    std::string::const_iterator last = part.end();
+    std::wstring::const_iterator first = part.begin();
+    std::wstring::const_iterator last = part.end();
 
     bool r = qi::phrase_parse(first, last, rule, sw::blank);
 
     if (!r || first != last) {
-        status.errorList_.push_back(ErrorInfo(status.textLineNumber_, status.basicLineNumber_, (boost::format("部分シンタックスエラー(%1%)") % part).str()));
+        status.errorList_.push_back(ErrorInfo(status.textLineNumber_, status.basicLineNumber_, (boost::wformat(L"部分シンタックスエラー(%1%)") % part).str()));
         return false;
     }
 
     return true;
 }
 
-bool program_parse(const std::string& program, ParserStatus& status)
+bool program_parse(const std::wstring& program, ParserStatus& status)
 {
     //グラフィック文字
     StringRule graph
@@ -532,7 +497,7 @@ bool program_parse(const std::string& program, ParserStatus& status)
     //代入文
     StringRule num_assign
             =   (num_array_var | num_var ) >> L("=")
-                                              > qi::as_string[*(char_ - lit(":"))]
+                                              > qi::as_wstring[*(char_ - lit(":"))]
                                               [phx::bind(&partial_parse, _1, ref(status), num_expression)];
     StringRule str_assign
             =   (str_array_var | str_var ) >> L("=") > str_expression;
@@ -679,7 +644,7 @@ bool program_parse(const std::string& program, ParserStatus& status)
             =   L("field") >> -L("#")
                            >> num_expression
                            >> +(L(",")
-                                >> qi::as_string[*(char_ - lit("as"))][phx::bind(&partial_parse, _1, ref(status), num_expression)]
+                                >> qi::as_wstring[*(char_ - lit("as"))][phx::bind(&partial_parse, _1, ref(status), num_expression)]
                                 >> L("as") >> str_var);
 
     //FILES文
@@ -694,9 +659,9 @@ bool program_parse(const std::string& program, ParserStatus& status)
     //後からpartial_parse関数にて[任意の文字列]を数値式としてパースする。
     StringRule st_for
             =   L("for") > num_var >> L("=")
-                                      > qi::as_string[*(char_ - lit("to"))][phx::bind(&partial_parse, _1, ref(status), num_expression)]
+                                      > qi::as_wstring[*(char_ - lit("to"))][phx::bind(&partial_parse, _1, ref(status), num_expression)]
                                    >> L("to")
-                                      > qi::as_string[*(char_ - lit("step") - lit(":"))][phx::bind(&partial_parse, _1, ref(status), num_expression)]
+                                      > qi::as_wstring[*(char_ - lit("step") - lit(":"))][phx::bind(&partial_parse, _1, ref(status), num_expression)]
                                    >> -(L("step") >> num_expression);
     StringRule st_next
             =   L("next") >> -(num_var >> *(L(",") > num_var));
@@ -732,9 +697,9 @@ bool program_parse(const std::string& program, ParserStatus& status)
             |   (L("then") >> linenumber)
             |   st_goto;
     StringRule st_if
-            =   L("if") >> qi::as_string[*(char_ - lit("then") - lit("goto"))]
+            =   L("if") >> qi::as_wstring[*(char_ - lit("then") - lit("goto"))]
                            [phx::bind(&partial_parse, _1, ref(status), logical_expression)]
-                        >> qi::as_string[*(char_ - lit("else"))]
+                        >> qi::as_wstring[*(char_ - lit("else"))]
                            [phx::bind(&partial_parse, _1, ref(status), st_then)]
                         >> -((L("else") >> statement)
                             | (L("else") >> linenumber));
@@ -858,7 +823,7 @@ bool program_parse(const std::string& program, ParserStatus& status)
     //ON GOSUB文
     StringRule st_on_gosub
             =   L("on") >> !L("error")
-                        >> qi::as_string[*(char_ - lit("gosub") - lit("goto"))]
+                        >> qi::as_wstring[*(char_ - lit("gosub") - lit("goto"))]
                            [phx::bind(&partial_parse, _1, ref(status), num_expression)]
                         >> L("gosub")
                         > -linenumber
@@ -867,7 +832,7 @@ bool program_parse(const std::string& program, ParserStatus& status)
     //ON GOTO文
     StringRule st_on_goto
             =   L("on") >> !L("error")
-                        >> qi::as_string[*(char_ - lit("goto") - lit("gosub"))]
+                        >> qi::as_wstring[*(char_ - lit("goto") - lit("gosub"))]
                            [phx::bind(&partial_parse, _1, ref(status), num_expression)]
                         >> L("goto")
                         > -linenumber
@@ -1112,8 +1077,8 @@ bool program_parse(const std::string& program, ParserStatus& status)
             =   linenumber[ref(status.basicLineNumber_) = _1]
             >   +(L(":") || statement);
 
-    std::string::const_iterator first = program.begin();
-    std::string::const_iterator last = program.end();
+    std::wstring::const_iterator first = program.begin();
+    std::wstring::const_iterator last = program.end();
 
     bool r = qi::phrase_parse(first, last, line, sw::blank);
 
@@ -1155,10 +1120,10 @@ void print_info(boost::spirit::info const& what)
     boost::apply_visitor(walker, what.value);
 }
 
-bool Checker::parse(const std::string& programList, ParserStatus& stat, bool trace)
+bool Checker::parse(const std::wstring& programList, ParserStatus& stat, bool trace)
 {
     //作業用プログラムリスト
-    std::string workProgramList = programList;
+    std::wstring workProgramList = programList;
     //プリプロセス。
     //全角を半角に
     convZenHan(workProgramList);
@@ -1166,13 +1131,13 @@ bool Checker::parse(const std::string& programList, ParserStatus& stat, bool tra
     transform(workProgramList.begin (), workProgramList.end (), workProgramList.begin (), tolower);
 
     //プログラムを行ごとに分割
-    std::vector<std::string> list;
+    std::vector<std::wstring> list;
     boost::algorithm::split(list, workProgramList, boost::is_any_of(L"\n"));
 
     bool result = true;
     for(size_t i = 0; i < list.size(); i++){
         stat.inclementLine();
-        const std::string line = list[i];
+        const std::wstring line = list[i];
         if (line.empty()) continue;
 
         // 1行の構文解析結果を判定
@@ -1180,18 +1145,18 @@ bool Checker::parse(const std::string& programList, ParserStatus& stat, bool tra
         try{
             r = program_parse(line, stat);
         }
-        catch (qi::expectation_failure<std::string::const_iterator> const& x)
+        catch (qi::expectation_failure<std::wstring::const_iterator> const& x)
         {
             if(trace){
-                std::cout << "expected: "; print_info(x.what_);
-                std::cout << "got: " << std::string(x.first, x.last) << std::endl;
-                std::cout << "textLine: " << stat.textLineNumber_ << std::endl;
-                std::cout << "basicline: " << stat.basicLineNumber_ << std::endl;
+                std::wcout << "expected: "; print_info(x.what_);
+                std::wcout << "got: " << std::wstring(x.first, x.last) << std::endl;
+                std::wcout << "textLine: " << stat.textLineNumber_ << std::endl;
+                std::wcout << "basicline: " << stat.basicLineNumber_ << std::endl;
             }
             r = false;
         }
         if(!r){
-            stat.errorList_.push_back(ErrorInfo(stat.textLineNumber_, stat.basicLineNumber_, "シンタックスエラー"));
+            stat.errorList_.push_back(ErrorInfo(stat.textLineNumber_, stat.basicLineNumber_, (boost::wformat(L"シンタックスエラー(%1%)") % line).str()));
         }
 
         result &= r;

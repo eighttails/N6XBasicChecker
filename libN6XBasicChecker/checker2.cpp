@@ -1,126 +1,127 @@
 #include "checker.h"
+#include "spiritwrap.h"
 
 void Checker::makeZenHanMap()
 {
     //全角半角テーブル
-    zenhanMap_["　"] = " ";
-    zenhanMap_["！"] = "!";
-    zenhanMap_["”"] = "\"";
-    zenhanMap_["＃"] = "#";
-    zenhanMap_["＄"] = "$";
-    zenhanMap_["％"] = "%";
-    zenhanMap_["＆"] = "&";
-    zenhanMap_["’"] = "'";
-    zenhanMap_["（"] = "(";
-    zenhanMap_["）"] = ")";
-    zenhanMap_["＊"] = "*";
-    zenhanMap_["＋"] = "+";
-    zenhanMap_["，"] = ",";
-    zenhanMap_["－"] = "-";
-    zenhanMap_["．"] = ".";
-    zenhanMap_["／"] = "/";
-    zenhanMap_["："] = ":";
-    zenhanMap_["；"] = ";";
-    zenhanMap_["＜"] = "<";
-    zenhanMap_["＝"] = "=";
-    zenhanMap_["＞"] = ">";
-    zenhanMap_["？"] = "?";
-    zenhanMap_["＠"] = "@";
-    zenhanMap_["〔"] = "[";
-    zenhanMap_["［"] = "[";
-    zenhanMap_["￥"] = "\\";
-    zenhanMap_["〕"] = "]";
-    zenhanMap_["］"] = "]";
-    zenhanMap_["＾"] = "^";
-    zenhanMap_["＿"] = "_";
-    zenhanMap_["｛"] = "{";
-    zenhanMap_["｜"] = "|";
-    zenhanMap_["｝"] = "}";
-    zenhanMap_["〜"] = "~";
+    zenhanMap_[L"　"] = L" ";
+    zenhanMap_[L"！"] = L"!";
+    zenhanMap_[L"”"] = L"\"";
+    zenhanMap_[L"＃"] = L"#";
+    zenhanMap_[L"＄"] = L"$";
+    zenhanMap_[L"％"] = L"%";
+    zenhanMap_[L"＆"] = L"&";
+    zenhanMap_[L"’"] = L"'";
+    zenhanMap_[L"（"] = L"(";
+    zenhanMap_[L"）"] = L")";
+    zenhanMap_[L"＊"] = L"*";
+    zenhanMap_[L"＋"] = L"+";
+    zenhanMap_[L"，"] = L",";
+    zenhanMap_[L"－"] = L"-";
+    zenhanMap_[L"．"] = L".";
+    zenhanMap_[L"／"] = L"/";
+    zenhanMap_[L"："] = L":";
+    zenhanMap_[L"；"] = L";";
+    zenhanMap_[L"＜"] = L"<";
+    zenhanMap_[L"＝"] = L"=";
+    zenhanMap_[L"＞"] = L">";
+    zenhanMap_[L"？"] = L"?";
+    zenhanMap_[L"＠"] = L"@";
+    zenhanMap_[L"〔"] = L"[";
+    zenhanMap_[L"［"] = L"[";
+    zenhanMap_[L"￥"] = L"\\";
+    zenhanMap_[L"〕"] = L"]";
+    zenhanMap_[L"］"] = L"]";
+    zenhanMap_[L"＾"] = L"^";
+    zenhanMap_[L"＿"] = L"_";
+    zenhanMap_[L"｛"] = L"{";
+    zenhanMap_[L"｜"] = L"|";
+    zenhanMap_[L"｝"] = L"}";
+    zenhanMap_[L"〜"] = L"~";
 
-    zenhanMap_["０"] = "0";
-    zenhanMap_["１"] = "1";
-    zenhanMap_["２"] = "2";
-    zenhanMap_["３"] = "3";
-    zenhanMap_["４"] = "4";
-    zenhanMap_["５"] = "5";
-    zenhanMap_["６"] = "6";
-    zenhanMap_["７"] = "7";
-    zenhanMap_["８"] = "8";
-    zenhanMap_["９"] = "9";
+    zenhanMap_[L"０"] = L"0";
+    zenhanMap_[L"１"] = L"1";
+    zenhanMap_[L"２"] = L"2";
+    zenhanMap_[L"３"] = L"3";
+    zenhanMap_[L"４"] = L"4";
+    zenhanMap_[L"５"] = L"5";
+    zenhanMap_[L"６"] = L"6";
+    zenhanMap_[L"７"] = L"7";
+    zenhanMap_[L"８"] = L"8";
+    zenhanMap_[L"９"] = L"9";
 
-    zenhanMap_["Ａ"] = "A";
-    zenhanMap_["ａ"] = "a";
-    zenhanMap_["Ｂ"] = "B";
-    zenhanMap_["ｂ"] = "b";
-    zenhanMap_["Ｃ"] = "C";
-    zenhanMap_["ｃ"] = "c";
-    zenhanMap_["Ｄ"] = "D";
-    zenhanMap_["ｄ"] = "d";
-    zenhanMap_["Ｅ"] = "E";
-    zenhanMap_["ｅ"] = "e";
-    zenhanMap_["Ｆ"] = "F";
-    zenhanMap_["ｆ"] = "f";
-    zenhanMap_["Ｇ"] = "G";
-    zenhanMap_["ｇ"] = "g";
-    zenhanMap_["Ｈ"] = "H";
-    zenhanMap_["ｈ"] = "h";
-    zenhanMap_["Ｉ"] = "I";
-    zenhanMap_["ｉ"] = "i";
-    zenhanMap_["Ｊ"] = "J";
-    zenhanMap_["ｊ"] = "j";
-    zenhanMap_["Ｋ"] = "K";
-    zenhanMap_["ｋ"] = "k";
-    zenhanMap_["Ｌ"] = "L";
-    zenhanMap_["ｌ"] = "l";
-    zenhanMap_["Ｍ"] = "M";
-    zenhanMap_["ｍ"] = "m";
-    zenhanMap_["Ｎ"] = "N";
-    zenhanMap_["ｎ"] = "n";
-    zenhanMap_["Ｏ"] = "O";
-    zenhanMap_["ｏ"] = "o";
-    zenhanMap_["Ｐ"] = "P";
-    zenhanMap_["ｐ"] = "p";
-    zenhanMap_["Ｑ"] = "Q";
-    zenhanMap_["ｑ"] = "q";
-    zenhanMap_["Ｒ"] = "R";
-    zenhanMap_["ｒ"] = "r";
-    zenhanMap_["Ｓ"] = "S";
-    zenhanMap_["ｓ"] = "s";
-    zenhanMap_["Ｔ"] = "T";
-    zenhanMap_["ｔ"] = "t";
-    zenhanMap_["Ｕ"] = "U";
-    zenhanMap_["ｕ"] = "u";
-    zenhanMap_["Ｖ"] = "V";
-    zenhanMap_["ｖ"] = "v";
-    zenhanMap_["Ｗ"] = "W";
-    zenhanMap_["ｗ"] = "w";
-    zenhanMap_["Ｘ"] = "X";
-    zenhanMap_["ｘ"] = "x";
-    zenhanMap_["Ｙ"] = "Y";
-    zenhanMap_["ｙ"] = "y";
-    zenhanMap_["Ｚ"] = "Z";
-    zenhanMap_["ｚ"] = "z";
+    zenhanMap_[L"Ａ"] = L"A";
+    zenhanMap_[L"ａ"] = L"a";
+    zenhanMap_[L"Ｂ"] = L"B";
+    zenhanMap_[L"ｂ"] = L"b";
+    zenhanMap_[L"Ｃ"] = L"C";
+    zenhanMap_[L"ｃ"] = L"c";
+    zenhanMap_[L"Ｄ"] = L"D";
+    zenhanMap_[L"ｄ"] = L"d";
+    zenhanMap_[L"Ｅ"] = L"E";
+    zenhanMap_[L"ｅ"] = L"e";
+    zenhanMap_[L"Ｆ"] = L"F";
+    zenhanMap_[L"ｆ"] = L"f";
+    zenhanMap_[L"Ｇ"] = L"G";
+    zenhanMap_[L"ｇ"] = L"g";
+    zenhanMap_[L"Ｈ"] = L"H";
+    zenhanMap_[L"ｈ"] = L"h";
+    zenhanMap_[L"Ｉ"] = L"I";
+    zenhanMap_[L"ｉ"] = L"i";
+    zenhanMap_[L"Ｊ"] = L"J";
+    zenhanMap_[L"ｊ"] = L"j";
+    zenhanMap_[L"Ｋ"] = L"K";
+    zenhanMap_[L"ｋ"] = L"k";
+    zenhanMap_[L"Ｌ"] = L"L";
+    zenhanMap_[L"ｌ"] = L"l";
+    zenhanMap_[L"Ｍ"] = L"M";
+    zenhanMap_[L"ｍ"] = L"m";
+    zenhanMap_[L"Ｎ"] = L"N";
+    zenhanMap_[L"ｎ"] = L"n";
+    zenhanMap_[L"Ｏ"] = L"O";
+    zenhanMap_[L"ｏ"] = L"o";
+    zenhanMap_[L"Ｐ"] = L"P";
+    zenhanMap_[L"ｐ"] = L"p";
+    zenhanMap_[L"Ｑ"] = L"Q";
+    zenhanMap_[L"ｑ"] = L"q";
+    zenhanMap_[L"Ｒ"] = L"R";
+    zenhanMap_[L"ｒ"] = L"r";
+    zenhanMap_[L"Ｓ"] = L"S";
+    zenhanMap_[L"ｓ"] = L"s";
+    zenhanMap_[L"Ｔ"] = L"T";
+    zenhanMap_[L"ｔ"] = L"t";
+    zenhanMap_[L"Ｕ"] = L"U";
+    zenhanMap_[L"ｕ"] = L"u";
+    zenhanMap_[L"Ｖ"] = L"V";
+    zenhanMap_[L"ｖ"] = L"v";
+    zenhanMap_[L"Ｗ"] = L"W";
+    zenhanMap_[L"ｗ"] = L"w";
+    zenhanMap_[L"Ｘ"] = L"X";
+    zenhanMap_[L"ｘ"] = L"x";
+    zenhanMap_[L"Ｙ"] = L"Y";
+    zenhanMap_[L"ｙ"] = L"y";
+    zenhanMap_[L"Ｚ"] = L"Z";
+    zenhanMap_[L"ｚ"] = L"z";
 
-    zenhanMap_["\r\n"] = "\n";
+    zenhanMap_[L"\r\n"] = L"\n";
 
 }
 
-void Checker::replaceString( std::string& str, const std::string& from, std::string to )
+void Checker::replaceString( std::wstring& str, const std::wstring& from, const std::wstring& to )
 {
-    std::string::size_type  p( str.find( from ) );
+    std::wstring::size_type  p( str.find( from ) );
 
-    while( p != std::string::npos )
+    while( p != std::wstring::npos )
     {
         str.replace( p, from.length(), to );
         p = str.find( from, p + to.length() );
     }
 }
 
-void Checker::convZenHan(std::string& programList)
+void Checker::convZenHan(std::wstring& programList)
 {
     //全角半角テーブルに従って全角文字を半角に置換
-    std::map<std::string, std::string>::const_iterator p;
+    std::map<std::wstring, std::wstring>::const_iterator p;
     for (p = zenhanMap_.begin(); p != zenhanMap_.end(); ++p){
         replaceString(programList, p->first, p->second);
     }
