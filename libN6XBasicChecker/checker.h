@@ -5,24 +5,44 @@
 #include <string>
 #include <vector>
 
-struct ErrorInfo{
+enum ErrorWarningCode
+{
+    E_UNKNOWN = 0,              //不明なエラー
+    W_UNKNOWN = 0,              //不明な警告
+    E_SYNTAX,                   //シンタックスエラー
+    E_PART_SYNTAX,              //部分シンタックスエラー
+    E_LINE_NOT_FOUND,           //行番号が見つからない
+    E_INVALID_LINENUMBER,       //行番号が昇順になっていない、ユニークでない
+    E_PLAY,                     //PLAY文エラー
+    E_TALK,                     //TALK文エラー
+    E_HEX,                      //16進数リテラルエラー
+    W_UNINITIALIZED_VARIABLE,   //代入されていない変数
+    W_UNUSED_VARIABLE,          //参照されていない変数
+};
+
+struct ErrorInfo
+{
     //テキストファイル内の行番号
     int textLineNumber_;
     //BASICリスト内の行番号
     int basicLineNumber_;
+    //エラー、警告コード
+    ErrorWarningCode code_;
     //エラー内容
     std::wstring info_;
 
     ErrorInfo()
-        : textLineNumber_(0)
+        : code_(E_UNKNOWN)
+        , textLineNumber_(0)
         , basicLineNumber_(-1)
-        {}
+    {}
 
-    ErrorInfo(unsigned textLineNumber, int basicLineNumber, std::wstring info)
-        : textLineNumber_(textLineNumber)
+    ErrorInfo(ErrorWarningCode code, unsigned textLineNumber, int basicLineNumber, std::wstring info)
+        : code_(code)
+        , textLineNumber_(textLineNumber)
         , basicLineNumber_(basicLineNumber)
         , info_(info)
-        {}
+    {}
 };
 
 
