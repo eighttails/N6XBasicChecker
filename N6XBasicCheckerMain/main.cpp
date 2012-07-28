@@ -80,7 +80,7 @@ int main(int argc, char *argv[])
             //パース実行
             Checker checker;
             ParserStatus stat;
-            bool r = checker.parse(unocodeList, stat, true);
+            bool r = checker.parse(unocodeList, stat);
 
             //エラー表示
             if(!stat.errorList_.empty()){
