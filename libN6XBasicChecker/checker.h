@@ -20,14 +20,49 @@ enum ErrorWarningCode
     W_UNUSED_VARIABLE,          //参照されていない変数
 };
 
+//プログラム内でGOTO,GOSUB,RESTOREなどから参照されている行番号情報
+struct ReferredLineNumber
+{
+    //参照元行番号
+    int basicLineNumber_;
+    //参照先行番号
+    int targetLineNumber_;
+
+    ReferredLineNumber()
+        : basicLineNumber_(-1)
+        , targetLineNumber_(-1)
+    {}
+};
+
+//プログラム内で使用されている変数情報
+struct UsedVar
+{
+    //行番号
+    int basicLineNumber_;
+
+    //BASICが識別する名前。変数名の先頭2文字。
+    //文字列変数の場合は『$』を含めて3文字まで。
+    //配列変数の場合はさらに末尾に『()』を付ける。
+    std::wstring identName_;
+
+    //BASICリスト上の完全な変数名。
+    //変数名内部の空白は除外する。
+    //配列変数の場合はさらに末尾に『()』を付ける。(次元、インデックス情報は含まない)
+    std::wstring fullName_;
+
+    UsedVar()
+        : basicLineNumber_(-1)
+    {}
+};
+
 struct ErrorInfo
 {
+    //エラー、警告コード
+    ErrorWarningCode code_;
     //テキストファイル内の行番号
     int textLineNumber_;
     //BASICリスト内の行番号
     int basicLineNumber_;
-    //エラー、警告コード
-    ErrorWarningCode code_;
     //エラー内容
     std::wstring info_;
 
@@ -58,6 +93,9 @@ struct ParserStatus
 
     //エラー情報のリスト
     std::vector<ErrorInfo> errorList_;
+
+    //警告情報のリスト
+    std::vector<ErrorInfo> warningList_;
 
     ParserStatus()
     : textLineNumber_(0)
