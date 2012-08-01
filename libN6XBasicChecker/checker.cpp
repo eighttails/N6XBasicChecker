@@ -4,22 +4,7 @@
 
 #include "spiritwrap.h"
 
-//行番号を登録する。
-//行を1行認識するごとに実行する。
-//全行読み込み後にここで登録した行番号の整合性、および
-//GOTOなどで参照された行番号の存在チェックを行う。
-void registerLineNumber(ParserStatus& stat, int basicLineNumber){
-    stat.line_.basicLineNumber_ = basicLineNumber;
 
-    if(stat.basicLineNumberList_.size() > 0 && *stat.basicLineNumberList_.rbegin() >= basicLineNumber){
-        stat.errorList_.push_back(ErrorInfo(E_INVALID_LINENUMBER, stat.line_.textLineNumber_, stat.line_.basicLineNumber_, L"行番号が昇順になっていません"));
-    }
-
-    if(stat.basicLineNumberList_.count(basicLineNumber)){
-        stat.errorList_.push_back(ErrorInfo(E_INVALID_LINENUMBER, stat.line_.textLineNumber_, stat.line_.basicLineNumber_, L"行番号に重複があります"));
-    }
-    stat.basicLineNumberList_.insert(basicLineNumber);
-}
 
 //部分パーサー
 //Spiritのルールは通常先頭から最長一致でマッチしてしまうため、
@@ -1097,7 +1082,7 @@ bool program_parse(const std::wstring& program, ParserStatus& status)
 
     //行
     StringRule line
-            =   linenumber[phx::bind(&registerLineNumber, ref(status), _1)]
+            =   linenumber[phx::bind(&ParserStatus::registerLineNumber, ref(status), _1)]
             >   +(L(":") || statement);
 
     std::wstring::const_iterator first = program.begin();
@@ -1157,7 +1142,6 @@ bool Checker::parse(const std::wstring& programList, ParserStatus& stat, bool tr
     std::vector<std::wstring> list;
     boost::algorithm::split(list, workProgramList, boost::is_any_of(L"\n"));
 
-    bool result = true;
     for(size_t i = 0; i < list.size(); i++){
         stat.inclementLine();
         const std::wstring line = list[i];
@@ -1185,8 +1169,6 @@ bool Checker::parse(const std::wstring& programList, ParserStatus& stat, bool tr
 
             stat.errorList_.push_back(ErrorInfo(E_SYNTAX, stat.line_.textLineNumber_, stat.line_.basicLineNumber_, (boost::wformat(L"シンタックスエラー(%1%)") % workLine).str()));
         }
-
-        result &= r;
     }
-    return result;
+    return stat.errorList_.empty();
 }

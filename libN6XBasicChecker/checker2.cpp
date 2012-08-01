@@ -126,3 +126,16 @@ void Checker::convZenHan(std::wstring& programList)
         replaceString(programList, p->first, p->second);
     }
 }
+
+void Checker::afterCheck(ParserStatus& stat)
+{
+    //行番号チェック
+    //#PENDING 行番号存在チェック
+
+    //変数チェック
+    //#PENDING 識別子重複チェック(2文字目までが一致しているが、違う名前が使われている変数)
+
+    //#PENDING 参照されているが代入されていない変数
+
+    //#PENDING 代入されているが参照されていない変数
+}

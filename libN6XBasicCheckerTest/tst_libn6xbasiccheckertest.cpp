@@ -20,6 +20,12 @@ private Q_SLOTS:
     void testCase1();
     void testCase2();
     void testCase3();
+    void testCase4();
+    void testCase5();
+    void testCase6();
+    void testCase7();
+    void testCase8();
+    void testCaseX();
 
 };
 
@@ -53,7 +59,12 @@ void LibN6XBasicCheckerTest::testCase1()
             "20 goto 20\n"
             ;
     QVERIFY(parse(programList, stat, true));
+}
 
+void LibN6XBasicCheckerTest::testCase2()
+{
+    ParserStatus stat;
+    std::wstring programList;
     //エラー行判定
     programList =
             L"10 goto 10: go to10\n"
@@ -62,14 +73,17 @@ void LibN6XBasicCheckerTest::testCase1()
             "30 goto 30\n"
             "40 goto-40\n"     //エラー
             ;
-    stat = ParserStatus();
     QVERIFY(!parse(programList, stat));
     QVERIFY(stat.errorList_.size() == 2);
     QVERIFY(stat.errorList_[0].line_.textLineNumber_ ==  2);
     QVERIFY(stat.errorList_[0].line_.basicLineNumber_ == 20);
     QVERIFY(stat.errorList_[1].line_.textLineNumber_ ==  5);
     QVERIFY(stat.errorList_[1].line_.basicLineNumber_ == 40);
-
+}
+void LibN6XBasicCheckerTest::testCase3()
+{
+    ParserStatus stat;
+    std::wstring programList;
     //正常系(各関数、ステートメント)
     programList =
             L"10 print\"abcあいう\n"
@@ -226,9 +240,13 @@ void LibN6XBasicCheckerTest::testCase1()
             "1520 wait &hc0,155,253\n"
             "1530 width:width80:width80,25\n"
             ;
-
-    stat = ParserStatus();
     QVERIFY(parse(programList, stat, true));
+}
+
+void LibN6XBasicCheckerTest::testCase4()
+{
+    ParserStatus stat;
+    std::wstring programList;
 
     //正常系(全角)
     programList =
@@ -243,7 +261,13 @@ void LibN6XBasicCheckerTest::testCase1()
             "９０　ｐｒｉｎｔａ　ａｎｄ　ｂ：ｐｒｉｎｔａ　ｏｒ　ｂ：ｐｒｉｎｔ　ａ　ｘｏｒ　ｂ：ｐｒｉｎｔａｉｎｐｂ：ｐｒｉｎｔａｅｑｖｂ\n"
             "１００　ａ＄＝”１”\n"
             ;
-            QVERIFY(parse(programList, stat, true));
+    QVERIFY(parse(programList, stat, true));
+}
+
+void LibN6XBasicCheckerTest::testCase5()
+{
+    ParserStatus stat;
+    std::wstring programList;
 
     //エラー
     programList =
@@ -257,7 +281,6 @@ void LibN6XBasicCheckerTest::testCase1()
             "80 locate,,\n"
             "90 fori=x:toy\n"
             ;
-    stat = ParserStatus();
     QVERIFY(!parse(programList, stat));
     int i=0;
     QCOMPARE(stat.errorList_[i++].line_.basicLineNumber_, 10);
@@ -271,7 +294,7 @@ void LibN6XBasicCheckerTest::testCase1()
     QCOMPARE(stat.errorList_[i++].line_.basicLineNumber_, 90);
 }
 
-void LibN6XBasicCheckerTest::testCase2()
+void LibN6XBasicCheckerTest::testCase6()
 {
     //えすびさんに提供してもらったテストケース
     //モード4までの対応とのことだが、構文系のテストとして利用させていただきます。
@@ -301,9 +324,14 @@ void LibN6XBasicCheckerTest::testCase2()
             "340 COLOR\"AA\"=A$:COLORA$=\"AA\":COLORINKEY$=\"AA\"\n"
             "350 COLORA$=B$+C$:COLORA$+B$=C$:COLOR\"1\"+A$=B$\n"
             ;
-    stat = ParserStatus();
     QVERIFY(parse(programList, stat, true));
+}
 
+void LibN6XBasicCheckerTest::testCase7()
+{
+    //えすびさんに提供してもらったテストケース
+    ParserStatus stat;
+    std::wstring programList;
     //異常系
     programList =
             L"500 A$=\"1\",\"b\":B$=\"AA\"+\n"
@@ -317,7 +345,6 @@ void LibN6XBasicCheckerTest::testCase2()
             "580 COLOR(\"AA\"<>A):COLOR(A$><1):COLOR(INKEY$<=1)\n"
             "590 COLOR1+A$=B$\n"
             ;
-    stat = ParserStatus();
     QVERIFY(!parse(programList, stat));
     int i=0;
     QVERIFY(stat.errorList_[i++].line_.basicLineNumber_ == 500);
@@ -336,7 +363,29 @@ void LibN6XBasicCheckerTest::testCase2()
 
 }
 
-void LibN6XBasicCheckerTest::testCase3()
+void LibN6XBasicCheckerTest::testCase8()
+{
+    ParserStatus stat;
+    std::wstring programList;
+
+    //異常系
+    programList =
+            L"10 rem\n"
+            "10 rem\n"
+            "20 rem\n"
+            "10 rem\n"
+            "30 rem\n"
+            ;
+    QVERIFY(!parse(programList, stat));
+    int i=0;
+    QVERIFY(stat.errorList_[i].line_.textLineNumber_ == 2);
+    QVERIFY(stat.errorList_[i].line_.basicLineNumber_ == 10);
+    QVERIFY(stat.errorList_[i++].code_ == E_INVALID_LINENUMBER);
+
+
+}
+
+void LibN6XBasicCheckerTest::testCaseX()
 {
     babel::init_babel();
     //tst_libn6xbasiccheckertesttestのバイナリと同階層にある
@@ -350,7 +399,7 @@ void LibN6XBasicCheckerTest::testCase3()
 
     QStringList files;
     files = dir.entryList(QStringList("*.txt"),
-                                 QDir::Files | QDir::NoSymLinks);
+                          QDir::Files | QDir::NoSymLinks);
 
     foreach(QString file, files){
         std::ifstream fst((listPath + QDir::separator() + file).toLocal8Bit());

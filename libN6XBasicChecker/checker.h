@@ -17,7 +17,7 @@ enum ErrorWarningCode
     E_PLAY,                     //PLAY文エラー
     E_TALK,                     //TALK文エラー
     E_HEX,                      //16進数リテラルエラー
-    W_UNINITIALIZED_VARIABLE,   //代入されていない変数
+    W_UNASSIGNED_VARIABLE,      //代入されていない変数
     W_UNUSED_VARIABLE,          //参照されていない変数
 };
 
@@ -44,7 +44,7 @@ struct LineNumberInfo
 struct ReferredLineNumber
 {
     //参照元行番号
-    LineNumberInfo refererLine;
+    LineNumberInfo refererLine_;
 
     //参照先行番号
     int targetLineNumber_;
@@ -111,6 +111,23 @@ struct ParserStatus
     ParserStatus()
     {}
 
+    //行番号を登録する。
+    //行を1行認識するごとに実行する。
+    //全行読み込み後にここで登録した行番号の整合性、および
+    //GOTOなどで参照された行番号の存在チェックを行う。
+    void registerLineNumber(int basicLineNumber){
+        line_.basicLineNumber_ = basicLineNumber;
+
+        if(basicLineNumberList_.size() > 0 && *basicLineNumberList_.rbegin() >= basicLineNumber){
+            errorList_.push_back(ErrorInfo(E_INVALID_LINENUMBER, line_.textLineNumber_, line_.basicLineNumber_, L"行番号が昇順になっていません"));
+        }
+
+        if(basicLineNumberList_.count(basicLineNumber)){
+            errorList_.push_back(ErrorInfo(E_INVALID_LINENUMBER, line_.textLineNumber_, line_.basicLineNumber_, L"行番号に重複があります"));
+        }
+        basicLineNumberList_.insert(basicLineNumber);
+    }
+
     //行を1行進める。
     void inclementLine(){
         line_.textLineNumber_++;
@@ -134,6 +151,9 @@ private:
     //全角半角変換マップ
     void makeZenHanMap();
     std::map<std::wstring, std::wstring> zenhanMap_;
+
+    //事後チェック(2パス目)
+    void afterCheck(ParserStatus& stat);
 };
 
 #endif // CHECKER_H
