@@ -701,8 +701,7 @@ bool program_parse(const std::wstring& program, ParserStatus& status)
 
     //IF文
     StringRule st_then
-            =   (L("then") >> statement >> *(L(":") >> statement))
-            |   (L("then") >> linenumber)
+            =   (L("then") >> (linenumber | statement) >> *(L(":") >> -statement))
             |   st_goto;
     StringRule st_if
             =   L("if") >> qi::as_wstring[*(char_ - lit("then") - lit("goto"))]
