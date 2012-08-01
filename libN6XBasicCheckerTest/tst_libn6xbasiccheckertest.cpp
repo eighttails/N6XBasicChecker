@@ -34,8 +34,8 @@ bool LibN6XBasicCheckerTest::parse(const std::wstring& program, ParserStatus& st
     if(!r && trace){
         for(size_t i = 0; i < stat.errorList_.size(); i++){
             const ErrorInfo& err = stat.errorList_[i];
-            std::cout << utf8_to_local("テキスト行:") << err.textLineNumber_
-                      << utf8_to_local(" BASIC行:") << err.basicLineNumber_
+            std::cout << utf8_to_local("テキスト行:") << err.line_.textLineNumber_
+                      << utf8_to_local(" BASIC行:") << err.line_.basicLineNumber_
                       << " " << unicode_to_local(err.info_) << std::endl;
         }
     }
@@ -65,10 +65,10 @@ void LibN6XBasicCheckerTest::testCase1()
     stat = ParserStatus();
     QVERIFY(!parse(programList, stat));
     QVERIFY(stat.errorList_.size() == 2);
-    QVERIFY(stat.errorList_[0].textLineNumber_ ==  2);
-    QVERIFY(stat.errorList_[0].basicLineNumber_ == 20);
-    QVERIFY(stat.errorList_[1].textLineNumber_ ==  5);
-    QVERIFY(stat.errorList_[1].basicLineNumber_ == 40);
+    QVERIFY(stat.errorList_[0].line_.textLineNumber_ ==  2);
+    QVERIFY(stat.errorList_[0].line_.basicLineNumber_ == 20);
+    QVERIFY(stat.errorList_[1].line_.textLineNumber_ ==  5);
+    QVERIFY(stat.errorList_[1].line_.basicLineNumber_ == 40);
 
     //正常系(各関数、ステートメント)
     programList =
@@ -260,15 +260,15 @@ void LibN6XBasicCheckerTest::testCase1()
     stat = ParserStatus();
     QVERIFY(!parse(programList, stat));
     int i=0;
-    QCOMPARE(stat.errorList_[i++].basicLineNumber_, 10);
-    QCOMPARE(stat.errorList_[i++].basicLineNumber_, 20);
-    QCOMPARE(stat.errorList_[i++].basicLineNumber_, 30);
-    QCOMPARE(stat.errorList_[i++].basicLineNumber_, 40);
-    QCOMPARE(stat.errorList_[i++].basicLineNumber_, 50);
-    QCOMPARE(stat.errorList_[i++].basicLineNumber_, 60);
-    QCOMPARE(stat.errorList_[i++].basicLineNumber_, 70);
-    QCOMPARE(stat.errorList_[i++].basicLineNumber_, 80);
-    QCOMPARE(stat.errorList_[i++].basicLineNumber_, 90);
+    QCOMPARE(stat.errorList_[i++].line_.basicLineNumber_, 10);
+    QCOMPARE(stat.errorList_[i++].line_.basicLineNumber_, 20);
+    QCOMPARE(stat.errorList_[i++].line_.basicLineNumber_, 30);
+    QCOMPARE(stat.errorList_[i++].line_.basicLineNumber_, 40);
+    QCOMPARE(stat.errorList_[i++].line_.basicLineNumber_, 50);
+    QCOMPARE(stat.errorList_[i++].line_.basicLineNumber_, 60);
+    QCOMPARE(stat.errorList_[i++].line_.basicLineNumber_, 70);
+    QCOMPARE(stat.errorList_[i++].line_.basicLineNumber_, 80);
+    QCOMPARE(stat.errorList_[i++].line_.basicLineNumber_, 90);
 }
 
 void LibN6XBasicCheckerTest::testCase2()
@@ -320,19 +320,19 @@ void LibN6XBasicCheckerTest::testCase2()
     stat = ParserStatus();
     QVERIFY(!parse(programList, stat));
     int i=0;
-    QVERIFY(stat.errorList_[i++].basicLineNumber_ == 500);
-    QVERIFY(stat.errorList_[i++].basicLineNumber_ == 510);
-    QVERIFY(stat.errorList_[i++].basicLineNumber_ == 520);
-    QVERIFY(stat.errorList_[i++].basicLineNumber_ == 530);
-    QVERIFY(stat.errorList_[i++].basicLineNumber_ == 540);
-    //QVERIFY(stat.errorList_[i++].basicLineNumber_ == 550); エミュレータでエラーにならなかったので、テストケースから除外
-    QVERIFY(stat.errorList_[i++].basicLineNumber_ == 560);
-    QVERIFY(stat.errorList_[i++].basicLineNumber_ == 560);
-    QVERIFY(stat.errorList_[i++].basicLineNumber_ == 560);
-    QVERIFY(stat.errorList_[i++].basicLineNumber_ == 570);
-    QVERIFY(stat.errorList_[i++].basicLineNumber_ == 570);
-    QVERIFY(stat.errorList_[i++].basicLineNumber_ == 580);
-    QVERIFY(stat.errorList_[i++].basicLineNumber_ == 590);
+    QVERIFY(stat.errorList_[i++].line_.basicLineNumber_ == 500);
+    QVERIFY(stat.errorList_[i++].line_.basicLineNumber_ == 510);
+    QVERIFY(stat.errorList_[i++].line_.basicLineNumber_ == 520);
+    QVERIFY(stat.errorList_[i++].line_.basicLineNumber_ == 530);
+    QVERIFY(stat.errorList_[i++].line_.basicLineNumber_ == 540);
+    //QVERIFY(stat.errorList_[i++].line_.basicLineNumber_ == 550); エミュレータでエラーにならなかったので、テストケースから除外
+    QVERIFY(stat.errorList_[i++].line_.basicLineNumber_ == 560);
+    QVERIFY(stat.errorList_[i++].line_.basicLineNumber_ == 560);
+    QVERIFY(stat.errorList_[i++].line_.basicLineNumber_ == 560);
+    QVERIFY(stat.errorList_[i++].line_.basicLineNumber_ == 570);
+    QVERIFY(stat.errorList_[i++].line_.basicLineNumber_ == 570);
+    QVERIFY(stat.errorList_[i++].line_.basicLineNumber_ == 580);
+    QVERIFY(stat.errorList_[i++].line_.basicLineNumber_ == 590);
 
 }
 

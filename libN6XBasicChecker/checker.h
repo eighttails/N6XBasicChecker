@@ -2,6 +2,7 @@
 #define CHECKER_H
 
 #include <map>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -20,17 +21,36 @@ enum ErrorWarningCode
     W_UNUSED_VARIABLE,          //参照されていない変数
 };
 
+//エラーやパーサーの状態管理に使われる行番号情報
+struct LineNumberInfo
+{
+    //テキストファイル内の行番号
+    int textLineNumber_;
+    //BASICリスト内の行番号
+    int basicLineNumber_;
+
+    LineNumberInfo()
+        : textLineNumber_(0)
+        , basicLineNumber_(-1)
+    {}
+
+    LineNumberInfo(int textLineNumber, int basicLineNumber)
+        : textLineNumber_(textLineNumber)
+        , basicLineNumber_(basicLineNumber)
+    {}
+};
+
 //プログラム内でGOTO,GOSUB,RESTOREなどから参照されている行番号情報
 struct ReferredLineNumber
 {
     //参照元行番号
-    int basicLineNumber_;
+    LineNumberInfo refererLine;
+
     //参照先行番号
     int targetLineNumber_;
 
     ReferredLineNumber()
-        : basicLineNumber_(-1)
-        , targetLineNumber_(-1)
+        : targetLineNumber_(-1)
     {}
 };
 
@@ -38,7 +58,7 @@ struct ReferredLineNumber
 struct UsedVar
 {
     //行番号
-    int basicLineNumber_;
+    LineNumberInfo line_;
 
     //BASICが識別する名前。変数名の先頭2文字。
     //文字列変数の場合は『$』を含めて3文字まで。
@@ -49,33 +69,26 @@ struct UsedVar
     //変数名内部の空白は除外する。
     //配列変数の場合はさらに末尾に『()』を付ける。(次元、インデックス情報は含まない)
     std::wstring fullName_;
-
-    UsedVar()
-        : basicLineNumber_(-1)
-    {}
 };
 
 struct ErrorInfo
 {
     //エラー、警告コード
     ErrorWarningCode code_;
-    //テキストファイル内の行番号
-    int textLineNumber_;
-    //BASICリスト内の行番号
-    int basicLineNumber_;
+
+    //行番号情報
+    LineNumberInfo line_;
+
     //エラー内容
     std::wstring info_;
 
     ErrorInfo()
         : code_(E_UNKNOWN)
-        , textLineNumber_(0)
-        , basicLineNumber_(-1)
     {}
 
-    ErrorInfo(ErrorWarningCode code, unsigned textLineNumber, int basicLineNumber, std::wstring info)
+    ErrorInfo(ErrorWarningCode code, int textLineNumber, int basicLineNumber, std::wstring info)
         : code_(code)
-        , textLineNumber_(textLineNumber)
-        , basicLineNumber_(basicLineNumber)
+        , line_(textLineNumber, basicLineNumber)
         , info_(info)
     {}
 };
@@ -83,13 +96,11 @@ struct ErrorInfo
 
 struct ParserStatus
 {
-    //テキストファイル内の行番号
-    int textLineNumber_;
-    //BASICリスト内の行番号
-    int basicLineNumber_;
+    //現在処理中の行番号
+    LineNumberInfo line_;
 
     //BASIC行番号のリスト
-    std::vector<int> basicLineNumberList_;
+    std::set<int> basicLineNumberList_;
 
     //エラー情報のリスト
     std::vector<ErrorInfo> errorList_;
@@ -98,16 +109,13 @@ struct ParserStatus
     std::vector<ErrorInfo> warningList_;
 
     ParserStatus()
-    : textLineNumber_(0)
-    , basicLineNumber_(-1)
     {}
 
     //行を1行進める。
     void inclementLine(){
-        textLineNumber_++;
-        basicLineNumber_ = -1;
+        line_.textLineNumber_++;
+        line_.basicLineNumber_ = -1;
     }
-
 };
 
 class Checker

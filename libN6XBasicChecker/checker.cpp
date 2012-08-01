@@ -4,6 +4,23 @@
 
 #include "spiritwrap.h"
 
+//行番号を登録する。
+//行を1行認識するごとに実行する。
+//全行読み込み後にここで登録した行番号の整合性、および
+//GOTOなどで参照された行番号の存在チェックを行う。
+void registerLineNumber(ParserStatus& stat, int basicLineNumber){
+    stat.line_.basicLineNumber_ = basicLineNumber;
+
+    if(stat.basicLineNumberList_.size() > 0 && *stat.basicLineNumberList_.rbegin() >= basicLineNumber){
+        stat.errorList_.push_back(ErrorInfo(E_INVALID_LINENUMBER, stat.line_.textLineNumber_, stat.line_.basicLineNumber_, L"行番号が昇順になっていません"));
+    }
+
+    if(stat.basicLineNumberList_.count(basicLineNumber)){
+        stat.errorList_.push_back(ErrorInfo(E_INVALID_LINENUMBER, stat.line_.textLineNumber_, stat.line_.basicLineNumber_, L"行番号に重複があります"));
+    }
+    stat.basicLineNumberList_.insert(basicLineNumber);
+}
+
 //部分パーサー
 //Spiritのルールは通常先頭から最長一致でマッチしてしまうため、
 //一部の構文に使われる予約語が変数名の一部として認識されてしまう。
@@ -19,11 +36,11 @@ bool partial_parse(std::wstring const& part, ParserStatus& status, StringRule co
     bool r = qi::phrase_parse(first, last, rule, sw::blank);
 
     if (!r || first != last) {
-        //出力の際は大文字に変換
+        //出力の際は大文字に変換partial_parse
         std::wstring workPart = part;
         transform(workPart.begin (), workPart.end (), workPart.begin (), toupper);
 
-        status.errorList_.push_back(ErrorInfo(E_PART_SYNTAX, status.textLineNumber_, status.basicLineNumber_, (boost::wformat(L"部分シンタックスエラー(%1%)") % workPart).str()));
+        status.errorList_.push_back(ErrorInfo(E_PART_SYNTAX, status.line_.textLineNumber_, status.line_.basicLineNumber_, (boost::wformat(L"部分シンタックスエラー(%1%)") % workPart).str()));
         return false;
     }
 
@@ -1080,7 +1097,7 @@ bool program_parse(const std::wstring& program, ParserStatus& status)
 
     //行
     StringRule line
-            =   linenumber[ref(status.basicLineNumber_) = _1]
+            =   linenumber[phx::bind(&registerLineNumber, ref(status), _1)]
             >   +(L(":") || statement);
 
     std::wstring::const_iterator first = program.begin();
@@ -1156,8 +1173,8 @@ bool Checker::parse(const std::wstring& programList, ParserStatus& stat, bool tr
             if(trace){
                 std::wcout << "expected: "; print_info(x.what_);
                 std::wcout << "got: " << std::wstring(x.first, x.last) << std::endl;
-                std::wcout << "textLine: " << stat.textLineNumber_ << std::endl;
-                std::wcout << "basicline: " << stat.basicLineNumber_ << std::endl;
+                std::wcout << "textLine: " << stat.line_.textLineNumber_ << std::endl;
+                std::wcout << "basicline: " << stat.line_.basicLineNumber_ << std::endl;
             }
             r = false;
         }
@@ -1166,7 +1183,7 @@ bool Checker::parse(const std::wstring& programList, ParserStatus& stat, bool tr
             std::wstring workLine = line;
             transform(workLine.begin (), workLine.end (), workLine.begin (), toupper);
 
-            stat.errorList_.push_back(ErrorInfo(E_SYNTAX, stat.textLineNumber_, stat.basicLineNumber_, (boost::wformat(L"シンタックスエラー(%1%)") % workLine).str()));
+            stat.errorList_.push_back(ErrorInfo(E_SYNTAX, stat.line_.textLineNumber_, stat.line_.basicLineNumber_, (boost::wformat(L"シンタックスエラー(%1%)") % workLine).str()));
         }
 
         result &= r;

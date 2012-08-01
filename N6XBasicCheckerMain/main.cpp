@@ -88,9 +88,9 @@ int main(int argc, char *argv[])
             }
             for(size_t i = 0; i < stat.errorList_.size(); i++){
                 const ErrorInfo& err = stat.errorList_[i];
-                std::cout << utf8_to_local("テキスト行:") << err.textLineNumber_
+                std::cout << utf8_to_local("テキスト行:") << err.line_.textLineNumber_
                           << utf8_to_local(" BASIC行:") <<
-                             ((err.basicLineNumber_ == -1) ? utf8_to_local("N/A") : boost::lexical_cast<std::string>(err.basicLineNumber_))
+                             ((err.line_.basicLineNumber_ == -1) ? utf8_to_local("N/A") : boost::lexical_cast<std::string>(err.line_.basicLineNumber_))
                           << " " << unicode_to_local(err.info_) << std::endl;
             }
             std::cout << utf8_to_local("Ok") << std::endl;
