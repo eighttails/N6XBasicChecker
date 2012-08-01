@@ -19,6 +19,7 @@ enum ErrorWarningCode
     E_HEX,                      //16進数リテラルエラー
     W_UNASSIGNED_VARIABLE,      //代入されていない変数
     W_UNUSED_VARIABLE,          //参照されていない変数
+    W_DUPLICATE_VARIABLE,       //識別名が重複している変数
 };
 
 //エラーやパーサーの状態管理に使われる行番号情報

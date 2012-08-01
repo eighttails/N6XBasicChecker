@@ -373,7 +373,7 @@ void LibN6XBasicCheckerTest::testCase8()
             L"10 rem\n"
             "10 rem\n"
             "20 rem\n"
-            "10 rem\n"
+            "15 rem\n"
             "30 rem\n"
             ;
     QVERIFY(!parse(programList, stat));
@@ -381,8 +381,12 @@ void LibN6XBasicCheckerTest::testCase8()
     QVERIFY(stat.errorList_[i].line_.textLineNumber_ == 2);
     QVERIFY(stat.errorList_[i].line_.basicLineNumber_ == 10);
     QVERIFY(stat.errorList_[i++].code_ == E_INVALID_LINENUMBER);
-
-
+    QVERIFY(stat.errorList_[i].line_.textLineNumber_ == 2);
+    QVERIFY(stat.errorList_[i].line_.basicLineNumber_ == 10);
+    QVERIFY(stat.errorList_[i++].code_ == E_INVALID_LINENUMBER);
+    QVERIFY(stat.errorList_[i].line_.textLineNumber_ == 4);
+    QVERIFY(stat.errorList_[i].line_.basicLineNumber_ == 15);
+    QVERIFY(stat.errorList_[i++].code_ == E_INVALID_LINENUMBER);
 }
 
 void LibN6XBasicCheckerTest::testCaseX()
