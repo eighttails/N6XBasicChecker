@@ -17,6 +17,7 @@ public:
 private:
     bool parse(const std::wstring& program, ParserStatus& stat, bool trace = false);
 private Q_SLOTS:
+    void testCase10();
     void testCase9();
     void testCase8();
     void testCase7();
@@ -46,7 +47,43 @@ bool LibN6XBasicCheckerTest::parse(const std::wstring& program, ParserStatus& st
                       << " " << unicode_to_local(err.info_) << std::endl;
         }
     }
+    if(trace){
+        for(size_t i = 0; i < stat.warningList_.size(); i++){
+            const ErrorInfo& err = stat.warningList_[i];
+            std::cout << utf8_to_local("テキスト行:") << err.line_.textLineNumber_
+                      << utf8_to_local(" BASIC行:") << err.line_.basicLineNumber_
+                      << " " << unicode_to_local(err.info_) << std::endl;
+        }
+    }
     return r;
+}
+
+void LibN6XBasicCheckerTest::testCase10()
+{
+    ParserStatus stat;
+    std::wstring programList;
+
+    //GOTO,GOSUBの後に余分な記述があった場合に警告を出す
+    programList =
+            L"10 goto10aaa\n"         //正常系
+            "20 gosub10aaa\n"
+            "30 ifa=0then10aaaelse20\n"
+            "40 ifa=0then10else20aaa\n"
+            ;
+    QVERIFY(parse(programList, stat));
+    int i=0;
+    QVERIFY(stat.warningList_[i].line_.textLineNumber_ == 1);
+    QVERIFY(stat.warningList_[i].line_.basicLineNumber_ == 10);
+    QVERIFY(stat.warningList_[i++].code_ == W_REDUNDANT_CONTENT);
+    QVERIFY(stat.warningList_[i].line_.textLineNumber_ == 2);
+    QVERIFY(stat.warningList_[i].line_.basicLineNumber_ == 20);
+    QVERIFY(stat.warningList_[i++].code_ == W_REDUNDANT_CONTENT);
+    QVERIFY(stat.warningList_[i].line_.textLineNumber_ == 3);
+    QVERIFY(stat.warningList_[i].line_.basicLineNumber_ == 30);
+    QVERIFY(stat.warningList_[i++].code_ == W_REDUNDANT_CONTENT);
+    QVERIFY(stat.warningList_[i].line_.textLineNumber_ == 4);
+    QVERIFY(stat.warningList_[i].line_.basicLineNumber_ == 40);
+    QVERIFY(stat.warningList_[i++].code_ == W_REDUNDANT_CONTENT);
 }
 
 void LibN6XBasicCheckerTest::testCase9()
@@ -479,7 +516,11 @@ void LibN6XBasicCheckerTest::testCaseX()
         std::wstring unicodeList = babel::sjis_to_unicode(sjisList);
 
         ParserStatus stat;
-        QVERIFY2(parse(unicodeList, stat, true), (QString("error in ") + file).toLocal8Bit());
+        QVERIFY(parse(unicodeList, stat, true));
+        if(!stat.errorList_.empty())
+            std::cout << ((QString("error in ") + file).toStdString()) << std::endl;
+        if(!stat.warningList_.empty())
+            std::cout << ((QString("warning in ") + file).toStdString()) << std::endl;
     }
 
 }

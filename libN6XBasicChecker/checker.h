@@ -6,6 +6,8 @@
 #include <string>
 #include <vector>
 
+#include <boost/format.hpp>
+
 enum ErrorWarningCode
 {
     E_UNKNOWN = 0,              //不明なエラー
@@ -20,6 +22,7 @@ enum ErrorWarningCode
     W_UNASSIGNED_VARIABLE,      //代入されていない変数
     W_UNUSED_VARIABLE,          //参照されていない変数
     W_DUPLICATE_VARIABLE,       //識別名が重複している変数
+    W_REDUNDANT_CONTENT,        //GOTO文の後に何か書いてある(実行時エラーにはならない)
 };
 
 //エラーやパーサーの状態管理に使われる行番号情報
@@ -139,6 +142,18 @@ struct ParserStatus
     //行番号の参照を登録する
     void registerReferredLineNumber(int targetLineNumber){
         ReferredLineNumberList_.push_back(ReferredLineNumber(line_.textLineNumber_, line_.basicLineNumber_, targetLineNumber));
+    }
+
+    //GOTO,GOSUBの後の余分な記述を登録する。
+    //実行時エラーにならないので、コメントなどを入れる人がいるが、
+    //GOTOの後のコロンが抜けた場合、次のステートメントが実行されない事態になるため、
+    //警告を出すために登録する。
+    void warnRedundantContent(std::wstring tok){
+        //出力の際は大文字に変換partial_parse
+        std::wstring workTok = tok;
+        transform(workTok.begin (), workTok.end (), workTok.begin (), toupper);
+        warningList_.push_back(ErrorInfo(W_REDUNDANT_CONTENT, line_.textLineNumber_, line_.basicLineNumber_,
+                                         (boost::wformat(L"行番号の後に余分な記述があります。エラーにはなりませんが、意図した記述ですか？(%1%)") % workTok).str()));
     }
 
     //行を1行進める。

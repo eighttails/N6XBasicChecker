@@ -93,6 +93,17 @@ int main(int argc, char *argv[])
                              ((err.line_.basicLineNumber_ == -1) ? utf8_to_local("N/A") : boost::lexical_cast<std::string>(err.line_.basicLineNumber_))
                           << " " << unicode_to_local(err.info_) << std::endl;
             }
+            //警告表示
+            if(!stat.warningList_.empty()){
+                std::cout << utf8_to_local("警告:") << std::endl;
+            }
+            for(size_t i = 0; i < stat.warningList_.size(); i++){
+                const ErrorInfo& err = stat.warningList_[i];
+                std::cout << utf8_to_local("テキスト行:") << err.line_.textLineNumber_
+                          << utf8_to_local(" BASIC行:") <<
+                             ((err.line_.basicLineNumber_ == -1) ? utf8_to_local("N/A") : boost::lexical_cast<std::string>(err.line_.basicLineNumber_))
+                          << " " << unicode_to_local(err.info_) << std::endl;
+            }
             std::cout << utf8_to_local("Ok") << std::endl;
 
             ret &= r;

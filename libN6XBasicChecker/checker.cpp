@@ -690,18 +690,22 @@ bool program_parse(const std::wstring& program, ParserStatus& status)
 
     //GOSUB〜RETURN文
     StringRule st_gosub
-            =   L("gosub") >> linenumber[phx::bind(&ParserStatus::registerReferredLineNumber, ref(status), _1)];
+            =   L("gosub") >> linenumber[phx::bind(&ParserStatus::registerReferredLineNumber, ref(status), _1)]
+                           >> -qi::as_wstring[+(char_ - lit(":"))][phx::bind(&ParserStatus::warnRedundantContent, ref(status), _1)];
     StringRule st_return
             =   L("return");
 
     //GOTO文
     //PC-6000Techknowによると、「g o t o」でも通るため、トークンを分ける
     StringRule st_goto
-            =   L("g") >> L("o")  >> L("t") >> L("o") > linenumber[phx::bind(&ParserStatus::registerReferredLineNumber, ref(status), _1)];
+            =   L("g") >> L("o")  >> L("t") >> L("o") > linenumber[phx::bind(&ParserStatus::registerReferredLineNumber, ref(status), _1)]
+                          >> -qi::as_wstring[+(char_ - lit(":"))][phx::bind(&ParserStatus::warnRedundantContent, ref(status), _1)];
 
     //IF文
     StringRule st_then
-            =   (L("then") >> (linenumber[phx::bind(&ParserStatus::registerReferredLineNumber, ref(status), _1)] | statement) >> *(L(":") >> -statement))
+            =   (L("then") >> ((linenumber[phx::bind(&ParserStatus::registerReferredLineNumber, ref(status), _1)]
+                                >> -qi::as_wstring[+(char_ - lit(":"))][phx::bind(&ParserStatus::warnRedundantContent, ref(status), _1)]) | statement)
+                 >> *(L(":") >> -statement))
             |   st_goto;
     StringRule st_if
             =   L("if") >> qi::as_wstring[*(char_ - lit("then") - lit("goto"))]
@@ -709,7 +713,8 @@ bool program_parse(const std::wstring& program, ParserStatus& status)
                         >> qi::as_wstring[*(char_ - lit("else"))]
                            [phx::bind(&partial_parse, _1, ref(status), st_then)]
                         >> -((L("else") >> statement)
-                            | (L("else") >> linenumber[phx::bind(&ParserStatus::registerReferredLineNumber, ref(status), _1)]));
+                            | (L("else") >> linenumber[phx::bind(&ParserStatus::registerReferredLineNumber, ref(status), _1)]
+                               >> -qi::as_wstring[+(char_ - lit(":"))][phx::bind(&ParserStatus::warnRedundantContent, ref(status), _1)]));
 
     //INPUT文
     StringRule st_input
