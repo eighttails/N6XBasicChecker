@@ -17,14 +17,14 @@ public:
 private:
     bool parse(const std::wstring& program, ParserStatus& stat, bool trace = false);
 private Q_SLOTS:
-    void testCase1();
-    void testCase2();
-    void testCase3();
-    void testCase4();
-    void testCase5();
-    void testCase6();
-    void testCase7();
     void testCase8();
+    void testCase7();
+    void testCase6();
+    void testCase5();
+    void testCase4();
+    void testCase3();
+    void testCase2();
+    void testCase1();
     void testCaseX();
 
 };
@@ -48,38 +48,153 @@ bool LibN6XBasicCheckerTest::parse(const std::wstring& program, ParserStatus& st
     return r;
 }
 
-void LibN6XBasicCheckerTest::testCase1()
+
+void LibN6XBasicCheckerTest::testCase8()
 {
+    ParserStatus stat;
+    std::wstring programList;
+
+    //異常系
+    programList =
+            L"10 rem\n"
+            "10 rem\n"
+            "20 rem\n"
+            "15 rem\n"
+            "30 rem\n"
+            ;
+    QVERIFY(!parse(programList, stat));
+    int i=0;
+    QVERIFY(stat.errorList_[i].line_.textLineNumber_ == 2);
+    QVERIFY(stat.errorList_[i].line_.basicLineNumber_ == 10);
+    QVERIFY(stat.errorList_[i++].code_ == E_INVALID_LINENUMBER);
+    QVERIFY(stat.errorList_[i].line_.textLineNumber_ == 2);
+    QVERIFY(stat.errorList_[i].line_.basicLineNumber_ == 10);
+    QVERIFY(stat.errorList_[i++].code_ == E_INVALID_LINENUMBER);
+    QVERIFY(stat.errorList_[i].line_.textLineNumber_ == 4);
+    QVERIFY(stat.errorList_[i].line_.basicLineNumber_ == 15);
+    QVERIFY(stat.errorList_[i++].code_ == E_INVALID_LINENUMBER);
+}
+
+void LibN6XBasicCheckerTest::testCase7()
+{
+    //えすびさんに提供してもらったテストケース
+    ParserStatus stat;
+    std::wstring programList;
+    //異常系
+    programList =
+            L"500 A$=\"1\",\"b\":B$=\"AA\"+\n"
+            "510 A=1+:B=111TO\n"
+            "520 COLORA$=B$+1:COLORB$+1=A$\n"
+            "530 COLORA$=B$*1:COLORB$*1=A$\n"
+            "540 A=A$=\"!!\":B=1+\"AA\"=B$:C=1+B$=\"BB\"\n"
+            "550 A=A$<>B$:B=B$<\"A\"\n"
+            "560 A=(1:B=1):C=(1\n"
+            "570 D=):E=()\n"
+            "580 COLOR(\"AA\"<>A):COLOR(A$><1):COLOR(INKEY$<=1)\n"
+            "590 COLOR1+A$=B$\n"
+            ;
+    QVERIFY(!parse(programList, stat));
+    int i=0;
+    QVERIFY(stat.errorList_[i++].line_.basicLineNumber_ == 500);
+    QVERIFY(stat.errorList_[i++].line_.basicLineNumber_ == 510);
+    QVERIFY(stat.errorList_[i++].line_.basicLineNumber_ == 520);
+    QVERIFY(stat.errorList_[i++].line_.basicLineNumber_ == 530);
+    QVERIFY(stat.errorList_[i++].line_.basicLineNumber_ == 540);
+    //QVERIFY(stat.errorList_[i++].line_.basicLineNumber_ == 550); エミュレータでエラーにならなかったので、テストケースから除外
+    QVERIFY(stat.errorList_[i++].line_.basicLineNumber_ == 560);
+    QVERIFY(stat.errorList_[i++].line_.basicLineNumber_ == 560);
+    QVERIFY(stat.errorList_[i++].line_.basicLineNumber_ == 560);
+    QVERIFY(stat.errorList_[i++].line_.basicLineNumber_ == 570);
+    QVERIFY(stat.errorList_[i++].line_.basicLineNumber_ == 570);
+    QVERIFY(stat.errorList_[i++].line_.basicLineNumber_ == 580);
+    QVERIFY(stat.errorList_[i++].line_.basicLineNumber_ == 590);
+
+}
+
+void LibN6XBasicCheckerTest::testCase6()
+{
+    //えすびさんに提供してもらったテストケース
+    //モード4までの対応とのことだが、構文系のテストとして利用させていただきます。
+
     ParserStatus stat;
     std::wstring programList;
     //正常系
     programList =
-            L"10 goto 10: go to10\n"
-            "\n"
-            "20 goto 20\n"
+            L"110 A=1:A$=\"11\":C=EXP(1):D$=MID$(INKEY$,1,2)\n"
+            "120 A$=\"11\"+\"33\":B$=INKEY$+LEFT$(\"aa\",1)\n"
+            "130 A$=\"1\"+\"a\"+\"BB\"+LEFT$(\"AA\",1)+MID$(B$,1,2)+\"11\"\n"
+            "140 A=1+3+B+CSRLIN+STICK(0)\n"
+            "150 A=1+VAL(\"a\")+VAL(\"BB\")+SIN(1)+MO(1,2,3)+11\n"
+            "160 A=1=2:A=1<>2:A=1><2:A=1>2:A=1<2:A=1>=2:A=1=>2:A=1<=2:A=1=<2\n"
+            "170 A=1^2:A=1-2:A=1*2:A=1/2:A=1+2:A=1AND2:A=1OR2\n"
+            "180 A=NANDA:B=NORS\n"
+            "190 A=-1+2:B=-1.2*2+1:C=+111*2:D=NOTA+NOTB\n"
+            "200 COLORA$=B$:IFA$=\"A\"+\"B\"THEN110\n"
+            "210 COLORA$=B$+\"A\"\n"
+            "220 COLOR1+2:COLORA=B:COLORA$=\"AA\"\n"
+            "230 IFA$<>B$THEN110:IFA$><B$THEN110:IFA$>B$THEN110:IFA$<B$THEN110\n"
+            "240 IFA$>=B$THEN110:IFA$=>B$THEN110:IFA$<=B$THEN110:IFA$=<B$THEN110\n"
+            "300 COLOR(((A$=B$)+1)*2):PLAY(\"AA\"+\"BB\"):PLAYA$+(B$+C$):COLOR(A$=B$):COLOR(A$=\"AA\")\n"
+            "310 COLOR(\"AA\"=A$):COLOR(A$=\"AA\"):COLOR(INKEY$=\"AA\")\n"
+            "320 A=(1):B=(-1):C=((1))\n"
+            "330 COLOR(A$=B$+C$):COLOR(A$+B$=C$):COLOR(\"1\"+A$=B$)\n"
+            "340 COLOR\"AA\"=A$:COLORA$=\"AA\":COLORINKEY$=\"AA\"\n"
+            "350 COLORA$=B$+C$:COLORA$+B$=C$:COLOR\"1\"+A$=B$\n"
             ;
     QVERIFY(parse(programList, stat, true));
 }
 
-void LibN6XBasicCheckerTest::testCase2()
+void LibN6XBasicCheckerTest::testCase5()
 {
     ParserStatus stat;
     std::wstring programList;
-    //エラー行判定
+
+    //エラー
     programList =
-            L"10 goto 10: go to10\n"
-            "20 goo 20\n"       //エラー
-            "\n"
-            "30 goto 30\n"
-            "40 goto-40\n"     //エラー
+            L"10 print\"abcあいう\":got10\n"
+            "20 a=abs(\"aa\")\n"
+            "30 a=asc(-a)\n"
+            "40 auto,\n"
+            "50 circle(x,y),,,,\n"
+            "60 circle(x,y),r,c,s,e,a,a2\n"
+            "70 delete\n"
+            "80 locate,,\n"
+            "90 fori=x:toy\n"
             ;
     QVERIFY(!parse(programList, stat));
-    QVERIFY(stat.errorList_.size() == 2);
-    QVERIFY(stat.errorList_[0].line_.textLineNumber_ ==  2);
-    QVERIFY(stat.errorList_[0].line_.basicLineNumber_ == 20);
-    QVERIFY(stat.errorList_[1].line_.textLineNumber_ ==  5);
-    QVERIFY(stat.errorList_[1].line_.basicLineNumber_ == 40);
+    int i=0;
+    QCOMPARE(stat.errorList_[i++].line_.basicLineNumber_, 10);
+    QCOMPARE(stat.errorList_[i++].line_.basicLineNumber_, 20);
+    QCOMPARE(stat.errorList_[i++].line_.basicLineNumber_, 30);
+    QCOMPARE(stat.errorList_[i++].line_.basicLineNumber_, 40);
+    QCOMPARE(stat.errorList_[i++].line_.basicLineNumber_, 50);
+    QCOMPARE(stat.errorList_[i++].line_.basicLineNumber_, 60);
+    QCOMPARE(stat.errorList_[i++].line_.basicLineNumber_, 70);
+    QCOMPARE(stat.errorList_[i++].line_.basicLineNumber_, 80);
+    QCOMPARE(stat.errorList_[i++].line_.basicLineNumber_, 90);
 }
+
+void LibN6XBasicCheckerTest::testCase4()
+{
+    ParserStatus stat;
+    std::wstring programList;
+
+    //正常系(全角)
+    programList =
+            L"１０　ｐｒｉｎｔ”ａｂｃあいう\n"
+            "２０　ｐｒｉｎｔ”ａｂｃあいう”：ｇｏｔｏ１０\n"
+            "３０　？”ａｂｃあいう”\n"
+            "４０　ｐｒｉｎｔａｂｃｄｅ　＄：ｐｒｉｎｔａｂｃｄｅ\n"
+            "５０　ｐｒｉｎｔａ＄；”ａｂｃあいう”；ｂ＄；ｓｐｃ（１０）；（ａ＄＋ｂ＄）\n"
+            "６０　ｐｒｉｎｔａ＄（１）；ｂ＄（１，２，３），”ａｂｃあいう\n"
+            "７０　ｐｒｉｎｔ（ａ＄＝”１”）：ｐｒｉｎｔ（ａ＋ｂ＝１）\n"
+            "８０　ｐｒｉｎｔｎｏｔ（ａ＄＝”１”）：ｐｒｉｎｔｎｏｔ－ａ＝１：ｐｒｉｎｔ－ａ\n"
+            "９０　ｐｒｉｎｔａ　ａｎｄ　ｂ：ｐｒｉｎｔａ　ｏｒ　ｂ：ｐｒｉｎｔ　ａ　ｘｏｒ　ｂ：ｐｒｉｎｔａｉｎｐｂ：ｐｒｉｎｔａｅｑｖｂ\n"
+            "１００　ａ＄＝”１”\n"
+            ;
+    QVERIFY(parse(programList, stat, true));
+}
+
 void LibN6XBasicCheckerTest::testCase3()
 {
     ParserStatus stat;
@@ -243,151 +358,40 @@ void LibN6XBasicCheckerTest::testCase3()
     QVERIFY(parse(programList, stat, true));
 }
 
-void LibN6XBasicCheckerTest::testCase4()
+void LibN6XBasicCheckerTest::testCase2()
 {
     ParserStatus stat;
     std::wstring programList;
-
-    //正常系(全角)
+    //エラー行判定
     programList =
-            L"１０　ｐｒｉｎｔ”ａｂｃあいう\n"
-            "２０　ｐｒｉｎｔ”ａｂｃあいう”：ｇｏｔｏ１０\n"
-            "３０　？”ａｂｃあいう”\n"
-            "４０　ｐｒｉｎｔａｂｃｄｅ　＄：ｐｒｉｎｔａｂｃｄｅ\n"
-            "５０　ｐｒｉｎｔａ＄；”ａｂｃあいう”；ｂ＄；ｓｐｃ（１０）；（ａ＄＋ｂ＄）\n"
-            "６０　ｐｒｉｎｔａ＄（１）；ｂ＄（１，２，３），”ａｂｃあいう\n"
-            "７０　ｐｒｉｎｔ（ａ＄＝”１”）：ｐｒｉｎｔ（ａ＋ｂ＝１）\n"
-            "８０　ｐｒｉｎｔｎｏｔ（ａ＄＝”１”）：ｐｒｉｎｔｎｏｔ－ａ＝１：ｐｒｉｎｔ－ａ\n"
-            "９０　ｐｒｉｎｔａ　ａｎｄ　ｂ：ｐｒｉｎｔａ　ｏｒ　ｂ：ｐｒｉｎｔ　ａ　ｘｏｒ　ｂ：ｐｒｉｎｔａｉｎｐｂ：ｐｒｉｎｔａｅｑｖｂ\n"
-            "１００　ａ＄＝”１”\n"
-            ;
-    QVERIFY(parse(programList, stat, true));
-}
-
-void LibN6XBasicCheckerTest::testCase5()
-{
-    ParserStatus stat;
-    std::wstring programList;
-
-    //エラー
-    programList =
-            L"10 print\"abcあいう\":got10\n"
-            "20 a=abs(\"aa\")\n"
-            "30 a=asc(-a)\n"
-            "40 auto,\n"
-            "50 circle(x,y),,,,\n"
-            "60 circle(x,y),r,c,s,e,a,a2\n"
-            "70 delete\n"
-            "80 locate,,\n"
-            "90 fori=x:toy\n"
+            L"10 goto 10: go to10\n"
+            "20 goo 20\n"       //エラー
+            "\n"
+            "30 goto 30\n"
+            "40 goto-40\n"     //エラー
             ;
     QVERIFY(!parse(programList, stat));
-    int i=0;
-    QCOMPARE(stat.errorList_[i++].line_.basicLineNumber_, 10);
-    QCOMPARE(stat.errorList_[i++].line_.basicLineNumber_, 20);
-    QCOMPARE(stat.errorList_[i++].line_.basicLineNumber_, 30);
-    QCOMPARE(stat.errorList_[i++].line_.basicLineNumber_, 40);
-    QCOMPARE(stat.errorList_[i++].line_.basicLineNumber_, 50);
-    QCOMPARE(stat.errorList_[i++].line_.basicLineNumber_, 60);
-    QCOMPARE(stat.errorList_[i++].line_.basicLineNumber_, 70);
-    QCOMPARE(stat.errorList_[i++].line_.basicLineNumber_, 80);
-    QCOMPARE(stat.errorList_[i++].line_.basicLineNumber_, 90);
+    QVERIFY(stat.errorList_.size() == 2);
+    QVERIFY(stat.errorList_[0].line_.textLineNumber_ ==  2);
+    QVERIFY(stat.errorList_[0].line_.basicLineNumber_ == 20);
+    QVERIFY(stat.errorList_[1].line_.textLineNumber_ ==  5);
+    QVERIFY(stat.errorList_[1].line_.basicLineNumber_ == 40);
 }
 
-void LibN6XBasicCheckerTest::testCase6()
+void LibN6XBasicCheckerTest::testCase1()
 {
-    //えすびさんに提供してもらったテストケース
-    //モード4までの対応とのことだが、構文系のテストとして利用させていただきます。
-
     ParserStatus stat;
     std::wstring programList;
     //正常系
     programList =
-            L"110 A=1:A$=\"11\":C=EXP(1):D$=MID$(INKEY$,1,2)\n"
-            "120 A$=\"11\"+\"33\":B$=INKEY$+LEFT$(\"aa\",1)\n"
-            "130 A$=\"1\"+\"a\"+\"BB\"+LEFT$(\"AA\",1)+MID$(B$,1,2)+\"11\"\n"
-            "140 A=1+3+B+CSRLIN+STICK(0)\n"
-            "150 A=1+VAL(\"a\")+VAL(\"BB\")+SIN(1)+MO(1,2,3)+11\n"
-            "160 A=1=2:A=1<>2:A=1><2:A=1>2:A=1<2:A=1>=2:A=1=>2:A=1<=2:A=1=<2\n"
-            "170 A=1^2:A=1-2:A=1*2:A=1/2:A=1+2:A=1AND2:A=1OR2\n"
-            "180 A=NANDA:B=NORS\n"
-            "190 A=-1+2:B=-1.2*2+1:C=+111*2:D=NOTA+NOTB\n"
-            "200 COLORA$=B$:IFA$=\"A\"+\"B\"THEN110\n"
-            "210 COLORA$=B$+\"A\"\n"
-            "220 COLOR1+2:COLORA=B:COLORA$=\"AA\"\n"
-            "230 IFA$<>B$THEN110:IFA$><B$THEN110:IFA$>B$THEN110:IFA$<B$THEN110\n"
-            "240 IFA$>=B$THEN110:IFA$=>B$THEN110:IFA$<=B$THEN110:IFA$=<B$THEN110\n"
-            "300 COLOR(((A$=B$)+1)*2):PLAY(\"AA\"+\"BB\"):PLAYA$+(B$+C$):COLOR(A$=B$):COLOR(A$=\"AA\")\n"
-            "310 COLOR(\"AA\"=A$):COLOR(A$=\"AA\"):COLOR(INKEY$=\"AA\")\n"
-            "320 A=(1):B=(-1):C=((1))\n"
-            "330 COLOR(A$=B$+C$):COLOR(A$+B$=C$):COLOR(\"1\"+A$=B$)\n"
-            "340 COLOR\"AA\"=A$:COLORA$=\"AA\":COLORINKEY$=\"AA\"\n"
-            "350 COLORA$=B$+C$:COLORA$+B$=C$:COLOR\"1\"+A$=B$\n"
+            L"10 goto 10: go to10\n"
+            "\n"
+            "20 goto 20\n"
             ;
     QVERIFY(parse(programList, stat, true));
 }
 
-void LibN6XBasicCheckerTest::testCase7()
-{
-    //えすびさんに提供してもらったテストケース
-    ParserStatus stat;
-    std::wstring programList;
-    //異常系
-    programList =
-            L"500 A$=\"1\",\"b\":B$=\"AA\"+\n"
-            "510 A=1+:B=111TO\n"
-            "520 COLORA$=B$+1:COLORB$+1=A$\n"
-            "530 COLORA$=B$*1:COLORB$*1=A$\n"
-            "540 A=A$=\"!!\":B=1+\"AA\"=B$:C=1+B$=\"BB\"\n"
-            "550 A=A$<>B$:B=B$<\"A\"\n"
-            "560 A=(1:B=1):C=(1\n"
-            "570 D=):E=()\n"
-            "580 COLOR(\"AA\"<>A):COLOR(A$><1):COLOR(INKEY$<=1)\n"
-            "590 COLOR1+A$=B$\n"
-            ;
-    QVERIFY(!parse(programList, stat));
-    int i=0;
-    QVERIFY(stat.errorList_[i++].line_.basicLineNumber_ == 500);
-    QVERIFY(stat.errorList_[i++].line_.basicLineNumber_ == 510);
-    QVERIFY(stat.errorList_[i++].line_.basicLineNumber_ == 520);
-    QVERIFY(stat.errorList_[i++].line_.basicLineNumber_ == 530);
-    QVERIFY(stat.errorList_[i++].line_.basicLineNumber_ == 540);
-    //QVERIFY(stat.errorList_[i++].line_.basicLineNumber_ == 550); エミュレータでエラーにならなかったので、テストケースから除外
-    QVERIFY(stat.errorList_[i++].line_.basicLineNumber_ == 560);
-    QVERIFY(stat.errorList_[i++].line_.basicLineNumber_ == 560);
-    QVERIFY(stat.errorList_[i++].line_.basicLineNumber_ == 560);
-    QVERIFY(stat.errorList_[i++].line_.basicLineNumber_ == 570);
-    QVERIFY(stat.errorList_[i++].line_.basicLineNumber_ == 570);
-    QVERIFY(stat.errorList_[i++].line_.basicLineNumber_ == 580);
-    QVERIFY(stat.errorList_[i++].line_.basicLineNumber_ == 590);
 
-}
-
-void LibN6XBasicCheckerTest::testCase8()
-{
-    ParserStatus stat;
-    std::wstring programList;
-
-    //異常系
-    programList =
-            L"10 rem\n"
-            "10 rem\n"
-            "20 rem\n"
-            "15 rem\n"
-            "30 rem\n"
-            ;
-    QVERIFY(!parse(programList, stat));
-    int i=0;
-    QVERIFY(stat.errorList_[i].line_.textLineNumber_ == 2);
-    QVERIFY(stat.errorList_[i].line_.basicLineNumber_ == 10);
-    QVERIFY(stat.errorList_[i++].code_ == E_INVALID_LINENUMBER);
-    QVERIFY(stat.errorList_[i].line_.textLineNumber_ == 2);
-    QVERIFY(stat.errorList_[i].line_.basicLineNumber_ == 10);
-    QVERIFY(stat.errorList_[i++].code_ == E_INVALID_LINENUMBER);
-    QVERIFY(stat.errorList_[i].line_.textLineNumber_ == 4);
-    QVERIFY(stat.errorList_[i].line_.basicLineNumber_ == 15);
-    QVERIFY(stat.errorList_[i++].code_ == E_INVALID_LINENUMBER);
-}
 
 void LibN6XBasicCheckerTest::testCaseX()
 {
