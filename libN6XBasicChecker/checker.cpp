@@ -690,18 +690,18 @@ bool program_parse(const std::wstring& program, ParserStatus& status)
 
     //GOSUB〜RETURN文
     StringRule st_gosub
-            =   L("gosub") >> linenumber;
+            =   L("gosub") >> linenumber[phx::bind(&ParserStatus::registerReferredLineNumber, ref(status), _1)];
     StringRule st_return
             =   L("return");
 
     //GOTO文
     //PC-6000Techknowによると、「g o t o」でも通るため、トークンを分ける
     StringRule st_goto
-            =   L("g") >> L("o")  >> L("t") >> L("o") > linenumber;
+            =   L("g") >> L("o")  >> L("t") >> L("o") > linenumber[phx::bind(&ParserStatus::registerReferredLineNumber, ref(status), _1)];
 
     //IF文
     StringRule st_then
-            =   (L("then") >> (linenumber | statement) >> *(L(":") >> -statement))
+            =   (L("then") >> (linenumber[phx::bind(&ParserStatus::registerReferredLineNumber, ref(status), _1)] | statement) >> *(L(":") >> -statement))
             |   st_goto;
     StringRule st_if
             =   L("if") >> qi::as_wstring[*(char_ - lit("then") - lit("goto"))]
@@ -709,7 +709,7 @@ bool program_parse(const std::wstring& program, ParserStatus& status)
                         >> qi::as_wstring[*(char_ - lit("else"))]
                            [phx::bind(&partial_parse, _1, ref(status), st_then)]
                         >> -((L("else") >> statement)
-                            | (L("else") >> linenumber));
+                            | (L("else") >> linenumber[phx::bind(&ParserStatus::registerReferredLineNumber, ref(status), _1)]));
 
     //INPUT文
     StringRule st_input
@@ -833,8 +833,8 @@ bool program_parse(const std::wstring& program, ParserStatus& status)
                         >> qi::as_wstring[*(char_ - lit("gosub") - lit("goto"))]
                            [phx::bind(&partial_parse, _1, ref(status), num_expression)]
                         >> L("gosub")
-                        > -linenumber
-                        >> *(L(",") > -linenumber);
+                        > -linenumber[phx::bind(&ParserStatus::registerReferredLineNumber, ref(status), _1)]
+                        >> *(L(",") > -linenumber[phx::bind(&ParserStatus::registerReferredLineNumber, ref(status), _1)]);
 
     //ON GOTO文
     StringRule st_on_goto
@@ -842,8 +842,8 @@ bool program_parse(const std::wstring& program, ParserStatus& status)
                         >> qi::as_wstring[*(char_ - lit("goto") - lit("gosub"))]
                            [phx::bind(&partial_parse, _1, ref(status), num_expression)]
                         >> L("goto")
-                        > -linenumber
-                        >> *(L(",") > -linenumber);
+                        > -linenumber[phx::bind(&ParserStatus::registerReferredLineNumber, ref(status), _1)]
+                        >> *(L(",") > -linenumber[phx::bind(&ParserStatus::registerReferredLineNumber, ref(status), _1)]);
 
     //OPEN文
     StringRule st_open
@@ -923,11 +923,11 @@ bool program_parse(const std::wstring& program, ParserStatus& status)
 
     //RESTORE文
     StringRule st_restore
-            =   L("restore") >> -linenumber;
+            =   L("restore") >> -linenumber[phx::bind(&ParserStatus::registerReferredLineNumber, ref(status), _1)];
 
     //RESUME文
     StringRule st_resume
-            =   L("resume") >> -(L("0") | L("next") | linenumber);
+            =   L("resume") >> -(L("0") | L("next") | linenumber[phx::bind(&ParserStatus::registerReferredLineNumber, ref(status), _1)]);
 
     //ROLL文
     StringRule st_roll
@@ -941,7 +941,7 @@ bool program_parse(const std::wstring& program, ParserStatus& status)
 
     //RUN文
     StringRule st_run
-            =   L("run") >> -(linenumber
+            =   L("run") >> -(linenumber[phx::bind(&ParserStatus::registerReferredLineNumber, ref(status), _1)]
                               |(str_expression >> -(L(",") >> L("r"))));
 
     //SAVE文
@@ -1169,5 +1169,9 @@ bool Checker::parse(const std::wstring& programList, ParserStatus& stat, bool tr
             stat.errorList_.push_back(ErrorInfo(E_SYNTAX, stat.line_.textLineNumber_, stat.line_.basicLineNumber_, (boost::wformat(L"シンタックスエラー(%1%)") % workLine).str()));
         }
     }
+
+    //全行読み込み後のチェック
+    afterCheck(stat);
+
     return stat.errorList_.empty();
 }

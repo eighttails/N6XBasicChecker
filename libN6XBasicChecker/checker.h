@@ -53,6 +53,11 @@ struct ReferredLineNumber
     ReferredLineNumber()
         : targetLineNumber_(-1)
     {}
+
+    ReferredLineNumber(int textLineNumber, int basicLineNumber, int targetLineNumber)
+        : refererLine_(textLineNumber, basicLineNumber)
+        , targetLineNumber_(targetLineNumber)
+    {}
 };
 
 //プログラム内で使用されている変数情報
@@ -103,6 +108,8 @@ struct ParserStatus
     //BASIC行番号のリスト
     std::set<int> basicLineNumberList_;
 
+    std::vector<ReferredLineNumber> ReferredLineNumberList_;
+
     //エラー情報のリスト
     std::vector<ErrorInfo> errorList_;
 
@@ -129,6 +136,11 @@ struct ParserStatus
         basicLineNumberList_.insert(basicLineNumber);
     }
 
+    //行番号の参照を登録する
+    void registerReferredLineNumber(int targetLineNumber){
+        ReferredLineNumberList_.push_back(ReferredLineNumber(line_.textLineNumber_, line_.basicLineNumber_, targetLineNumber));
+    }
+
     //行を1行進める。
     void inclementLine(){
         line_.textLineNumber_++;
@@ -140,6 +152,7 @@ class Checker
 {
 public:
     Checker();
+
     //構文解析
     bool parse(const std::wstring& programList, ParserStatus& stat, bool trace = false);
 

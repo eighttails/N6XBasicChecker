@@ -130,7 +130,13 @@ void Checker::convZenHan(std::wstring& programList)
 void Checker::afterCheck(ParserStatus& stat)
 {
     //行番号チェック
-    //#PENDING 行番号存在チェック
+    for (size_t i = 0; i < stat.ReferredLineNumberList_.size(); i++){
+        const ReferredLineNumber& ref = stat.ReferredLineNumberList_[i];
+        if(stat.basicLineNumberList_.count(ref.targetLineNumber_) == 0){
+            stat.errorList_.push_back(ErrorInfo(E_LINE_NOT_FOUND, ref.refererLine_.textLineNumber_, ref.refererLine_.basicLineNumber_,
+                                                (boost::wformat(L"BASIC行%1%は存在しません") % ref.targetLineNumber_).str()));
+        }
+    }
 
     //変数チェック
     //#PENDING 識別子重複チェック(2文字目までが一致しているが、違う名前が使われている変数)

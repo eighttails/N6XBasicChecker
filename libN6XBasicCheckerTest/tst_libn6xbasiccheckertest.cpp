@@ -17,6 +17,7 @@ public:
 private:
     bool parse(const std::wstring& program, ParserStatus& stat, bool trace = false);
 private Q_SLOTS:
+    void testCase9();
     void testCase8();
     void testCase7();
     void testCase6();
@@ -48,6 +49,69 @@ bool LibN6XBasicCheckerTest::parse(const std::wstring& program, ParserStatus& st
     return r;
 }
 
+void LibN6XBasicCheckerTest::testCase9()
+{
+    ParserStatus stat;
+    std::wstring programList;
+
+    //行番号存在チェック
+    programList =
+            L"10 rem\n"         //正常系
+            "20 goto 10\n"
+            "30 gosub 10\n"
+            "40 ifa=0then10else20\n"
+            "50 onagoto10,20,30\n"
+            "60 onagosub10,20,30\n"
+            "70 restore10\n"
+            "80 run10\n"
+            "90 goto 999\n"     //異常系
+            "100 gosub 999\n"
+            "110 ifa=0then999else20\n"
+            "120 ifa=0then10else999\n"
+            "130 onagoto1000,1010,1020\n"
+            "140 onagosub1000,1010,1020\n"
+            "150 restore999\n"
+            "160 run999\n"
+            ;
+    QVERIFY(!parse(programList, stat));
+    int i=0;
+    QVERIFY(stat.errorList_[i].line_.textLineNumber_ == 9);
+    QVERIFY(stat.errorList_[i].line_.basicLineNumber_ == 90);
+    QVERIFY(stat.errorList_[i++].code_ == E_LINE_NOT_FOUND);
+    QVERIFY(stat.errorList_[i].line_.textLineNumber_ == 10);
+    QVERIFY(stat.errorList_[i].line_.basicLineNumber_ == 100);
+    QVERIFY(stat.errorList_[i++].code_ == E_LINE_NOT_FOUND);
+    QVERIFY(stat.errorList_[i].line_.textLineNumber_ == 11);
+    QVERIFY(stat.errorList_[i].line_.basicLineNumber_ == 110);
+    QVERIFY(stat.errorList_[i++].code_ == E_LINE_NOT_FOUND);
+    QVERIFY(stat.errorList_[i].line_.textLineNumber_ == 12);
+    QVERIFY(stat.errorList_[i].line_.basicLineNumber_ == 120);
+    QVERIFY(stat.errorList_[i++].code_ == E_LINE_NOT_FOUND);
+    QVERIFY(stat.errorList_[i].line_.textLineNumber_ == 13);
+    QVERIFY(stat.errorList_[i].line_.basicLineNumber_ == 130);
+    QVERIFY(stat.errorList_[i++].code_ == E_LINE_NOT_FOUND);
+    QVERIFY(stat.errorList_[i].line_.textLineNumber_ == 13);
+    QVERIFY(stat.errorList_[i].line_.basicLineNumber_ == 130);
+    QVERIFY(stat.errorList_[i++].code_ == E_LINE_NOT_FOUND);
+    QVERIFY(stat.errorList_[i].line_.textLineNumber_ == 13);
+    QVERIFY(stat.errorList_[i].line_.basicLineNumber_ == 130);
+    QVERIFY(stat.errorList_[i++].code_ == E_LINE_NOT_FOUND);
+    QVERIFY(stat.errorList_[i].line_.textLineNumber_ == 14);
+    QVERIFY(stat.errorList_[i].line_.basicLineNumber_ == 140);
+    QVERIFY(stat.errorList_[i++].code_ == E_LINE_NOT_FOUND);
+    QVERIFY(stat.errorList_[i].line_.textLineNumber_ == 14);
+    QVERIFY(stat.errorList_[i].line_.basicLineNumber_ == 140);
+    QVERIFY(stat.errorList_[i++].code_ == E_LINE_NOT_FOUND);
+    QVERIFY(stat.errorList_[i].line_.textLineNumber_ == 14);
+    QVERIFY(stat.errorList_[i].line_.basicLineNumber_ == 140);
+    QVERIFY(stat.errorList_[i++].code_ == E_LINE_NOT_FOUND);
+    QVERIFY(stat.errorList_[i].line_.textLineNumber_ == 15);
+    QVERIFY(stat.errorList_[i].line_.basicLineNumber_ == 150);
+    QVERIFY(stat.errorList_[i++].code_ == E_LINE_NOT_FOUND);
+    QVERIFY(stat.errorList_[i].line_.textLineNumber_ == 16);
+    QVERIFY(stat.errorList_[i].line_.basicLineNumber_ == 160);
+    QVERIFY(stat.errorList_[i++].code_ == E_LINE_NOT_FOUND);
+}
 
 void LibN6XBasicCheckerTest::testCase8()
 {
