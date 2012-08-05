@@ -27,11 +27,14 @@ unix:!symbian {
 HEADERS += \
     checker.h \
     babelwrap.h \
-    spiritwrap.h
+    spiritwrap.h \
+    checkercommon.h \
+    parserstatus.h
 
 SOURCES += \
     checker.cpp \
     checker2.cpp \
-    babelwrap.cpp
+    babelwrap.cpp \
+    parserstatus.cpp
 
 

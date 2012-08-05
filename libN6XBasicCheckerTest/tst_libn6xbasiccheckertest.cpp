@@ -4,7 +4,9 @@
 #include <iostream>
 #include <fstream>
 
+#include "parserstatus.h"
 #include "checker.h"
+
 #include "babelwrap.h"
 
 class LibN6XBasicCheckerTest : public QObject

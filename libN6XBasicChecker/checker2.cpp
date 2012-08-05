@@ -1,4 +1,6 @@
 #include "checker.h"
+#include "parserstatus.h"
+
 #include "spiritwrap.h"
 
 void Checker::makeZenHanMap()

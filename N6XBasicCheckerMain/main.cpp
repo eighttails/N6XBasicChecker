@@ -7,7 +7,9 @@
 #include <boost/program_options.hpp>
 namespace po = boost::program_options;
 
+#include "parserstatus.h"
 #include "checker.h"
+
 #include "babelwrap.h"
 
 

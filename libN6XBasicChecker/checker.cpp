@@ -2,9 +2,9 @@
 #include <string>
 #include <algorithm>
 
+#include "checker.h"
+#include "parserstatus.h"
 #include "spiritwrap.h"
-
-
 
 //部分パーサー
 //Spiritのルールは通常先頭から最長一致でマッチしてしまうため、
