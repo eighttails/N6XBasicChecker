@@ -139,8 +139,8 @@ bool program_parse(const std::wstring& program, ParserStatus& status)
             =   num_func
             |   num_literal
             |   num_hex_literal
-            |   num_array_var
-            |   num_var
+            |   qi::as_wstring[num_array_var][phx::bind(&ParserStatus::registerUsedVariable, ref(status), _1, VAR_REFER)]
+            |   qi::as_wstring[num_var][phx::bind(&ParserStatus::registerUsedVariable, ref(status), _1, VAR_REFER)]
             |   num_group;
 
     //単項式
@@ -227,8 +227,8 @@ bool program_parse(const std::wstring& program, ParserStatus& status)
     StringRule str_value
             =   str_func
             |   str_quoted
-            |   str_array_var
-            |   str_var
+            |   qi::as_wstring[str_array_var][phx::bind(&ParserStatus::registerUsedVariable, ref(status), _1, VAR_REFER)]
+            |   qi::as_wstring[str_var][phx::bind(&ParserStatus::registerUsedVariable, ref(status), _1, VAR_REFER)]
             |   str_group;
 
     //文字列式
@@ -504,11 +504,13 @@ bool program_parse(const std::wstring& program, ParserStatus& status)
     StringRule statement;
     //代入文
     StringRule num_assign
-            =   (num_array_var | num_var ) >> L("=")
-                                              > qi::as_wstring[*(char_ - lit(":"))]
-                                              [phx::bind(&partial_parse, _1, ref(status), num_expression)];
+            =   qi::as_wstring[(num_array_var | num_var )][phx::bind(&ParserStatus::registerUsedVariable, ref(status), _1, VAR_ASSIGN)]
+            >>  L("=")
+                > qi::as_wstring[*(char_ - lit(":"))]
+                [phx::bind(&partial_parse, _1, ref(status), num_expression)];
     StringRule str_assign
-            =   (str_array_var | str_var ) >> L("=") > str_expression;
+            =   qi::as_wstring[(str_array_var | str_var )][phx::bind(&ParserStatus::registerUsedVariable, ref(status), _1, VAR_ASSIGN)]
+            >>  L("=") > str_expression;
 
     //グラフィック用２次元座標
     StringRule coord_2d
@@ -552,7 +554,8 @@ bool program_parse(const std::wstring& program, ParserStatus& status)
     //CLOAD*文
     //#PENDING 配列名の存在確認
     StringRule st_cload_ast
-            =   L("cload") >> L("*") >> num_var;
+            =   L("cload") >> L("*")
+                           >> qi::as_wstring[num_var][phx::bind(&ParserStatus::registerUsedVariable, ref(status), _1, VAR_ASSIGN)];
 
     //CLOAD文(CLOAD?文も兼ねる)
     StringRule st_cload
@@ -591,7 +594,8 @@ bool program_parse(const std::wstring& program, ParserStatus& status)
 
     //CSAVE*文
     StringRule st_csave_ast
-            =   L("csave") >> L("*") >> num_var;
+            =   L("csave") >> L("*")
+                           >> qi::as_wstring[num_var][phx::bind(&ParserStatus::registerUsedVariable, ref(status), _1, VAR_REFER)];
 
     //DATA文
     StringRule data_element
@@ -621,8 +625,8 @@ bool program_parse(const std::wstring& program, ParserStatus& status)
     StringRule array_var
             =   str_array_var | num_array_var;
     StringRule st_dim
-            =   L("dim") >> array_var
-                         >> *(L(",") > array_var);
+            =   L("dim") >> qi::as_wstring[array_var][phx::bind(&ParserStatus::registerUsedVariable, ref(status), _1, VAR_ASSIGN)]
+                         >> *(L(",") > qi::as_wstring[array_var][phx::bind(&ParserStatus::registerUsedVariable, ref(status), _1, VAR_REFER)]);
 
     //DSKO$文
     StringRule st_dsko$
@@ -653,7 +657,7 @@ bool program_parse(const std::wstring& program, ParserStatus& status)
                            >> num_expression
                            >> +(L(",")
                                 >> qi::as_wstring[*(char_ - lit("as"))][phx::bind(&partial_parse, _1, ref(status), num_expression)]
-                                >> L("as") >> str_var);
+                                >> L("as") >> qi::as_wstring[str_var][phx::bind(&ParserStatus::registerUsedVariable, ref(status), _1, VAR_ASSIGN)]);
 
     //FILES文
     StringRule st_files
@@ -666,13 +670,16 @@ bool program_parse(const std::wstring& program, ParserStatus& status)
     //苦肉の策として、for[任意の文字列]toという構文を定義しておき、
     //後からpartial_parse関数にて[任意の文字列]を数値式としてパースする。
     StringRule st_for
-            =   L("for") > num_var >> L("=")
-                                      > qi::as_wstring[*(char_ - lit("to"))][phx::bind(&partial_parse, _1, ref(status), num_expression)]
-                                   >> L("to")
-                                      > qi::as_wstring[*(char_ - lit("step") - lit(":"))][phx::bind(&partial_parse, _1, ref(status), num_expression)]
-                                   >> -(L("step") >> num_expression);
+            =   L("for") > qi::as_wstring[num_var][phx::bind(&ParserStatus::registerUsedVariable, ref(status), _1, VAR_ASSIGN)]
+            >> L("=")
+               > qi::as_wstring[*(char_ - lit("to"))][phx::bind(&partial_parse, _1, ref(status), num_expression)]
+            >> L("to")
+               > qi::as_wstring[*(char_ - lit("step") - lit(":"))][phx::bind(&partial_parse, _1, ref(status), num_expression)]
+            >> -(L("step") >> num_expression);
     StringRule st_next
-            =   L("next") >> -(num_var >> *(L(",") > num_var));
+            =   L("next") >> -(qi::as_wstring[num_var][phx::bind(&ParserStatus::registerUsedVariable, ref(status), _1, VAR_REFER)]
+                               >> *(L(",")
+                                    > qi::as_wstring[num_var][phx::bind(&ParserStatus::registerUsedVariable, ref(status), _1, VAR_REFER)]));
 
     //GET文
     StringRule st_get
@@ -686,7 +693,7 @@ bool program_parse(const std::wstring& program, ParserStatus& status)
                          >> coord_2d
                          >> L("-") >> -L("step")
                          >> coord_2d
-                         >> L(",") >> (str_expression | num_var);
+                         >> L(",") >> (str_expression | qi::as_wstring[num_var][phx::bind(&ParserStatus::registerUsedVariable, ref(status), _1, VAR_ASSIGN)]);
 
     //GOSUB〜RETURN文
     StringRule st_gosub
@@ -719,13 +726,13 @@ bool program_parse(const std::wstring& program, ParserStatus& status)
     //INPUT文
     StringRule st_input
             =   L("input") >> -(str_expression >> L(";"))
-                           >> var
-                           >> *(L(",") >> var);
+                           >> qi::as_wstring[var][phx::bind(&ParserStatus::registerUsedVariable, ref(status), _1, VAR_ASSIGN)]
+                           >> *(L(",") >> qi::as_wstring[var][phx::bind(&ParserStatus::registerUsedVariable, ref(status), _1, VAR_ASSIGN)]);
 
     //INPUT#文
     StringRule st_input_sharp
             =   L("input") >> L("#") >> num_expression
-                           >> +(L(",") >> var);
+                           >> +(L(",") >> qi::as_wstring[var][phx::bind(&ParserStatus::registerUsedVariable, ref(status), _1, VAR_ASSIGN)]);
     //KANJI文
     StringRule st_kanji
             =   L("kanji") >> -L("step")
@@ -772,7 +779,8 @@ bool program_parse(const std::wstring& program, ParserStatus& status)
 
     //LIST V文
     StringRule st_list_v
-            =   L("list") >> L("v") >> -(L(",") >> var);
+            =   L("list") >> L("v") >> -(L(",")
+                                         >> qi::as_wstring[var][phx::bind(&ParserStatus::registerUsedVariable, ref(status), _1, VAR_REFER)]);
 
     //LLIST文
     StringRule st_llist
@@ -784,7 +792,8 @@ bool program_parse(const std::wstring& program, ParserStatus& status)
 
     //LLIST V文
     StringRule st_llist_v
-            =   L("llist") >> L("v") >> -(L(",") >> var);
+            =   L("llist") >> L("v") >> -(L(",")
+                                          >> qi::as_wstring[var][phx::bind(&ParserStatus::registerUsedVariable, ref(status), _1, VAR_ASSIGN)]);
 
     //LOAD文
     StringRule st_load
@@ -910,13 +919,15 @@ bool program_parse(const std::wstring& program, ParserStatus& status)
     StringRule st_put_at
             =   L("put") >> -L("@") >> -L("step")
                          >> coord_2d
-                         >> L(",") >> (num_var | str_expression)
+                         >> L(",") >> (qi::as_wstring[num_var][phx::bind(&ParserStatus::registerUsedVariable, ref(status), _1, VAR_REFER)] | str_expression)
                          >> -(L(",") >> (L("xor") | L("and") | L("or") | L("pset") | L("preset"))); //色
 
     //READ文
     StringRule st_read
-            =   L("read") >> (str_array_var | str_var | num_array_var | num_var)
-                         >> *(L(",") >> (str_array_var | str_var | num_array_var | num_var));
+            =   L("read") >> qi::as_wstring[(str_array_var | str_var | num_array_var | num_var)]
+                             [phx::bind(&ParserStatus::registerUsedVariable, ref(status), _1, VAR_ASSIGN)]
+                         >> *(L(",") >> qi::as_wstring[(str_array_var | str_var | num_array_var | num_var)]
+                              [phx::bind(&ParserStatus::registerUsedVariable, ref(status), _1, VAR_ASSIGN)]);
 
     //REM文
     StringRule st_rem

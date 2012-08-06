@@ -2,6 +2,7 @@
 #define PARSERSTATUS_H
 
 #include <set>
+#include <map>
 #include <vector>
 
 #include "checkercommon.h"
@@ -15,6 +16,11 @@ struct ParserStatus
     std::set<int> basicLineNumberList_;
 
     std::vector<ReferredLineNumber> ReferredLineNumberList_;
+
+    //プログラム内で使用されている変数のリスト
+    //キーは変数の識別名。(先頭2文字を抽出したもの)
+    //同一の識別名に複数の長い変数名が使用された場合、警告を出す。
+    std::multimap<std::wstring, UsedVar> usedVariables_;
 
     //エラー情報のリスト
     std::vector<ErrorInfo> errorList_;
@@ -38,7 +44,10 @@ struct ParserStatus
     //実行時エラーにならないので、コメントなどを入れる人がいるが、
     //GOTOの後のコロンが抜けた場合、次のステートメントが実行されない事態になるため、
     //警告を出すために登録する。
-    void warnRedundantContent(std::wstring tok);
+    void warnRedundantContent(const std::wstring& tok);
+
+    //使用されている変数を登録する。
+    void registerUsedVariable(const std::wstring& fullName, VarUsage usage);
 
     //行を1行進める。
     void inclementLine(){

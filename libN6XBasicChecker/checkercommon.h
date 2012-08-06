@@ -58,11 +58,21 @@ struct ReferredLineNumber
     {}
 };
 
+//変数の使われ方
+enum VarUsage
+{
+    VAR_REFER,  //参照
+    VAR_ASSIGN, //代入
+};
+
 //プログラム内で使用されている変数情報
 struct UsedVar
 {
-    //行番号
-    LineNumberInfo line_;
+    //変数を参照している行番号
+    std::set<LineNumberInfo> referingLines_;
+
+    //変数に代入している行番号
+    std::set<LineNumberInfo> assigningLines_;
 
     //BASICが識別する名前。変数名の先頭2文字。
     //文字列変数の場合は『$』を含めて3文字まで。
