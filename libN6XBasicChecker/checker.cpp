@@ -626,7 +626,7 @@ bool program_parse(const std::wstring& program, ParserStatus& status)
             =   str_array_var | num_array_var;
     StringRule st_dim
             =   L("dim") >> qi::as_wstring[array_var][phx::bind(&ParserStatus::registerUsedVariable, ref(status), _1, VAR_ASSIGN)]
-                         >> *(L(",") > qi::as_wstring[array_var][phx::bind(&ParserStatus::registerUsedVariable, ref(status), _1, VAR_REFER)]);
+                         >> *(L(",") > qi::as_wstring[array_var][phx::bind(&ParserStatus::registerUsedVariable, ref(status), _1, VAR_ASSIGN)]);
 
     //DSKO$文
     StringRule st_dsko$
@@ -793,7 +793,7 @@ bool program_parse(const std::wstring& program, ParserStatus& status)
     //LLIST V文
     StringRule st_llist_v
             =   L("llist") >> L("v") >> -(L(",")
-                                          >> qi::as_wstring[var][phx::bind(&ParserStatus::registerUsedVariable, ref(status), _1, VAR_ASSIGN)]);
+                                          >> qi::as_wstring[var][phx::bind(&ParserStatus::registerUsedVariable, ref(status), _1, VAR_REFER)]);
 
     //LOAD文
     StringRule st_load
