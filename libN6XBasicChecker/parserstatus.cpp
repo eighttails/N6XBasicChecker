@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <boost/format.hpp>
+#include <boost/regex.hpp>
 
 #include "parserstatus.h"
 
@@ -35,6 +36,8 @@ void ParserStatus::registerUsedVariable(const std::wstring& fullName, VarUsage u
 {
     //#PENDING
     //配列のインデックスを除去し、『()』に置換する。
+    boost::wregex regex(L"\\(.*\\)");
+    boost::regex_replace(fullName, regex, L"#()#", boost::format_all);
 
     //変数名を空白を含まない形式にする。
 

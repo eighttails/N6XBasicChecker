@@ -22,6 +22,9 @@ struct ParserStatus
     //同一の識別名に複数の長い変数名が使用された場合、警告を出す。
     std::multimap<std::wstring, UsedVar> usedVariables_;
 
+    //現在の読み込み位置の次に現れる変数が代入か参照かを示すフラグ
+    VarUsage varMode_;
+
     //エラー情報のリスト
     std::vector<ErrorInfo> errorList_;
 
@@ -29,6 +32,7 @@ struct ParserStatus
     std::vector<ErrorInfo> warningList_;
 
     ParserStatus()
+        : varMode_(VAR_ASSIGN)
     {}
 
     //行番号を登録する。

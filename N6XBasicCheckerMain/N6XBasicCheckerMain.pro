@@ -24,7 +24,7 @@ QMAKE_LFLAGS = -static-libgcc -static-libstdc++
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../libN6XBasicChecker/release/ -lN6XBasicChecker -L$(BOOSTDIR)/lib/ -lboost_program_options-mgw47-mt-1_50
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../libN6XBasicChecker/debug/ -lN6XBasicChecker -L$(BOOSTDIR)/lib/ -lboost_program_options-mgw47-mt-d-1_50
 else:symbian: LIBS += -lN6XBasicChecker
-else:unix: LIBS += -L$$OUT_PWD/../libN6XBasicChecker/ -lN6XBasicChecker -lboost_program_options
+else:unix: LIBS += -L$$OUT_PWD/../libN6XBasicChecker/ -lN6XBasicChecker -lboost_program_options -lboost_regex
 
 INCLUDEPATH += $$PWD/../libN6XBasicChecker $$PWD/../babel
 DEPENDPATH += $$PWD/../libN6XBasicChecker
