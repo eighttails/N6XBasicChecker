@@ -13,7 +13,7 @@
 //苦肉の策として、for[任意の文字列]toという構文を定義しておき、
 //後から当関数にて[任意の文字列]を数値式としてパースする。
 //渡された部分文字列を何としてパースするかは引数ruleとして渡される。
-bool partial_parse(std::wstring const& part, ParserStatus& status, StringRule const& rule)
+bool partial_parse(std::wstring const& part, ParserStatus& status, BasicRule const& rule)
 {
     std::wstring::const_iterator first = part.begin();
     std::wstring::const_iterator last = part.end();
@@ -35,18 +35,18 @@ bool partial_parse(std::wstring const& part, ParserStatus& status, StringRule co
 bool program_parse(const std::wstring& program, ParserStatus& status)
 {
     //グラフィック文字
-    StringRule graph
+    BasicRule graph
             =   L("月")|L("火")|L("水")|L("木")|L("金")|L("土")|L("日")|L("年")|L("円")
             |	L("時")|L("分")|L("秒")|L("百")|L("千")|L("万")|L("π")
             |	L("┻")|L("┳")|L("┫")|L("┣")|L("╋")|L("┃")|L("━")|L("┏")|L("┓")|L("┗")|L("┛")
             |	L("×")|L("大")|L("中")|L("小")|L("▲")|L("▼")|L("★")|L("◆")|L("○")|L("●");
 
     //かな記号
-    StringRule kana_kigou
+    BasicRule kana_kigou
             =	L("「")|L("」")|L("、")|L("。")|L("・")|L("゛")|L("゜")|L("ー");
 
     //ひらがな
-    StringRule hiragana
+    BasicRule hiragana
             =	L("を")|L("ぁ")|L("ぃ")|L("ぅ")|L("ぇ")|L("ぉ")|L("ゃ")|L("ゅ")|L("ょ")|L("っ")
             |	L("あ")|L("い")|L("う")|L("え")|L("お")|L("か")|L("き")|L("く")|L("け")|L("こ")
             |	L("さ")|L("し")|L("す")|L("せ")|L("そ")|L("た")|L("ち")|L("つ")|L("て")|L("と")
@@ -58,7 +58,7 @@ bool program_parse(const std::wstring& program, ParserStatus& status)
             |	L("ぱ")|L("ぴ")|L("ぷ")|L("ぺ")|L("ぽ");
 
     //カタカナ
-    StringRule katakana
+    BasicRule katakana
             =	L("ヲ")|L("ァ")|L("ィ")|L("ゥ")|L("ェ")|L("ォ")|L("ャ")|L("ュ")|L("ョ")|L("ッ")
             |	L("ア")|L("イ")|L("ウ")|L("エ")|L("オ")|L("カ")|L("キ")|L("ク")|L("ケ")|L("コ")
             |	L("サ")|L("シ")|L("ス")|L("セ")|L("ソ")|L("タ")|L("チ")|L("ツ")|L("テ")|L("ト")
@@ -70,7 +70,7 @@ bool program_parse(const std::wstring& program, ParserStatus& status)
             |	L("パ")|L("ピ")|L("プ")|L("ペ")|L("ポ")|L("ヴ");
 
     //半角カナ
-    StringRule han_kana
+    BasicRule han_kana
             =	L("｡")|L("｢")|L("｣")|L("､")|L("･")|L("ｰ")
             |   L("ｦ")|L("ｧ")|L("ｨ")|L("ｩ")|L("ｪ")|L("ｫ")|L("ｬ")|L("ｭ")|L("ｮ")|L("ｯ")
             |	L("ｱ")|L("ｲ")|L("ｳ")|L("ｴ")|L("ｵ")|L("ｶ")|L("ｷ")|L("ｸ")|L("ｹ")|L("ｺ")
@@ -81,7 +81,7 @@ bool program_parse(const std::wstring& program, ParserStatus& status)
             |   L("ﾞ")|L("ﾟ");
 
     //使用可能な文字
-    StringRule printable
+    BasicRule printable
             =	L(" ")|L("!")|L("\"")|L("#")|L("$")|L("%")|L("&")
             |	L("'")|L("(")|L(")")|L("*")
             |	L("+")|L(",")|L("-")|L(".")|L("/")|L(":")|L(";")
@@ -95,10 +95,10 @@ bool program_parse(const std::wstring& program, ParserStatus& status)
 
     //数値系--------------------------------------------------------------------------
     //数値関連
-    StringRule num_expression, num_func, num_group;
+    BasicRule num_expression, num_func, num_group;
 
     //予約語
-    StringRule reserved
+    BasicRule reserved
             =   lit("and")
             |   lit("xor")
             |   lit("or")
@@ -107,35 +107,35 @@ bool program_parse(const std::wstring& program, ParserStatus& status)
             |   lit("mod");
     //数値型変数(5文字まで。識別されるのは2文字まで)
     //変数に予約語が含まれないようにする
-    StringRule num_var
+    BasicRule num_var
             =   sw::alpha >> qi::repeat(0, 4)[sw::alnum - reserved];
 
     //数値型変数(配列)
     //#PENDING DIM分との間の次元数チェック
-    StringRule num_array_var
+    BasicRule num_array_var
             =   num_var >> L("(") > num_expression >> *(L(",") > num_expression) > L(")");
 
     //数値リテラル
-    StringRule sign
+    BasicRule sign
             =   L("+") | L("-");
 
-    StringRule fractional_constant
+    BasicRule fractional_constant
             =  *sw::digit >> -L(".") >> +sw::digit
                              |  +sw::digit >> -L(".");
 
-    StringRule exponent_part
+    BasicRule exponent_part
             =   (L("e") | L("E")) >> -sign >> +sw::digit;
 
-    StringRule num_literal
+    BasicRule num_literal
             =   -sign >> (fractional_constant >> -exponent_part
                           | +sw::digit >> exponent_part);
 
     //数値リテラル(16進)
-    StringRule num_hex_literal
+    BasicRule num_hex_literal
             =   L("&h") >> hex;
 
     //数値
-    StringRule num_value
+    BasicRule num_value
             =   num_func
             |   num_literal
             |   num_hex_literal
@@ -144,13 +144,13 @@ bool program_parse(const std::wstring& program, ParserStatus& status)
             |   num_group;
 
     //単項式
-    StringRule unary_expression
+    BasicRule unary_expression
             =   num_value
             |   (L("-") >> num_value)
             |   (L("not") >> num_value);
 
     //算術式
-    StringRule arithmetic_operator
+    BasicRule arithmetic_operator
             =   L("+")
             |   L("-")
             |   L("*")
@@ -159,11 +159,11 @@ bool program_parse(const std::wstring& program, ParserStatus& status)
             |   L("\\") //整数除算
             |   L("mod");
 
-    StringRule num_arithmetic_expression
+    BasicRule num_arithmetic_expression
             =   unary_expression >> *(arithmetic_operator > unary_expression);
 
     //関係式
-    StringRule rel_operator
+    BasicRule rel_operator
             =   L("<>")
             |   L("><")
             |   L("<=")
@@ -174,20 +174,20 @@ bool program_parse(const std::wstring& program, ParserStatus& status)
             |   L("<")
             |   L(">");
 
-    StringRule str_expression;
-    StringRule rel_expression
+    BasicRule str_expression;
+    BasicRule rel_expression
             //文字列は"文字列式 比較演算子 文字列式"というフォーマットが成立している場合に限り関係式とみなす
             =   (str_expression >> (rel_operator > str_expression))
             |   (num_arithmetic_expression >> *(rel_operator > num_arithmetic_expression));
 
     //論理式
-    StringRule logical_operator
+    BasicRule logical_operator
             =   L("and")
             |   L("xor")
             |   L("or")
             |   L("eqv")
             |   L("imp");
-    StringRule logical_expression
+    BasicRule logical_expression
             =   (rel_expression >> *(logical_operator > rel_expression));
 
     //数値式
@@ -201,30 +201,30 @@ bool program_parse(const std::wstring& program, ParserStatus& status)
 
     //文字列系--------------------------------------------------------------------------
     //文字列変数($を抜いて5文字まで。識別されるのは2文字まで)
-    StringRule str_var
+    BasicRule str_var
             =   sw::alpha >> qi::repeat(0, 4)[sw::alnum] >> L("$");
 
     //文字列変数(配列)
     //#PENDING DIM分との間の次元数チェック
-    StringRule str_array_var
+    BasicRule str_array_var
             =   str_var >> L("(") > num_expression >> *(L(",") > num_expression) > L(")");
 
     //文字列リテラル(ダブルクオーテーションを含まない)
     //2つ目のダブルクオートの前に「-」が付いているのは、行末のダブルクオートは省略できるという仕様への対応
-    StringRule str_literal
+    BasicRule str_literal
             =   *(printable - L("\""));
 
     //文字列リテラル(ダブルクオーテーションを含む)
-    StringRule str_quoted
+    BasicRule str_quoted
             =   L("\"") > str_literal > -L("\"");
 
     //文字列グループ
-    StringRule str_group
+    BasicRule str_group
             =   L("(") >> str_expression >> L(")");
 
     //文字列値
-    StringRule str_func;
-    StringRule str_value
+    BasicRule str_func;
+    BasicRule str_value
             =   str_func
             |   str_quoted
             |   qi::as_wstring[str_array_var][phx::bind(&ParserStatus::registerUsedVariable, ref(status), _1, VAR_REFER)]
@@ -236,46 +236,46 @@ bool program_parse(const std::wstring& program, ParserStatus& status)
             =   str_value >> *(L("+") > str_value);
 
     //式
-    StringRule expression
+    BasicRule expression
             =   str_expression | num_expression;
 
     //変数
-    StringRule var
+    BasicRule var
             =   str_array_var | str_var | num_array_var | num_var;
 
     //関数----------------------------------------------------------------------
     //数値型関数
     //ASC
-    StringRule num_func_abs
+    BasicRule num_func_abs
             =   L("abs") >> L("(") > num_expression >> L(")");
 
     //ABS
-    StringRule num_func_asc
+    BasicRule num_func_asc
             =   L("asc") >> L("(") > str_expression >> L(")");
 
     //COS
-    StringRule num_func_cos
+    BasicRule num_func_cos
             =   L("cos") >> L("(") > num_expression >> L(")");
 
     //CSRLIN
-    StringRule num_func_csrlin
+    BasicRule num_func_csrlin
             =   L("csrlin");
 
     //CVS
-    StringRule num_func_cvs
+    BasicRule num_func_cvs
             =   L("cvs") >> L("(") > str_expression >> L(")");
 
     //DEFFN文で定義された関数
-    StringRule num_func_deffn
+    BasicRule num_func_deffn
             =   L("fn") >> num_var >> L("(") > num_expression >> L(")");
 
     //DSKF
-    StringRule num_func_dskf
+    BasicRule num_func_dskf
             =   L("dskf") >> L("(") > num_expression
                           >> -(L(",") >> num_expression) >> L(")");
 
     //EOF
-    StringRule num_func_eof
+    BasicRule num_func_eof
             =   L("eof") >> L("(") > num_expression >> L(")");
 
     //ERL,ERR
@@ -283,106 +283,106 @@ bool program_parse(const std::wstring& program, ParserStatus& status)
     //変数の代入、参照の管理を実装する際に再検討する。
 
     //EXP
-    StringRule num_func_exp
+    BasicRule num_func_exp
             =   L("exp") >> L("(") > num_expression >> L(")");
 
     //FRE
-    StringRule num_func_fre
+    BasicRule num_func_fre
             =   L("fre") >> L("(") >> expression >> L(")");
 
     //INP
-    StringRule num_func_inp
+    BasicRule num_func_inp
             =   L("inp") >> L("(") > num_expression >> L(")");
 
     //INT
-    StringRule num_func_int
+    BasicRule num_func_int
             =   L("int") >> L("(") > num_expression >> L(")");
 
     //LEN
-    StringRule num_func_len
+    BasicRule num_func_len
             =   L("len") >> L("(") > str_expression >> L(")");
 
     //LOC
-    StringRule num_func_loc
+    BasicRule num_func_loc
             =   L("loc") >> L("(") > num_expression >> L(")");
 
     //LOF
-    StringRule num_func_lof
+    BasicRule num_func_lof
             =   L("lof") >> L("(") > num_expression >> L(")");
 
     //LOG
-    StringRule num_func_log
+    BasicRule num_func_log
             =   L("log") >> L("(") > num_expression >> L(")");
 
     //LPOS
-    StringRule num_func_lpos
+    BasicRule num_func_lpos
             =   L("lpos") >> L("(") > num_expression >> L(")");
 
     //PAD
-    StringRule num_func_pad
+    BasicRule num_func_pad
             =   L("pad") >> L("(") > num_expression >> L(")");
 
     //PEEK
-    StringRule num_func_peek
+    BasicRule num_func_peek
             =   L("peek") >> num_expression;
 
     //POINT
-    StringRule num_func_point
+    BasicRule num_func_point
             =   L("point") >> -L("step")
                            >> L("(") > num_expression >> L(",") >> num_expression >> L(")");
 
     //POS
-    StringRule num_func_pos
+    BasicRule num_func_pos
             =   L("pos") >> L("(") > num_expression >> L(")");
 
     //RND
-    StringRule num_func_rnd
+    BasicRule num_func_rnd
             =   L("rnd") >> L("(") > num_expression >> L(")");
 
     //ROLL
-    StringRule num_func_roll
+    BasicRule num_func_roll
             =   L("roll") >> L("(") > num_expression >> L(")");
 
     //SCREEN
-    StringRule num_func_screen
+    BasicRule num_func_screen
             =   L("screen") >> L("(") > num_expression >> L(",") >> num_expression >> L(")");
 
     //SGN
-    StringRule num_func_sgn
+    BasicRule num_func_sgn
             =   L("sgn") >> L("(") > num_expression >> L(")");
 
     //SIN
-    StringRule num_func_sin
+    BasicRule num_func_sin
             =   L("sin") >> L("(") > num_expression >> L(")");
 
     //SQR
-    StringRule num_func_sqr
+    BasicRule num_func_sqr
             =   L("sqr") >> L("(") > num_expression >> L(")");
 
     //STICK
-    StringRule num_func_stick
+    BasicRule num_func_stick
             =   L("stick") >> L("(") > num_expression >> L(")");
 
     //STRIG
-    StringRule num_func_strig
+    BasicRule num_func_strig
             =   L("strig") >> L("(") > num_expression >> L(")");
 
     //TAN
-    StringRule num_func_tan
+    BasicRule num_func_tan
             =   L("tan") >> L("(") > num_expression >> L(")");
 
     //TIME
-    StringRule num_func_time
+    BasicRule num_func_time
             =   L("time");
 
     //USR(数値を返す場合)
     //USR関数は引数に文字列を取るものと数字を取るものがあるため、
     //L("(") >> num_expressionのようにバックトラックを可能にしておく。
-    StringRule num_func_usr
+    BasicRule num_func_usr
             =   L("usr") >> L("(") >> num_expression >> L(")");
 
     //VAL
-    StringRule num_func_val
+    BasicRule num_func_val
             =   L("val") >> L("(") > str_expression >> L(")");
 
     //数値関数
@@ -423,61 +423,61 @@ bool program_parse(const std::wstring& program, ParserStatus& status)
 
     //文字列関数
     //CHR$
-    StringRule str_func_chr$
+    BasicRule str_func_chr$
             =   L("chr$") >> L("(") > num_expression >> L(")");
 
     //DSKI$
-    StringRule str_func_dski$
+    BasicRule str_func_dski$
             =   L("dski$") >> L("(") > num_expression
                            >> L(",") >> num_expression
                            >> L(",") >> num_expression > L(")");
 
     //GRP$
-    StringRule str_func_grp$
+    BasicRule str_func_grp$
             =   L("grp$") >> L("(") > num_expression >> L(")");
 
     //HEX$
-    StringRule str_func_hex$
+    BasicRule str_func_hex$
             =   L("hex$") >> L("(") > num_expression >> L(")");
 
     //INKEY$
-    StringRule str_func_inkey$
+    BasicRule str_func_inkey$
             =   L("inkey$");
 
     //LEFT$
-    StringRule str_func_left$
+    BasicRule str_func_left$
             =   L("left$") >> L("(") > str_expression >> L(",") >> num_expression >> L(")");
 
     //MID$
-    StringRule str_func_mid$
+    BasicRule str_func_mid$
             =   L("mid$") >> L("(") > str_expression
                           >> L(",") >> num_expression
                           >> -(L(",") >> num_expression)
                           >> L(")");
 
     //OCT$
-    StringRule str_func_oct$
+    BasicRule str_func_oct$
             =   L("oct$") >> L("(") > num_expression >> L(")");
 
     //RIGHT$
-    StringRule str_func_right$
+    BasicRule str_func_right$
             =   L("right$") >> L("(") > str_expression >> L(",") >> num_expression >> L(")");
     //SPACE$
-    StringRule str_func_space$
+    BasicRule str_func_space$
             =   L("space$") >> L("(") > num_expression >> L(")");
 
     //STR$
-    StringRule str_func_str$
+    BasicRule str_func_str$
             =   L("str$") >> L("(") > num_expression >> L(")");
 
     //TIME$
-    StringRule str_func_time$
+    BasicRule str_func_time$
             =   L("time$") >> L("(") > num_expression >> L(")");
 
     //USR(文字列を返す場合)
     //USR関数は引数に文字列を取るものと数字を取るものがあるため、
     //L("(") >> str_expressionのようにバックトラックを可能にしておく。
-    StringRule str_func_usr
+    BasicRule str_func_usr
             =   L("usr") >> L("(") >> str_expression >> L(")");
 
     //文字列関数
@@ -501,42 +501,42 @@ bool program_parse(const std::wstring& program, ParserStatus& status)
     UintRule linenumber = uint_;
 
     //ステートメント、コマンド------------------------------------------------
-    StringRule statement;
+    BasicRule statement;
     //代入文
-    StringRule num_assign
+    BasicRule num_assign
             =   qi::as_wstring[(num_array_var | num_var )][phx::bind(&ParserStatus::registerUsedVariable, ref(status), _1, VAR_ASSIGN)]
             >>  L("=")
                 > qi::as_wstring[*(char_ - lit(":"))]
                 [phx::bind(&partial_parse, _1, ref(status), num_expression)];
-    StringRule str_assign
+    BasicRule str_assign
             =   qi::as_wstring[(str_array_var | str_var )][phx::bind(&ParserStatus::registerUsedVariable, ref(status), _1, VAR_ASSIGN)]
             >>  L("=") > str_expression;
 
     //グラフィック用２次元座標
-    StringRule coord_2d
+    BasicRule coord_2d
             =   L("(") >> num_expression >> L(",") >> num_expression >> L(")");
 
     //AUTO文
-    StringRule st_auto
+    BasicRule st_auto
             =   L("auto") >> -linenumber >> -(L(",") > linenumber);
 
     //BGM文
-    StringRule st_bgm
+    BasicRule st_bgm
             =   L("bgm") >> num_expression;
 
     //BLOAD文
-    StringRule st_bload
+    BasicRule st_bload
             =   L("bload") >> str_expression
                            >> -(L(",") >> -num_expression)
                            >> -(L(",") > -L("r"));
     //BSAVE文
-    StringRule st_bsave
+    BasicRule st_bsave
             =   L("bsave") >> str_expression
                            >> L(",") >> num_expression
                            >> L(",") >> num_expression;
 
     //CIRCLE文
-    StringRule st_circle
+    BasicRule st_circle
             =   L("circle") >> -L("step") >> L("(")
                             >> num_expression >> L(",")     //x
                             >> num_expression >> L(")")     //y
@@ -547,36 +547,36 @@ bool program_parse(const std::wstring& program, ParserStatus& status)
                             >> -(L(",") > -num_expression);   //a
 
     //CLEAR文
-    StringRule st_clear
+    BasicRule st_clear
             =   L("clear") >> -num_expression
                            >> -(L(",") > num_expression);
 
     //CLOAD*文
     //#PENDING 配列名の存在確認
-    StringRule st_cload_ast
+    BasicRule st_cload_ast
             =   L("cload") >> L("*")
                            >> qi::as_wstring[num_var][phx::bind(&ParserStatus::registerUsedVariable, ref(status), _1, VAR_ASSIGN)];
 
     //CLOAD文(CLOAD?文も兼ねる)
-    StringRule st_cload
+    BasicRule st_cload
             =   L("cload") >> -L("?") >> -str_expression;
 
     //CLOSE文
-    StringRule st_close
+    BasicRule st_close
             =   L("close") >> -(num_expression
                                 >> *(L(",") >> num_expression));
     //CLS文
-    StringRule st_cls
+    BasicRule st_cls
             =   L("cls");
 
     //COLOR文
-    StringRule st_color
+    BasicRule st_color
             =   L("color") >> -num_expression               //f
                            >> -(L(",") >> -num_expression)  //b
                            >> -(L(",") > -num_expression);  //c
 
     //CONSOLE文
-    StringRule st_console
+    BasicRule st_console
             =   L("console") >> -num_expression               //m
                              >> -(L(",") >> -num_expression)    //n
                              >> -(L(",") >> -num_expression)    //f
@@ -585,74 +585,74 @@ bool program_parse(const std::wstring& program, ParserStatus& status)
 
     //CONT文
     //プログラム中に存在し得ないはずだが、一応定義しておく。
-    StringRule st_cont
+    BasicRule st_cont
             =   L("cont");
 
     //CSAVE文
-    StringRule st_csave
+    BasicRule st_csave
             =   L("csave") >> str_expression;
 
     //CSAVE*文
-    StringRule st_csave_ast
+    BasicRule st_csave_ast
             =   L("csave") >> L("*")
                            >> qi::as_wstring[num_var][phx::bind(&ParserStatus::registerUsedVariable, ref(status), _1, VAR_REFER)];
 
     //DATA文
-    StringRule data_element
+    BasicRule data_element
             =   +(printable - L("\"") - L(",") - L(":"))
             |   (L("\"") >> str_literal >> -L("\""));
-    StringRule st_data
+    BasicRule st_data
             =   L("data") >> -data_element
                           >> *(L(",") > -data_element);
 
     //DEFFN文
     //#PENDING 登録された関数名の管理
-    StringRule st_deffn
+    BasicRule st_deffn
             =   L("def") >> L("fn") >> num_var
                          >> L("(") >> num_var >> L(")") >> L("=")
                          >> num_expression;
 
     //DEFUSR文
-    StringRule st_defusr
+    BasicRule st_defusr
             =   L("def") >> L("usr") >> L("=") >> num_expression;
 
     //DELETE文
-    StringRule st_delete
+    BasicRule st_delete
             =   L("delete") >> (linenumber || (L("-") >> -linenumber));
 
     //DIM文
     //#PENDING配列変数名の管理
-    StringRule array_var
+    BasicRule array_var
             =   str_array_var | num_array_var;
-    StringRule st_dim
+    BasicRule st_dim
             =   L("dim") >> qi::as_wstring[array_var][phx::bind(&ParserStatus::registerUsedVariable, ref(status), _1, VAR_ASSIGN)]
                          >> *(L(",") > qi::as_wstring[array_var][phx::bind(&ParserStatus::registerUsedVariable, ref(status), _1, VAR_ASSIGN)]);
 
     //DSKO$文
-    StringRule st_dsko$
+    BasicRule st_dsko$
             =   L("dsko$") >> L("(") >> num_expression
                            >> L(",") >> num_expression
                            >> L(",") >> num_expression > L(")");
 
     //END文
-    StringRule st_end
+    BasicRule st_end
             =   L("end");
 
     //ERASE文
-    StringRule st_erase
+    BasicRule st_erase
             =   L("erase") >> array_var
                            >> *(L(",") > array_var);
 
     //ERROR文
-    StringRule st_error
+    BasicRule st_error
             =   L("error") >> num_expression;
 
     //EXEC文
-    StringRule st_exec
+    BasicRule st_exec
             =   L("exec") >> num_expression;
 
     //FIELD文
-    StringRule st_field
+    BasicRule st_field
             =   L("field") >> -L("#")
                            >> num_expression
                            >> +(L(",")
@@ -660,7 +660,7 @@ bool program_parse(const std::wstring& program, ParserStatus& status)
                                 >> L("as") >> qi::as_wstring[str_var][phx::bind(&ParserStatus::registerUsedVariable, ref(status), _1, VAR_ASSIGN)]);
 
     //FILES文
-    StringRule st_files
+    BasicRule st_files
             =   L("files") >> -num_expression;
 
     //FOR〜NEXT文
@@ -669,26 +669,26 @@ bool program_parse(const std::wstring& program, ParserStatus& status)
     //例えば、forx=ytoz は、ytozが変数名として認識されてしまう。
     //苦肉の策として、for[任意の文字列]toという構文を定義しておき、
     //後からpartial_parse関数にて[任意の文字列]を数値式としてパースする。
-    StringRule st_for
+    BasicRule st_for
             =   L("for") > qi::as_wstring[num_var][phx::bind(&ParserStatus::registerUsedVariable, ref(status), _1, VAR_ASSIGN)]
             >> L("=")
                > qi::as_wstring[*(char_ - lit("to"))][phx::bind(&partial_parse, _1, ref(status), num_expression)]
             >> L("to")
                > qi::as_wstring[*(char_ - lit("step") - lit(":"))][phx::bind(&partial_parse, _1, ref(status), num_expression)]
             >> -(L("step") >> num_expression);
-    StringRule st_next
+    BasicRule st_next
             =   L("next") >> -(qi::as_wstring[num_var][phx::bind(&ParserStatus::registerUsedVariable, ref(status), _1, VAR_REFER)]
                                >> *(L(",")
                                     > qi::as_wstring[num_var][phx::bind(&ParserStatus::registerUsedVariable, ref(status), _1, VAR_REFER)]));
 
     //GET文
-    StringRule st_get
+    BasicRule st_get
             =   L("get") >> -L("#") >> num_expression
                          >> -(L(",") >> num_expression);
 
     //GET@文
     //#PENDING 配列変数名の管理
-    StringRule st_get_at
+    BasicRule st_get_at
             =   L("get") >> -L("@") >> -L("step")
                          >> coord_2d
                          >> L("-") >> -L("step")
@@ -696,25 +696,25 @@ bool program_parse(const std::wstring& program, ParserStatus& status)
                          >> L(",") >> (str_expression | qi::as_wstring[num_var][phx::bind(&ParserStatus::registerUsedVariable, ref(status), _1, VAR_ASSIGN)]);
 
     //GOSUB〜RETURN文
-    StringRule st_gosub
+    BasicRule st_gosub
             =   L("gosub") >> linenumber[phx::bind(&ParserStatus::registerReferredLineNumber, ref(status), _1)]
                            >> -qi::as_wstring[+(char_ - lit(":"))][phx::bind(&ParserStatus::warnRedundantContent, ref(status), _1)];
-    StringRule st_return
+    BasicRule st_return
             =   L("return");
 
     //GOTO文
     //PC-6000Techknowによると、「g o t o」でも通るため、トークンを分ける
-    StringRule st_goto
+    BasicRule st_goto
             =   L("g") >> L("o")  >> L("t") >> L("o") > linenumber[phx::bind(&ParserStatus::registerReferredLineNumber, ref(status), _1)]
                           >> -qi::as_wstring[+(char_ - lit(":"))][phx::bind(&ParserStatus::warnRedundantContent, ref(status), _1)];
 
     //IF文
-    StringRule st_then
+    BasicRule st_then
             =   (L("then") >> ((linenumber[phx::bind(&ParserStatus::registerReferredLineNumber, ref(status), _1)]
                                 >> -qi::as_wstring[+(char_ - lit(":"))][phx::bind(&ParserStatus::warnRedundantContent, ref(status), _1)]) | statement)
                  >> *(L(":") >> -statement))
             |   st_goto;
-    StringRule st_if
+    BasicRule st_if
             =   L("if") >> qi::as_wstring[*(char_ - lit("then") - lit("goto"))]
                            [phx::bind(&partial_parse, _1, ref(status), logical_expression)]
                         >> qi::as_wstring[*(char_ - lit("else"))]
@@ -724,44 +724,44 @@ bool program_parse(const std::wstring& program, ParserStatus& status)
                                >> -qi::as_wstring[+(char_ - lit(":"))][phx::bind(&ParserStatus::warnRedundantContent, ref(status), _1)]));
 
     //INPUT文
-    StringRule st_input
+    BasicRule st_input
             =   L("input") >> -(str_expression >> L(";"))
                            >> qi::as_wstring[var][phx::bind(&ParserStatus::registerUsedVariable, ref(status), _1, VAR_ASSIGN)]
                            >> *(L(",") >> qi::as_wstring[var][phx::bind(&ParserStatus::registerUsedVariable, ref(status), _1, VAR_ASSIGN)]);
 
     //INPUT#文
-    StringRule st_input_sharp
+    BasicRule st_input_sharp
             =   L("input") >> L("#") >> num_expression
                            >> +(L(",") >> qi::as_wstring[var][phx::bind(&ParserStatus::registerUsedVariable, ref(status), _1, VAR_ASSIGN)]);
     //KANJI文
-    StringRule st_kanji
+    BasicRule st_kanji
             =   L("kanji") >> -L("step")
                            >> coord_2d
                            >> L(",") >> num_expression //色
                            >> L(",") >> expression
                            >> *(-L(",") >> expression);
     //KEY文
-    StringRule st_key
+    BasicRule st_key
             =   L("key") >> num_expression >> L(",") >> str_expression;
 
     //KILL文
-    StringRule st_kill
+    BasicRule st_kill
             =   L("kill") >> str_expression;
 
     //LCOPY文
-    StringRule st_lcopy
+    BasicRule st_lcopy
             =   L("lcopy") >> -num_expression;
 
     //LET文
-    StringRule st_let
+    BasicRule st_let
             =   L("let") >> (str_assign | num_assign);
 
     //LFILES文
-    StringRule st_lfiles
+    BasicRule st_lfiles
             =   L("lfiles") >> num_expression;
 
     //LINE文
-    StringRule st_line
+    BasicRule st_line
             =   L("line") >> -(-L("step")
                           >> coord_2d)
                           >> L("-") >> -L("step")
@@ -770,79 +770,79 @@ bool program_parse(const std::wstring& program, ParserStatus& status)
                           >> -(L(",") >> (L("bf") | L("b")));
 
     //LIST文
-    StringRule st_list
+    BasicRule st_list
             =   L("list") >> (linenumber || (L("-") >> -linenumber));
 
     //LIST L文
-    StringRule st_list_l
+    BasicRule st_list_l
             =   L("list") >> L("l") >> -(L(",") >> linenumber);
 
     //LIST V文
-    StringRule st_list_v
+    BasicRule st_list_v
             =   L("list") >> L("v") >> -(L(",")
                                          >> qi::as_wstring[var][phx::bind(&ParserStatus::registerUsedVariable, ref(status), _1, VAR_REFER)]);
 
     //LLIST文
-    StringRule st_llist
+    BasicRule st_llist
             =   L("llist") >> (linenumber || (L("-") >> -linenumber));
 
     //LLIST L文
-    StringRule st_llist_l
+    BasicRule st_llist_l
             =   L("llist") >> L("l") >> -(L(",") >> linenumber);
 
     //LLIST V文
-    StringRule st_llist_v
+    BasicRule st_llist_v
             =   L("llist") >> L("v") >> -(L(",")
                                           >> qi::as_wstring[var][phx::bind(&ParserStatus::registerUsedVariable, ref(status), _1, VAR_REFER)]);
 
     //LOAD文
-    StringRule st_load
+    BasicRule st_load
             =   L("load") >> str_expression >> -(L(",") >> L("r"));
 
     //LOCATE文(LOCATE@にも対応)
-    StringRule st_locate
+    BasicRule st_locate
             =   L("locate") >> -L("@") >> -num_expression
                           >> -(L(",") >> -num_expression)
                           >> -(L(",") >> num_expression);
 
     //LPRINT文
     //SPC,TAB関数はPRINT,LPRINT中でのみ使える。
-    StringRule str_func_spc
+    BasicRule str_func_spc
             =   L("spc") >> L("(") >> num_expression >> L(")");
-    StringRule str_func_tab
+    BasicRule str_func_tab
             =   L("spc") >> L("(") >> num_expression >> L(")");
     //PRINT対象文字列
-    StringRule str_print
+    BasicRule str_print
             =   expression | str_func_spc | str_func_tab;
-    StringRule st_lprint
+    BasicRule st_lprint
             =   (L("lprint")|L("?")) >> *((L(";") | L(",")) || str_print);
 
     //LSET文
-    StringRule st_lset
+    BasicRule st_lset
             =   L("lset") >> str_assign;
 
     //MENU文
-    StringRule st_menu
+    BasicRule st_menu
             =   L("menu");
 
     //MERGE文
-    StringRule st_merge
+    BasicRule st_merge
             =   L("merge") >> str_expression;
 
     //NAME文
-    StringRule st_name
+    BasicRule st_name
             =   L("name") >> str_expression >> L("as") >> str_expression;
 
     //NEW文(こんなのプログラム中に有るのか？)
-    StringRule st_new
+    BasicRule st_new
             =   L("new");
 
     //ON ERROR GOTO文
-    StringRule st_on_error_goto
+    BasicRule st_on_error_goto
             =   L("on") >> L("error") > st_goto;
 
     //ON GOSUB文
-    StringRule st_on_gosub
+    BasicRule st_on_gosub
             =   L("on") >> !L("error")
                         >> qi::as_wstring[*(char_ - lit("gosub") - lit("goto"))]
                            [phx::bind(&partial_parse, _1, ref(status), num_expression)]
@@ -851,7 +851,7 @@ bool program_parse(const std::wstring& program, ParserStatus& status)
                         >> *(L(",") > -linenumber[phx::bind(&ParserStatus::registerReferredLineNumber, ref(status), _1)]);
 
     //ON GOTO文
-    StringRule st_on_goto
+    BasicRule st_on_goto
             =   L("on") >> !L("error")
                         >> qi::as_wstring[*(char_ - lit("goto") - lit("gosub"))]
                            [phx::bind(&partial_parse, _1, ref(status), num_expression)]
@@ -860,145 +860,145 @@ bool program_parse(const std::wstring& program, ParserStatus& status)
                         >> *(L(",") > -linenumber[phx::bind(&ParserStatus::registerReferredLineNumber, ref(status), _1)]);
 
     //OPEN文
-    StringRule st_open
+    BasicRule st_open
             =   L("open") >> str_expression
                           >> -(L("for") >> (L("input") | L("output") | L("append")))
                           >> L("as") >> -L("#") >> num_expression;
 
     //OUT文
-    StringRule st_out
+    BasicRule st_out
             =   L("out") >> num_expression >> L(",") >> num_expression;
 
     //PAINT文
-    StringRule st_paint
+    BasicRule st_paint
             =   L("paint") >> -L("step")
                            >> coord_2d
                            >> -(L(",") >> -num_expression) //領域色
                            >> -(L(",") >> num_expression); //境界色
 
     //PALET文
-    StringRule st_palet
+    BasicRule st_palet
             =   L("palet") >> -(num_expression >> L(",") >> num_expression);
 
     //PLAY文
     //#PENDING MML構文チェック
-    StringRule st_play
+    BasicRule st_play
             =   L("play") >> -str_expression
                           >> qi::repeat(0, 4)[(L(",") >> -str_expression)]
                           >> -(L(",") >> str_expression);
     //POKE文
-    StringRule st_poke
+    BasicRule st_poke
             =   L("poke") >> num_expression >> L(",") >> num_expression;
 
     //PRESET文
-    StringRule st_preset
+    BasicRule st_preset
             =   L("preset") >> -L("step")
                             >> coord_2d;
 
     //PRINT文(PRINT@にも対応)
-    StringRule st_print
+    BasicRule st_print
             =   (L("print")|L("?")) >> -L("@") >> *((L(";") | L(",")) || str_print);
 
     //PRINT#文
-    StringRule st_print_sharp
+    BasicRule st_print_sharp
             =   L("print") >> L("#") >> num_expression
                            >> L(",") >> expression
                            >> *((L(";") | L(",")) > expression);
 
     //PSET文
-    StringRule st_pset
+    BasicRule st_pset
             =   L("pset") >> -L("step")
                           >> coord_2d
                           >> -(L(",") >> num_expression); //色
     //PUT文
-    StringRule st_put
+    BasicRule st_put
             =   L("put") >> -L("#") >> num_expression
                          >> -(L(",") >> num_expression);
 
     //PUT@文
-    StringRule st_put_at
+    BasicRule st_put_at
             =   L("put") >> -L("@") >> -L("step")
                          >> coord_2d
                          >> L(",") >> (qi::as_wstring[num_var][phx::bind(&ParserStatus::registerUsedVariable, ref(status), _1, VAR_REFER)] | str_expression)
                          >> -(L(",") >> (L("xor") | L("and") | L("or") | L("pset") | L("preset"))); //色
 
     //READ文
-    StringRule st_read
+    BasicRule st_read
             =   L("read") >> qi::as_wstring[(str_array_var | str_var | num_array_var | num_var)]
                              [phx::bind(&ParserStatus::registerUsedVariable, ref(status), _1, VAR_ASSIGN)]
                          >> *(L(",") >> qi::as_wstring[(str_array_var | str_var | num_array_var | num_var)]
                               [phx::bind(&ParserStatus::registerUsedVariable, ref(status), _1, VAR_ASSIGN)]);
 
     //REM文
-    StringRule st_rem
+    BasicRule st_rem
             =   (L("rem") | L("'")) >> *printable;
 
     //RENUM文
-    StringRule st_renum
+    BasicRule st_renum
             =   L("renum") >> -linenumber >> -(L(",") >> linenumber);
 
     //RESTORE文
-    StringRule st_restore
+    BasicRule st_restore
             =   L("restore") >> -linenumber[phx::bind(&ParserStatus::registerReferredLineNumber, ref(status), _1)];
 
     //RESUME文
-    StringRule st_resume
+    BasicRule st_resume
             =   L("resume") >> -(L("0") | L("next") | linenumber[phx::bind(&ParserStatus::registerReferredLineNumber, ref(status), _1)]);
 
     //ROLL文
-    StringRule st_roll
+    BasicRule st_roll
             =   L("roll") >> -num_expression
                           >> -(L(",") >> -num_expression)
                           >> -(L(",") >> L("y"));
 
     //RSET文
-    StringRule st_rset
+    BasicRule st_rset
             =   L("rset") >> str_assign;
 
     //RUN文
-    StringRule st_run
+    BasicRule st_run
             =   L("run") >> -(linenumber[phx::bind(&ParserStatus::registerReferredLineNumber, ref(status), _1)]
                               |(str_expression >> -(L(",") >> L("r"))));
 
     //SAVE文
-    StringRule st_save
+    BasicRule st_save
             =   L("save") >> str_expression >> -(L(",") >> L("a"));
 
     //SCREEN文
-    StringRule st_screen
+    BasicRule st_screen
             =   L("screen") >> -num_expression               //m
                             >> -(L(",") >> -num_expression)    //a
                             >> -(L(",") > num_expression);     //V
 
     //SOUND文
-    StringRule st_sound
+    BasicRule st_sound
             =   L("sound") >> num_expression >> L(",") >> num_expression;
 
     //STOP文
-    StringRule st_stop
+    BasicRule st_stop
             =   L("stop");
 
     //TALK文
     //#PENDING TALK文構文チェック
-    StringRule st_talk
+    BasicRule st_talk
             =   L("talk") >> str_expression;
 
     //TROFF文
-    StringRule st_troff
+    BasicRule st_troff
             =   L("troff");
 
     //TRON文
-    StringRule st_tron
+    BasicRule st_tron
             =   L("tron");
 
     //WAIT文
-    StringRule st_wait
+    BasicRule st_wait
             =   L("wait") >> num_expression
                           >> L(",") >> -num_expression
                           >> -(L(",") > num_expression);
 
     //WIDTH文
-    StringRule st_width
+    BasicRule st_width
             =   L("width") >> -num_expression
                            >> -(L(",") > num_expression);
 
@@ -1096,7 +1096,7 @@ bool program_parse(const std::wstring& program, ParserStatus& status)
             |   str_assign;
 
     //行
-    StringRule line
+    BasicRule line
             =   linenumber[phx::bind(&ParserStatus::registerLineNumber, ref(status), _1)]
             >   +(L(":") || statement);
 
