@@ -32,7 +32,7 @@ typedef qi::rule<Iterator, unsigned()> UintRule;
 typedef qi::rule<Iterator, int()> IntRule;
 typedef qi::rule<Iterator, float()> FloatRule;
 typedef qi::rule<Iterator, sw::blank_type> BasicRule;
-typedef qi::rule<Iterator, std::wstring, sw::blank_type> StringRule;
+typedef qi::rule<Iterator, std::wstring(), sw::blank_type> StringRule;
 
 //リテラルパーサー
 #define L(a)    (sw::string(L##a))

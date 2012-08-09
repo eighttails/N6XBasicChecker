@@ -51,7 +51,7 @@ struct ParserStatus
     void warnRedundantContent(const std::wstring& tok);
 
     //使用されている変数を登録する。
-    void registerUsedVariable(const std::wstring& fullName, VarUsage usage);
+    void registerUsedVariable(const std::wstring& fullName, VarUsage usage, const std::wstring &ruleName);
 
     //行を1行進める。
     void inclementLine(){

@@ -32,9 +32,10 @@ void ParserStatus::warnRedundantContent(const std::wstring& tok){
                                      (boost::wformat(L"行番号の後に余分な記述があります。エラーにはなりませんが、意図した記述ですか？(%1%)") % workTok).str()));
 }
 
-void ParserStatus::registerUsedVariable(const std::wstring& fullName, VarUsage usage)
+void ParserStatus::registerUsedVariable(const std::wstring& fullName, VarUsage usage, const std::wstring& ruleName)
 {
     //#PENDING
+    std::wcout<<L"---id:" << ruleName << "\t\t" << (fullName.empty()? L"!!!":fullName) <<std::endl;
     //配列のインデックスを除去し、『()』に置換する。
     boost::wregex regex(L"\\(.*\\)");
     boost::regex_replace(fullName, regex, L"#()#", boost::format_all);
