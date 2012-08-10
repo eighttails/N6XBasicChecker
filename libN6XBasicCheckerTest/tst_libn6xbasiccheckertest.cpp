@@ -19,6 +19,8 @@ public:
 private:
     bool parse(const std::wstring& program, ParserStatus& stat, bool trace = false);
 private Q_SLOTS:
+    void testCase11();
+//private:
     void testCase10();
     void testCase9();
     void testCase8();
@@ -60,6 +62,30 @@ bool LibN6XBasicCheckerTest::parse(const std::wstring& program, ParserStatus& st
     return r;
 }
 
+void LibN6XBasicCheckerTest::testCase11()
+{
+    ParserStatus stat;
+    std::wstring programList;
+
+    //変数の参照、代入の管理
+    programList =
+            L"10 aiu$=\"aaaa\n"     //ai$代入(その1) 10,60行はaiu$,20行はaio$として代入。ともにai$として識別される
+            "20 aio$=\"aaaa\n"      //ai$代入(その2)
+            "30 aiu$(0)=\"aaaa\n"   //ai$配列(参照)同じai$でも単なる変数と配列は区別される。ここでは参照されていないという警告になる。
+            "40 print aiu$\n"       //ai$参照
+            "50 a i u $=\"bbbb\n"      //ai$代入(その3) 変数は空白を含んでいても同一とみなされる。
+            "60 a$=\"aaaa\n"        //どこからも参照されない変数
+            "70 printa$\n"            //どこからも代入されていない変数
+            ;
+    QVERIFY(parse(programList, stat));
+    int i=0;
+//    QVERIFY(stat.warningList_[i].line_.textLineNumber_ == 1);
+//    QVERIFY(stat.warningList_[i].line_.basicLineNumber_ == 10);
+//    QVERIFY(stat.warningList_[i++].code_ == W_UNUSED_VARIABLE);
+
+
+}
+
 void LibN6XBasicCheckerTest::testCase10()
 {
     ParserStatus stat;
@@ -67,7 +93,7 @@ void LibN6XBasicCheckerTest::testCase10()
 
     //GOTO,GOSUBの後に余分な記述があった場合に警告を出す
     programList =
-            L"10 goto10aaa\n"         //正常系
+            L"10 goto10aaa\n"
             "20 gosub10aaa\n"
             "30 ifa=0then10aaaelse20\n"
             "40 ifa=0then10else20aaa\n"

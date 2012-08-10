@@ -32,16 +32,25 @@ void ParserStatus::warnRedundantContent(const std::wstring& tok){
                                      (boost::wformat(L"行番号の後に余分な記述があります。エラーにはなりませんが、意図した記述ですか？(%1%)") % workTok).str()));
 }
 
-void ParserStatus::registerUsedVariable(const std::wstring& fullName, VarUsage usage, const std::wstring& ruleName)
+void ParserStatus::registerUsedVariable(const std::wstring& fullName, VarUsage usage, bool addArraySuffix, const std::wstring& ruleName)
 {
     //#PENDING
-    std::wcout<<L"---id:" << ruleName << "\t\t" << (fullName.empty()? L"!!!":fullName) <<std::endl;
+    std::wcout<<L"---rule:" << ruleName << "\t\t" << (fullName.empty()? L"!!!":fullName) <<std::endl;
     //配列のインデックスを除去し、『()』に置換する。
     boost::wregex regex(L"\\(.*\\)");
-    boost::regex_replace(fullName, regex, L"#()#", boost::format_all);
+    std::wstring varName = boost::regex_replace(fullName, regex, L"\\(\\)", boost::format_all);
+    //配列変数であるが『()』を付けない構文の場合、後から『()』を付加する。
+    if(addArraySuffix){
+        varName += L"()";
+    }
 
     //変数名を空白を含まない形式にする。
+    boost::wregex regex2(L" ");
+    varName = boost::regex_replace(varName, regex2, L"", boost::format_all);
 
     //先頭の2文字を抽出して識別名を生成する
 
+
+    std::wcout<<L"---fullName:" << fullName << "->varName:" << varName <<std::endl;
+    //mapに格納
 }
