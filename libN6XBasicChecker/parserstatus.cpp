@@ -34,8 +34,7 @@ void ParserStatus::warnRedundantContent(const std::wstring& tok){
 
 void ParserStatus::registerUsedVariable(const std::wstring& fullName, VarUsage usage, bool addArraySuffix, const std::wstring& ruleName)
 {
-    //#PENDING
-    std::wcout<<L"---rule:" << ruleName << "\t\t" << (fullName.empty()? L"!!!":fullName) <<std::endl;
+
     //配列のインデックスを除去し、『()』に置換する。
     boost::wregex regex(L"\\(.*\\)");
     std::wstring varName = boost::regex_replace(fullName, regex, L"\\(\\)", boost::format_all);
@@ -49,8 +48,12 @@ void ParserStatus::registerUsedVariable(const std::wstring& fullName, VarUsage u
     varName = boost::regex_replace(varName, regex2, L"", boost::format_all);
 
     //先頭の2文字を抽出して識別名を生成する
+    boost::wregex regex3(L"([a-z]{1,2})[a-z]*(\\$?)(\\(\\))?");
+    std::wstring idName = boost::regex_replace(varName, regex3, L"$1$2$3", boost::format_all);
 
+    //debug
+    //std::wcout<<L"---rule:" << ruleName << "\t\t" << (fullName.empty()? L"!!!":fullName) <<std::endl;
+    //std::wcout<<L"---fullName:" << fullName << "->varName:" << varName << " idName:" << idName << std::endl;
 
-    std::wcout<<L"---fullName:" << fullName << "->varName:" << varName <<std::endl;
     //mapに格納
 }
