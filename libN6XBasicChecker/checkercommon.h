@@ -38,6 +38,7 @@ struct LineNumberInfo
         , basicLineNumber_(basicLineNumber)
     {}
 
+    //ソート時はテキスト行番号でソート
     bool operator < (const LineNumberInfo& rhs) const{
         return textLineNumber_ < rhs.textLineNumber_;
     }
@@ -109,6 +110,11 @@ struct ErrorInfo
         , line_(textLineNumber, basicLineNumber)
         , info_(info)
     {}
+
+    //ソート時はテキスト行番号でソート
+    bool operator < (const ErrorInfo& rhs) const{
+        return line_ < rhs.line_;
+    }
 };
 
 #endif // CHECKERCOMMON_H

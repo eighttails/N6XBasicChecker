@@ -178,4 +178,9 @@ void Checker::afterCheck(ParserStatus& stat)
             }
         }
     }
+
+    //エラー、警告をソート
+    std::stable_sort(stat.errorList_.begin(), stat.errorList_.end());
+    std::stable_sort(stat.warningList_.begin(), stat.warningList_.end());
+
 }
