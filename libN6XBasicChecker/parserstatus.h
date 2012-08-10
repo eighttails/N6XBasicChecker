@@ -18,9 +18,10 @@ struct ParserStatus
     std::vector<ReferredLineNumber> ReferredLineNumberList_;
 
     //プログラム内で使用されている変数のリスト
-    //キーは変数の識別名。(先頭2文字を抽出したもの)
+    //第1のキーは変数の識別名。(先頭2文字を抽出したもの)
+    //第1のキーは変数の完全名。(変数名5文字まで+文字列の場合『$』、配列の場合『()』が続く)
     //同一の識別名に複数の長い変数名が使用された場合、警告を出す。
-    std::multimap<std::wstring, UsedVar> usedVariables_;
+    std::map<std::wstring, std::map<std::wstring, UsedVar> > usedVariables_;
 
     //現在の読み込み位置の次に現れる変数が代入か参照かを示すフラグ
     VarUsage varMode_;

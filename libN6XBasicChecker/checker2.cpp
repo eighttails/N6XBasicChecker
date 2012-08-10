@@ -141,9 +141,41 @@ void Checker::afterCheck(ParserStatus& stat)
     }
 
     //変数チェック
-    //#PENDING 識別子重複チェック(2文字目までが一致しているが、違う名前が使われている変数)
+    std::map<std::wstring, std::map<std::wstring, UsedVar> >::const_iterator i;
+    std::map<std::wstring, UsedVar>::const_iterator j;
+    std::set<LineNumberInfo>::const_iterator k;
 
-    //#PENDING 参照されているが代入されていない変数
+    for(i = stat.usedVariables_.begin(); i != stat.usedVariables_.end(); ++i){
+        const std::map<std::wstring, UsedVar>& subMap = (*i).second;
+        for(j = subMap.begin(); j != subMap.end(); ++j){
+            const UsedVar& var = (*j).second;
+            //識別子重複チェック(2文字目までが一致しているが、違う名前が使われている変数)
+            if(subMap.size() > 1){
+                for(k = var.assigningLines_.begin(); k != var.assigningLines_.end(); ++k){
+                    stat.warningList_.push_back(ErrorInfo(W_DUPLICATE_VARIABLE, (*k).textLineNumber_, (*k).basicLineNumber_,
+                                                          (boost::wformat(L"[%1%]として識別される変数が複数存在します[%2%]") % var.identName_ % var.varName_).str()));
+                }
+                for(k = var.referingLines_.begin(); k != var.referingLines_.end(); ++k){
+                    stat.warningList_.push_back(ErrorInfo(W_DUPLICATE_VARIABLE, (*k).textLineNumber_, (*k).basicLineNumber_,
+                                                          (boost::wformat(L"[%1%]として識別される変数が複数存在します[%2%]") % var.identName_ % var.varName_).str()));
+                }
+            }
 
-    //#PENDING 代入されているが参照されていない変数
+            //参照されているが代入されていない変数
+            if(var.assigningLines_.empty()){
+                for(k = var.referingLines_.begin(); k != var.referingLines_.end(); ++k){
+                    stat.warningList_.push_back(ErrorInfo(W_DUPLICATE_VARIABLE, (*k).textLineNumber_, (*k).basicLineNumber_,
+                                                          (boost::wformat(L"変数[%1%]はどこからも代入されていません") % var.varName_).str()));
+                }
+            }
+
+            //代入されているが参照されていない変数
+            if(var.referingLines_.empty()){
+                for(k = var.assigningLines_.begin(); k != var.assigningLines_.end(); ++k){
+                    stat.warningList_.push_back(ErrorInfo(W_DUPLICATE_VARIABLE, (*k).textLineNumber_, (*k).basicLineNumber_,
+                                                          (boost::wformat(L"変数[%1%]はどこからも参照されていません") % var.varName_).str()));
+                }
+            }
+        }
+    }
 }

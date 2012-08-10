@@ -56,4 +56,13 @@ void ParserStatus::registerUsedVariable(const std::wstring& fullName, VarUsage u
     //std::wcout<<L"---fullName:" << fullName << "->varName:" << varName << " idName:" << idName << std::endl;
 
     //mapに格納
+    UsedVar& var = usedVariables_[idName][varName];
+    var.varName_ = varName;
+    var.identName_ = idName;
+
+    if(usage == VAR_REFER){
+        var.referingLines_.insert(LineNumberInfo(line_.textLineNumber_, line_.basicLineNumber_));
+    }else if(usage == VAR_ASSIGN){
+        var.assigningLines_.insert(LineNumberInfo(line_.textLineNumber_, line_.basicLineNumber_));
+    }
 }

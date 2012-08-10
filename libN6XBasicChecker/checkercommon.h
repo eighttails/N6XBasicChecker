@@ -37,6 +37,10 @@ struct LineNumberInfo
         : textLineNumber_(textLineNumber)
         , basicLineNumber_(basicLineNumber)
     {}
+
+    bool operator < (const LineNumberInfo& rhs) const{
+        return textLineNumber_ < rhs.textLineNumber_;
+    }
 };
 
 //プログラム内でGOTO,GOSUB,RESTOREなどから参照されている行番号情報
@@ -82,7 +86,7 @@ struct UsedVar
     //BASICリスト上の完全な変数名。
     //変数名内部の空白は除外する。
     //配列変数の場合はさらに末尾に『()』を付ける。(次元、インデックス情報は含まない)
-    std::wstring fullName_;
+    std::wstring varName_;
 };
 
 struct ErrorInfo
