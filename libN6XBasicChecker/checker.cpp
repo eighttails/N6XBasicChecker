@@ -810,10 +810,10 @@ bool program_parse(const std::wstring& program, ParserStatus& status)
     BasicRule str_func_spc
             =   L("spc") >> L("(") >> num_expression >> L(")");
     BasicRule str_func_tab
-            =   L("spc") >> L("(") >> num_expression >> L(")");
+            =   L("tab") >> L("(") >> num_expression >> L(")");
     //PRINT対象文字列
     BasicRule str_print
-            =   expression | str_func_spc | str_func_tab;
+            =   str_func_spc | str_func_tab | expression;
     BasicRule st_lprint
             =   (L("lprint")|L("?")) >> *((L(";") | L(",")) || str_print);
 

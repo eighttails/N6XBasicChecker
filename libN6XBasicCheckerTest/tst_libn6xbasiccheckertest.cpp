@@ -17,10 +17,9 @@ public:
     LibN6XBasicCheckerTest();
 
 private:
-    bool parse(const std::wstring& program, ParserStatus& stat, bool trace = false);
+    bool parse(const std::wstring& program, ParserStatus& stat, bool errorTrace = false, bool warningTrace = false);
 private Q_SLOTS:
     void testCase11();
-//private:
     void testCase10();
     void testCase9();
     void testCase8();
@@ -32,18 +31,17 @@ private Q_SLOTS:
     void testCase2();
     void testCase1();
     void testCaseX();
-
 };
 
 LibN6XBasicCheckerTest::LibN6XBasicCheckerTest()
 {
 }
 
-bool LibN6XBasicCheckerTest::parse(const std::wstring& program, ParserStatus& stat, bool trace)
+bool LibN6XBasicCheckerTest::parse(const std::wstring& program, ParserStatus& stat, bool errorTrace, bool warningTrace)
 {
     Checker checker;
-    bool r = checker.parse(program, stat, trace);
-    if(!r && trace){
+    bool r = checker.parse(program, stat, errorTrace);
+    if(!r && errorTrace){
         for(size_t i = 0; i < stat.errorList_.size(); i++){
             const ErrorInfo& err = stat.errorList_[i];
             std::cout << utf8_to_local("テキスト行:") << err.line_.textLineNumber_
@@ -51,7 +49,7 @@ bool LibN6XBasicCheckerTest::parse(const std::wstring& program, ParserStatus& st
                       << " " << unicode_to_local(err.info_) << std::endl;
         }
     }
-    if(trace){
+    if(warningTrace){
         for(size_t i = 0; i < stat.warningList_.size(); i++){
             const ErrorInfo& err = stat.warningList_[i];
             std::cout << utf8_to_local("テキスト行:") << err.line_.textLineNumber_
@@ -93,10 +91,10 @@ void LibN6XBasicCheckerTest::testCase10()
 
     //GOTO,GOSUBの後に余分な記述があった場合に警告を出す
     programList =
-            L"10 goto10aaa\n"
-            "20 gosub10aaa\n"
-            "30 ifa=0then10aaaelse20\n"
-            "40 ifa=0then10else20aaa\n"
+            L"10 goto10xxx\n"
+            "20 gosub10yyy\n"
+            "30 a=0:ifa=0then10zzzelse20\n"
+            "40 ifa=0then10else20www\n"
             ;
     QVERIFY(parse(programList, stat));
     int i=0;
@@ -270,7 +268,7 @@ void LibN6XBasicCheckerTest::testCase6()
             "340 COLOR\"AA\"=A$:COLORA$=\"AA\":COLORINKEY$=\"AA\"\n"
             "350 COLORA$=B$+C$:COLORA$+B$=C$:COLOR\"1\"+A$=B$\n"
             ;
-    QVERIFY(parse(programList, stat, true));
+    QVERIFY(parse(programList, stat));
 }
 
 void LibN6XBasicCheckerTest::testCase5()
@@ -544,11 +542,11 @@ void LibN6XBasicCheckerTest::testCaseX()
         std::wstring unicodeList = babel::sjis_to_unicode(sjisList);
 
         ParserStatus stat;
-        QVERIFY(parse(unicodeList, stat, true));
+        QVERIFY(parse(unicodeList, stat, true, true));
         if(!stat.errorList_.empty())
-            std::cout << ((QString("error in ") + file).toStdString()) << std::endl;
+            std::cout << ((QString("errors found in ") + file).toStdString()) << std::endl;
         if(!stat.warningList_.empty())
-            std::cout << ((QString("warning in ") + file).toStdString()) << std::endl;
+            std::cout << ((QString("warning found in ") + file).toStdString()) << std::endl;
     }
 
 }
