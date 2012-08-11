@@ -61,8 +61,8 @@ void ParserStatus::registerUsedVariable(const std::wstring& fullName, VarUsage u
     var.identName_ = idName;
 
     if(usage == VAR_REFER){
-        var.referingLines_.insert(LineNumberInfo(line_.textLineNumber_, line_.basicLineNumber_));
+        var.referingLines_.insert(VarLineInfo(line_.textLineNumber_, line_.basicLineNumber_, ruleName));
     }else if(usage == VAR_ASSIGN){
-        var.assigningLines_.insert(LineNumberInfo(line_.textLineNumber_, line_.basicLineNumber_));
+        var.assigningLines_.insert(VarLineInfo(line_.textLineNumber_, line_.basicLineNumber_, ruleName));
     }
 }

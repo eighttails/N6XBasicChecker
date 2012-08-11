@@ -15,7 +15,7 @@ enum ErrorWarningCode
     E_TALK,                     //TALK文エラー
     E_HEX,                      //16進数リテラルエラー
     W_UNASSIGNED_VARIABLE,      //代入されていない変数
-    W_UNUSED_VARIABLE,          //参照されていない変数
+    W_UNREFERED_VARIABLE,       //参照されていない変数
     W_DUPLICATE_VARIABLE,       //識別名が重複している変数
     W_REDUNDANT_CONTENT,        //GOTO文の後に何か書いてある(実行時エラーにはならない)
 };
@@ -70,14 +70,34 @@ enum VarUsage
     VAR_ASSIGN, //代入
 };
 
+//変数が使われている行番号に関する情報
+struct VarLineInfo
+{
+    //行番号
+    LineNumberInfo line_;
+
+    //使われているルール(ステートメント、関数)名
+    std::wstring ruleName_;
+
+    VarLineInfo(int textLineNumber, int basicLineNumber, const std::wstring& ruleName)
+        : line_(textLineNumber, basicLineNumber)
+        , ruleName_(ruleName)
+    {}
+
+    //ソート時はテキスト行番号でソート
+    bool operator < (const VarLineInfo& rhs) const{
+        return line_ < rhs.line_;
+    }
+};
+
 //プログラム内で使用されている変数情報
 struct UsedVar
 {
     //変数を参照している行番号
-    std::set<LineNumberInfo> referingLines_;
+    std::set<VarLineInfo> referingLines_;
 
     //変数に代入している行番号
-    std::set<LineNumberInfo> assigningLines_;
+    std::set<VarLineInfo> assigningLines_;
 
     //BASICが識別する名前。変数名の先頭2文字。
     //文字列変数の場合は『$』を含めて3文字まで。
@@ -105,7 +125,7 @@ struct ErrorInfo
         : code_(E_UNKNOWN)
     {}
 
-    ErrorInfo(ErrorWarningCode code, int textLineNumber, int basicLineNumber, std::wstring info)
+    ErrorInfo(ErrorWarningCode code, int textLineNumber, int basicLineNumber, const std::wstring& info)
         : code_(code)
         , line_(textLineNumber, basicLineNumber)
         , info_(info)
