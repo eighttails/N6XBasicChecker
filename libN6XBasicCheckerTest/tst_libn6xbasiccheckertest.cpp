@@ -15,7 +15,6 @@ class LibN6XBasicCheckerTest : public QObject
 
 public:
     LibN6XBasicCheckerTest();
-
 private:
     bool parse(const std::wstring& program, ParserStatus& stat, bool errorTrace = false, bool warningTrace = false);
 private Q_SLOTS:
@@ -66,20 +65,80 @@ void LibN6XBasicCheckerTest::testCase11()
     std::wstring programList;
 
     //変数の参照、代入の管理
+    //文字列系
     programList =
-            L"10 aiu$=\"aaaa\n"     //ai$代入(その1) 10,60行はaiu$,20行はaio$として代入。ともにai$として識別される
+            L"10 aiu$=\"aaaa\n"     //ai$代入(その1) 10,50行はaiu$,20行はaio$として代入。ともにai$として識別される
             "20 aio$=\"aaaa\n"      //ai$代入(その2)
             "30 aiu$(0)=\"aaaa\n"   //ai$配列(参照)同じai$でも単なる変数と配列は区別される。ここでは参照されていないという警告になる。
             "40 print aiu$\n"       //ai$参照
-            "50 a i u $=\"bbbb\n"      //ai$代入(その3) 変数は空白を含んでいても同一とみなされる。
+            "50 a i u $=\"bbbb\n"   //ai$代入(その3) 変数は空白を含んでいても同一とみなされる。
             "60 a$=\"aaaa\n"        //どこからも参照されない変数
-            "70 printa$\n"            //どこからも代入されていない変数
+            "70 printb$\n"          //どこからも代入されていない変数
             ;
     QVERIFY(parse(programList, stat));
     int i=0;
-//    QVERIFY(stat.warningList_[i].line_.textLineNumber_ == 1);
-//    QVERIFY(stat.warningList_[i].line_.basicLineNumber_ == 10);
-//    QVERIFY(stat.warningList_[i++].code_ == W_UNUSED_VARIABLE);
+    QVERIFY(stat.warningList_[i].line_.textLineNumber_ == 1);
+    QVERIFY(stat.warningList_[i].line_.basicLineNumber_ == 10);
+    QVERIFY(stat.warningList_[i++].code_ == W_DUPLICATE_VARIABLE);
+    QVERIFY(stat.warningList_[i].line_.textLineNumber_ == 2);
+    QVERIFY(stat.warningList_[i].line_.basicLineNumber_ == 20);
+    QVERIFY(stat.warningList_[i++].code_ == W_DUPLICATE_VARIABLE);
+    QVERIFY(stat.warningList_[i].line_.textLineNumber_ == 2);
+    QVERIFY(stat.warningList_[i].line_.basicLineNumber_ == 20);
+    QVERIFY(stat.warningList_[i++].code_ == W_UNREFERED_VARIABLE);
+    QVERIFY(stat.warningList_[i].line_.textLineNumber_ == 3);
+    QVERIFY(stat.warningList_[i].line_.basicLineNumber_ == 30);
+    QVERIFY(stat.warningList_[i++].code_ == W_UNREFERED_VARIABLE);
+    QVERIFY(stat.warningList_[i].line_.textLineNumber_ == 4);
+    QVERIFY(stat.warningList_[i].line_.basicLineNumber_ == 40);
+    QVERIFY(stat.warningList_[i++].code_ == W_DUPLICATE_VARIABLE);
+    QVERIFY(stat.warningList_[i].line_.textLineNumber_ == 5);
+    QVERIFY(stat.warningList_[i].line_.basicLineNumber_ == 50);
+    QVERIFY(stat.warningList_[i++].code_ == W_DUPLICATE_VARIABLE);
+    QVERIFY(stat.warningList_[i].line_.textLineNumber_ == 6);
+    QVERIFY(stat.warningList_[i].line_.basicLineNumber_ == 60);
+    QVERIFY(stat.warningList_[i++].code_ == W_UNREFERED_VARIABLE);
+    QVERIFY(stat.warningList_[i].line_.textLineNumber_ == 7);
+    QVERIFY(stat.warningList_[i].line_.basicLineNumber_ == 70);
+    QVERIFY(stat.warningList_[i++].code_ == W_UNASSIGNED_VARIABLE);
+
+    //数値系
+    programList =
+            L"10 aiu=0\n"       //ai代入(その1) 10,50行はaiu,20行はaioとして代入。ともにaiとして識別される
+            "20 aio=0\n"        //ai代入(その2)
+            "30 aiu(0)=0\n"     //ai配列(参照)同じaiでも単なる変数と配列は区別される。ここでは参照されていないという警告になる。
+            "40 print aiu\n"    //ai参照
+            "50 a i u =0\n"     //ai代入(その3) 変数は空白を含んでいても同一とみなされる。
+            "60 a=0\n"          //どこからも参照されない変数
+            "70 printb\n"       //どこからも代入されていない変数
+            ;
+    stat = ParserStatus();
+    QVERIFY(parse(programList, stat));
+    i=0;
+    QVERIFY(stat.warningList_[i].line_.textLineNumber_ == 1);
+    QVERIFY(stat.warningList_[i].line_.basicLineNumber_ == 10);
+    QVERIFY(stat.warningList_[i++].code_ == W_DUPLICATE_VARIABLE);
+    QVERIFY(stat.warningList_[i].line_.textLineNumber_ == 2);
+    QVERIFY(stat.warningList_[i].line_.basicLineNumber_ == 20);
+    QVERIFY(stat.warningList_[i++].code_ == W_DUPLICATE_VARIABLE);
+    QVERIFY(stat.warningList_[i].line_.textLineNumber_ == 2);
+    QVERIFY(stat.warningList_[i].line_.basicLineNumber_ == 20);
+    QVERIFY(stat.warningList_[i++].code_ == W_UNREFERED_VARIABLE);
+    QVERIFY(stat.warningList_[i].line_.textLineNumber_ == 3);
+    QVERIFY(stat.warningList_[i].line_.basicLineNumber_ == 30);
+    QVERIFY(stat.warningList_[i++].code_ == W_UNREFERED_VARIABLE);
+    QVERIFY(stat.warningList_[i].line_.textLineNumber_ == 4);
+    QVERIFY(stat.warningList_[i].line_.basicLineNumber_ == 40);
+    QVERIFY(stat.warningList_[i++].code_ == W_DUPLICATE_VARIABLE);
+    QVERIFY(stat.warningList_[i].line_.textLineNumber_ == 5);
+    QVERIFY(stat.warningList_[i].line_.basicLineNumber_ == 50);
+    QVERIFY(stat.warningList_[i++].code_ == W_DUPLICATE_VARIABLE);
+    QVERIFY(stat.warningList_[i].line_.textLineNumber_ == 6);
+    QVERIFY(stat.warningList_[i].line_.basicLineNumber_ == 60);
+    QVERIFY(stat.warningList_[i++].code_ == W_UNREFERED_VARIABLE);
+    QVERIFY(stat.warningList_[i].line_.textLineNumber_ == 7);
+    QVERIFY(stat.warningList_[i].line_.basicLineNumber_ == 70);
+    QVERIFY(stat.warningList_[i++].code_ == W_UNASSIGNED_VARIABLE);
 
 
 }
