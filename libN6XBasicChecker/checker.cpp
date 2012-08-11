@@ -25,7 +25,7 @@ bool partial_parse(std::wstring const& part, ParserStatus& status, BasicRule con
         std::wstring workPart = part;
         transform(workPart.begin (), workPart.end (), workPart.begin (), toupper);
 
-        status.errorList_.push_back(ErrorInfo(E_PART_SYNTAX, status.line_.textLineNumber_, status.line_.basicLineNumber_, (boost::wformat(L"部分シンタックスエラー(%1%)") % workPart).str()));
+        status.errorList_.push_back(ErrorInfo(E_PART_SYNTAX, status.line_.textLineNumber_, status.line_.basicLineNumber_, (boost::wformat(L"部分シンタックスエラー[%1%]") % workPart).str()));
         return false;
     }
 
@@ -1180,7 +1180,7 @@ bool Checker::parse(const std::wstring& programList, ParserStatus& stat, bool tr
             std::wstring workLine = line;
             transform(workLine.begin (), workLine.end (), workLine.begin (), toupper);
 
-            stat.errorList_.push_back(ErrorInfo(E_SYNTAX, stat.line_.textLineNumber_, stat.line_.basicLineNumber_, (boost::wformat(L"シンタックスエラー(%1%)") % workLine).str()));
+            stat.errorList_.push_back(ErrorInfo(E_SYNTAX, stat.line_.textLineNumber_, stat.line_.basicLineNumber_, (boost::wformat(L"シンタックスエラー[%1%]") % workLine).str()));
         }
     }
 
