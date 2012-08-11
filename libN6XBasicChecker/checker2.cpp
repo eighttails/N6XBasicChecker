@@ -149,15 +149,22 @@ void Checker::afterCheck(ParserStatus& stat)
         const std::map<std::wstring, UsedVar>& subMap = (*i).second;
         for(j = subMap.begin(); j != subMap.end(); ++j){
             const UsedVar& var = (*j).second;
+
+            //警告出力の際は大文字に変換
+            std::wstring workIdent = var.identName_;
+            transform(workIdent.begin (), workIdent.end (), workIdent.begin (), toupper);
+            std::wstring workVarName = var.varName_;
+            transform(workVarName.begin (), workVarName.end (), workVarName.begin (), toupper);
+
             //識別子重複チェック(2文字目までが一致しているが、違う名前が使われている変数)
             if(subMap.size() > 1){
                 for(k = var.assigningLines_.begin(); k != var.assigningLines_.end(); ++k){
                     stat.warningList_.push_back(ErrorInfo(W_DUPLICATE_VARIABLE, (*k).line_.textLineNumber_, (*k).line_.basicLineNumber_,
-                                                          (boost::wformat(L"[%1%]として識別される変数が複数存在します[%2%]") % var.identName_ % var.varName_).str()));
+                                                          (boost::wformat(L"[%1%]として識別される変数が複数存在します[%2%]") % workIdent % workVarName).str()));
                 }
                 for(k = var.referingLines_.begin(); k != var.referingLines_.end(); ++k){
                     stat.warningList_.push_back(ErrorInfo(W_DUPLICATE_VARIABLE, (*k).line_.textLineNumber_, (*k).line_.basicLineNumber_,
-                                                          (boost::wformat(L"[%1%]として識別される変数が複数存在します[%2%]") % var.identName_ % var.varName_).str()));
+                                                          (boost::wformat(L"[%1%]として識別される変数が複数存在します[%2%]") % workIdent % workVarName).str()));
                 }
             }
 
@@ -165,7 +172,7 @@ void Checker::afterCheck(ParserStatus& stat)
             if(var.assigningLines_.empty()){
                 for(k = var.referingLines_.begin(); k != var.referingLines_.end(); ++k){
                     stat.warningList_.push_back(ErrorInfo(W_UNASSIGNED_VARIABLE, (*k).line_.textLineNumber_, (*k).line_.basicLineNumber_,
-                                                          (boost::wformat(L"変数[%1%]はどこからも代入されていません") % var.varName_).str()));
+                                                          (boost::wformat(L"変数[%1%]はどこからも代入されていません") % workVarName).str()));
                 }
             }
 
@@ -174,7 +181,7 @@ void Checker::afterCheck(ParserStatus& stat)
                 for(k = var.assigningLines_.begin(); k != var.assigningLines_.end(); ++k){
                     if((*k).ruleName_ != L"st_for"){ //forのループカウンタとして使われている場合は警告を出さない
                         stat.warningList_.push_back(ErrorInfo(W_UNREFERED_VARIABLE, (*k).line_.textLineNumber_, (*k).line_.basicLineNumber_,
-                                                              (boost::wformat(L"変数[%1%]はどこからも参照されていません") % var.varName_).str()));
+                                                              (boost::wformat(L"変数[%1%]はどこからも参照されていません") % workVarName).str()));
                     }
                 }
             }
