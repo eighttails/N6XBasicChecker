@@ -144,9 +144,9 @@ bool program_parse(const std::wstring& program, ParserStatus& status)
 
     //単項式
     BasicRule unary_expression
-            =   num_value
-            |   (L("-") >> num_value)
-            |   (L("not") >> num_value);
+            =   (L("-") >> num_value)
+            |   (L("not") >> num_value)
+            |   num_value;
 
     //算術式
     BasicRule arithmetic_operator
