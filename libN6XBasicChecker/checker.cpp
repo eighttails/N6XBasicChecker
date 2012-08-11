@@ -111,7 +111,6 @@ bool program_parse(const std::wstring& program, ParserStatus& status)
             =   qi::raw[sw::alpha >> qi::repeat(0, 4)[sw::alnum - reserved]];
 
     //数値型変数(配列)
-    //#PENDING DIM分との間の次元数チェック
     StringRule num_array_var
             =   qi::raw[num_var >> L("(") > num_expression >> *(L(",") > num_expression) > L(")")];
 
@@ -205,7 +204,6 @@ bool program_parse(const std::wstring& program, ParserStatus& status)
             =   qi::raw[sw::alpha >> qi::repeat(0, 4)[sw::alnum] >> L("$")];
 
     //文字列変数(配列)
-    //#PENDING DIM分との間の次元数チェック
     StringRule str_array_var
             =   qi::raw[str_var >> L("(") > num_expression >> *(L(",") > num_expression) > L(")")];
 
@@ -279,8 +277,10 @@ bool program_parse(const std::wstring& program, ParserStatus& status)
             =   L("eof") >> L("(") > num_expression >> L(")");
 
     //ERL,ERR
-    //#PENDING ERL,ERRは現状数値変数の定義で代用できるため、定義しない。
-    //変数の代入、参照の管理を実装する際に再検討する。
+    BasicRule num_func_erl
+            =   L("erl");
+    BasicRule num_func_err
+            =   L("err");
 
     //EXP
     BasicRule num_func_exp
@@ -412,6 +412,8 @@ bool program_parse(const std::wstring& program, ParserStatus& status)
             |   num_func_inp
             |   num_func_fre
             |   num_func_exp
+            |   num_func_err
+            |   num_func_erl
             |   num_func_eof
             |   num_func_dskf
             |   num_func_deffn
@@ -552,7 +554,6 @@ bool program_parse(const std::wstring& program, ParserStatus& status)
                            >> -(L(",") > num_expression);
 
     //CLOAD*文
-    //#PENDING 配列名の存在確認
     BasicRule st_cload_ast
             =   L("cload") >> L("*")
                            >> num_var[phx::bind(&ParserStatus::registerUsedVariable, ref(status), _1, VAR_ASSIGN, true, L"st_cload_ast")];
@@ -606,7 +607,6 @@ bool program_parse(const std::wstring& program, ParserStatus& status)
                           >> *(L(",") > -data_element);
 
     //DEFFN文
-    //#PENDING 登録された関数名の管理
     BasicRule st_deffn
             =   L("def") >> L("fn") >> num_var
                          >> L("(") >> num_var >> L(")") >> L("=")
@@ -687,7 +687,6 @@ bool program_parse(const std::wstring& program, ParserStatus& status)
                          >> -(L(",") >> num_expression);
 
     //GET@文
-    //#PENDING 配列変数名の管理
     BasicRule st_get_at
             =   L("get") >> -L("@") >> -L("step")
                          >> coord_2d
