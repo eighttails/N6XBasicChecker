@@ -10,7 +10,7 @@ TARGET = N6XBasicChecker
 TEMPLATE = lib
 CONFIG += staticlib
 
-#WindowsではBOOSTDIR環境変数をセット
+#WindowsではBOOSTDIR環墤�数をセッ�
 win32:INCLUDEPATH += $(BOOSTDIR)/include/boost-1_50
 
 INCLUDEPATH += $$PWD/../babel
@@ -33,7 +33,6 @@ HEADERS += \
 
 SOURCES += \
     checker.cpp \
-    checker2.cpp \
     babelwrap.cpp \
     parserstatus.cpp
 
