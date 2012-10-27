@@ -26,6 +26,10 @@ struct ParserStatus
     //現在の読み込み位置の次に現れる変数が代入か参照かを示すフラグ
     VarUsage varMode_;
 
+    //現在処理中のステートメントがPLAY文、またはTALK文であるかのフラグ
+    bool playMode_;
+    bool talkMode_;
+
     //エラー情報のリスト
     std::vector<ErrorInfo> errorList_;
 
@@ -34,6 +38,8 @@ struct ParserStatus
 
     ParserStatus()
         : varMode_(VAR_ASSIGN)
+        , playMode_(false)
+        , talkMode_(false)
     {}
 
     //行番号を登録する。

@@ -18,6 +18,7 @@ public:
 private:
     bool parse(const std::wstring& program, ParserStatus& stat, bool errorTrace = false, bool warningTrace = false);
 private Q_SLOTS:
+    void testCase12();
     void testCase11();
     void testCase10();
     void testCase9();
@@ -57,6 +58,38 @@ bool LibN6XBasicCheckerTest::parse(const std::wstring& program, ParserStatus& st
         }
     }
     return r;
+}
+
+void LibN6XBasicCheckerTest::testCase12()
+{
+    ParserStatus stat;
+    std::wstring programList;
+
+    //GOTO,GOSUBの後に余分な記述があった場合に警告を出す
+    programList =
+            L"10 play\"cde\n"
+            "20 play\"@3c+d-8e8.\n"
+            "30 play\"v8l8t255s=i;m=j;n=k;\n"
+            ;
+    QVERIFY(parse(programList, stat));
+
+    programList =
+            L"10 play\"qwerty\n"
+            "20 play\"@=kcde\n"
+            "30 play\"c8+\n"
+            ;
+    stat = ParserStatus();
+    QVERIFY(!parse(programList, stat));
+    int i=0;
+    QVERIFY(stat.errorList_[i].line_.textLineNumber_ == 1);
+    QVERIFY(stat.errorList_[i].line_.basicLineNumber_ == 10);
+    QVERIFY(stat.errorList_[i++].code_ == E_PLAY);
+    QVERIFY(stat.errorList_[i].line_.textLineNumber_ == 2);
+    QVERIFY(stat.errorList_[i].line_.basicLineNumber_ == 20);
+    QVERIFY(stat.errorList_[i++].code_ == E_PLAY);
+    QVERIFY(stat.errorList_[i].line_.textLineNumber_ == 3);
+    QVERIFY(stat.errorList_[i].line_.basicLineNumber_ == 30);
+    QVERIFY(stat.errorList_[i++].code_ == E_PLAY);
 }
 
 void LibN6XBasicCheckerTest::testCase11()
@@ -601,11 +634,12 @@ void LibN6XBasicCheckerTest::testCaseX()
         std::wstring unicodeList = babel::sjis_to_unicode(sjisList);
 
         ParserStatus stat;
-        QVERIFY(parse(unicodeList, stat, true, true));
+        bool result = parse(unicodeList, stat, true, true);
         if(!stat.errorList_.empty())
             std::cout << ((QString("errors found in ") + file).toStdString()) << std::endl;
         if(!stat.warningList_.empty())
             std::cout << ((QString("warning found in ") + file).toStdString()) << std::endl;
+        QVERIFY(result);
     }
 
 }
