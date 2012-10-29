@@ -114,9 +114,88 @@ bool play_parse(std::wstring const& part, ParserStatus& status, StringRule const
     return true;
 }
 
-//PLAY文の構文チェック
+//TALK文の構文チェック
 bool talk_parse(std::wstring const& part, ParserStatus& status, StringRule const& num_expression){
-    //#PENDING
+    //ルール記述
+    //性別
+    StringRule talk_sex
+            =   (L("m") | L("f"));
+
+    //速度
+    StringRule talk_speed
+            =   (L("1") | L("2") | L("3") | L("4") | L("5") | L("6") | L(" "));
+
+    //固定語
+    StringRule talk_fixed
+            =  talk_sex
+            >> talk_speed
+            >> (L("0") | L("1") | L("2") | L("3") | L("4"));
+
+    //音節
+    NoSkipStringRule talk_syllable
+            =   L("kya") | L("kyu") | L("kye") | L("kyo")
+            |   L("sya") | L("syu") | L("sye") | L("syo")
+            |   L("cya") | L("cyu") | L("cye") | L("cyo")
+            |   L("nya") | L("nyu") | L("nye") | L("nyo")
+            |   L("hya") | L("hyu") | L("hye") | L("hyo")
+            |   L("mya") | L("myu") | L("mye") | L("myo")
+            |   L("rya") | L("ryu") | L("rye") | L("ryo")
+            |   L("gya") | L("gyu") | L("gye") | L("gyo")
+            |   L("zya") | L("zyu") | L("zye") | L("zyo")
+            |   L("bya") | L("byu") | L("bye") | L("byo")
+            |   L("pya") | L("pyu") | L("pye") | L("pyo")
+            |   L("ka") | L("ki") | L("ku") | L("ke") | L("ko")
+            |   L("sa") | L("si") | L("su") | L("se") | L("so")
+            |   L("ta") | L("ci") | L("cu") | L("te") | L("to")
+            |   L("na") | L("ni") | L("nu") | L("ne") | L("no")
+            |   L("ha") | L("hi") | L("hu") | L("he") | L("ho")
+            |   L("ma") | L("mi") | L("mu") | L("me") | L("mo")
+            |   L("ya")           | L("yu")           | L("yo")
+            |   L("ra") | L("ri") | L("ru") | L("re") | L("ro")
+            |   L("wa")
+            |   L("ga") | L("gi") | L("gu") | L("ge") | L("go")
+            |   L("za") | L("zi") | L("zu") | L("ze") | L("zo")
+            |   L("da") | L("di") | L("du") | L("de") | L("do")
+            |   L("ba") | L("bi") | L("bu") | L("be") | L("bo")
+            |   L("pa") | L("pi") | L("pu") | L("pe") | L("po")
+            |   L("fa") | L("fi") | L("fu") | L("fe") | L("fo")
+            |   L("ti") | L("tu") | L("x") | L("q")
+            |   L("a") | L("i") | L("u") | L("e") | L("o")
+            ;
+
+    //修飾付き音節
+    StringRule talk_syllable_decorated
+            =  -(L("^") || L("+"))
+            >> talk_syllable
+            >> -(L("'") ^ L("-"))
+            >> -(L("*") ^ L("?"));
+
+    //音声文字列
+    StringRule talk_string
+            =  talk_syllable_decorated
+            >> *(-L("/") >> talk_syllable_decorated);
+
+    StringRule talk
+            =  (talk_fixed
+                | (talk_sex
+                   >> -talk_speed
+                   >> talk_string
+                   /*| #PENDING 歌TALK*/))
+            >> -(L(".") | L("?"));
+
+    std::wstring::const_iterator first = part.begin();
+    std::wstring::const_iterator last = part.end();
+
+    bool r = qi::phrase_parse(first, last, talk, sw::blank);
+
+    if (!r || first != last) {
+        //出力の際は大文字に変換
+        std::wstring workPart = part;
+        transform(workPart.begin (), workPart.end (), workPart.begin (), toupper);
+
+        status.errorList_.push_back(ErrorInfo(E_TALK, status.line_.textLineNumber_, status.line_.basicLineNumber_, (boost::wformat(L"TALK文エラー[%1%]") % workPart).str()));
+        return false;
+    }
     return true;
 }
 
@@ -139,18 +218,18 @@ bool literal_parse(std::wstring const& part, ParserStatus& status, StringRule co
 bool program_parse(const std::wstring& program, ParserStatus& status)
 {
     //グラフィック文字
-    StringRule graph
+    NoSkipStringRule graph
             =   L("月")|L("火")|L("水")|L("木")|L("金")|L("土")|L("日")|L("年")|L("円")
             |	L("時")|L("分")|L("秒")|L("百")|L("千")|L("万")|L("π")
             |	L("┻")|L("┳")|L("┫")|L("┣")|L("╋")|L("┃")|L("━")|L("┏")|L("┓")|L("┗")|L("┛")
             |	L("×")|L("大")|L("中")|L("小")|L("▲")|L("▼")|L("★")|L("◆")|L("○")|L("●");
 
     //かな記号
-    StringRule kana_kigou
+    NoSkipStringRule kana_kigou
             =	L("「")|L("」")|L("、")|L("。")|L("・")|L("゛")|L("゜")|L("ー");
 
     //ひらがな
-    StringRule hiragana
+    NoSkipStringRule hiragana
             =	L("を")|L("ぁ")|L("ぃ")|L("ぅ")|L("ぇ")|L("ぉ")|L("ゃ")|L("ゅ")|L("ょ")|L("っ")
             |	L("あ")|L("い")|L("う")|L("え")|L("お")|L("か")|L("き")|L("く")|L("け")|L("こ")
             |	L("さ")|L("し")|L("す")|L("せ")|L("そ")|L("た")|L("ち")|L("つ")|L("て")|L("と")
@@ -162,7 +241,7 @@ bool program_parse(const std::wstring& program, ParserStatus& status)
             |	L("ぱ")|L("ぴ")|L("ぷ")|L("ぺ")|L("ぽ");
 
     //カタカナ
-    StringRule katakana
+    NoSkipStringRule katakana
             =	L("ヲ")|L("ァ")|L("ィ")|L("ゥ")|L("ェ")|L("ォ")|L("ャ")|L("ュ")|L("ョ")|L("ッ")
             |	L("ア")|L("イ")|L("ウ")|L("エ")|L("オ")|L("カ")|L("キ")|L("ク")|L("ケ")|L("コ")
             |	L("サ")|L("シ")|L("ス")|L("セ")|L("ソ")|L("タ")|L("チ")|L("ツ")|L("テ")|L("ト")
@@ -174,7 +253,7 @@ bool program_parse(const std::wstring& program, ParserStatus& status)
             |	L("パ")|L("ピ")|L("プ")|L("ペ")|L("ポ")|L("ヴ");
 
     //半角カナ
-    StringRule han_kana
+    NoSkipStringRule han_kana
             =	L("｡")|L("｢")|L("｣")|L("､")|L("･")|L("ｰ")
             |   L("ｦ")|L("ｧ")|L("ｨ")|L("ｩ")|L("ｪ")|L("ｫ")|L("ｬ")|L("ｭ")|L("ｮ")|L("ｯ")
             |	L("ｱ")|L("ｲ")|L("ｳ")|L("ｴ")|L("ｵ")|L("ｶ")|L("ｷ")|L("ｸ")|L("ｹ")|L("ｺ")
@@ -185,7 +264,7 @@ bool program_parse(const std::wstring& program, ParserStatus& status)
             |   L("ﾞ")|L("ﾟ");
 
     //使用可能な文字
-    StringRule printable
+    NoSkipStringRule printable
             =	L(" ")|L("!")|L("\"")|L("#")|L("$")|L("%")|L("&")
             |	L("'")|L("(")|L(")")|L("*")
             |	L("+")|L(",")|L("-")|L(".")|L("/")|L(":")|L(";")
@@ -313,7 +392,7 @@ bool program_parse(const std::wstring& program, ParserStatus& status)
 
     //文字列リテラル(ダブルクオーテーションを含まない)
     //2つ目のダブルクオートの前に「-」が付いているのは、行末のダブルクオートは省略できるという仕様への対応
-    StringRule str_literal
+    NoSkipStringRule str_literal
             =   qi::as_wstring[*(printable - lit("\""))][phx::bind(&literal_parse, _1, ref(status), num_expression)];
 
     //文字列リテラル(ダブルクオーテーションを含む)
@@ -1084,9 +1163,10 @@ bool program_parse(const std::wstring& program, ParserStatus& status)
     //TALK文
     //#PENDING TALK文構文チェック
     StringRule st_talk
-            =   L("talk")[ref(status.talkMode_) = true]
-            >>  str_expression
-            >>  qi::eps[ref(status.talkMode_) = false];
+            =  L("talk")[ref(status.talkMode_) = true]
+            >> str_expression
+            >> *(L(",") || str_expression)
+            >> qi::eps[ref(status.talkMode_) = false];
 
     //TROFF文
     StringRule st_troff

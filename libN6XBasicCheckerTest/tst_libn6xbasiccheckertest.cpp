@@ -18,6 +18,7 @@ public:
 private:
     bool parse(const std::wstring& program, ParserStatus& stat, bool errorTrace = false, bool warningTrace = false);
 private Q_SLOTS:
+    void testCase13();
     void testCase12();
     void testCase11();
     void testCase10();
@@ -59,19 +60,36 @@ bool LibN6XBasicCheckerTest::parse(const std::wstring& program, ParserStatus& st
     }
     return r;
 }
+void LibN6XBasicCheckerTest::testCase13()
+{
+    ParserStatus stat;
+    std::wstring programList;
+
+    //TALK文のテスト(BASICマニュアルから抜粋)
+    programList =
+            L"10 talk\"f1 ka'mesax +koxniciwa.\n"
+            "20 talk\"m1 usagi' sa'x +koxniciwa.\n"
+            "30 talk\"f1 kyo'uwa +i'i te'xkidesune?\n"
+            "40 talk\"m1 hoxtode'su +ne\n"
+            "50 talk\"f1 do'odesu*?kake'qkodemo simase'xka?\n"
+            "60 talk\"m1 i'idesu +yo/ano yama'made kyo-soudesu*\n"
+            "70 talk\"f1 +yo'oi.\",\"m2 do'x.\n"
+            ;
+    QVERIFY(parse(programList, stat, true));
+}
 
 void LibN6XBasicCheckerTest::testCase12()
 {
     ParserStatus stat;
     std::wstring programList;
 
-    //GOTO,GOSUBの後に余分な記述があった場合に警告を出す
+    //PLAY文のテスト
     programList =
             L"10 play\"cde\n"
             "20 play\"@3c+d-8e8.\n"
             "30 play\"v8l8t255s=i;m=j;n=k;\n"
             ;
-    QVERIFY(parse(programList, stat));
+    QVERIFY(parse(programList, stat, true));
 
     programList =
             L"10 play\"qwerty\n"
@@ -108,7 +126,7 @@ void LibN6XBasicCheckerTest::testCase11()
             "60 a$=\"aaaa\n"        //どこからも参照されない変数
             "70 printb$\n"          //どこからも代入されていない変数
             ;
-    QVERIFY(parse(programList, stat));
+    QVERIFY(parse(programList, stat, true));
     int i=0;
     QVERIFY(stat.warningList_[i].line_.textLineNumber_ == 1);
     QVERIFY(stat.warningList_[i].line_.basicLineNumber_ == 10);
@@ -146,7 +164,7 @@ void LibN6XBasicCheckerTest::testCase11()
             "70 printb\n"       //どこからも代入されていない変数
             ;
     stat = ParserStatus();
-    QVERIFY(parse(programList, stat));
+    QVERIFY(parse(programList, stat, true));
     i=0;
     QVERIFY(stat.warningList_[i].line_.textLineNumber_ == 1);
     QVERIFY(stat.warningList_[i].line_.basicLineNumber_ == 10);
@@ -188,7 +206,7 @@ void LibN6XBasicCheckerTest::testCase10()
             "30 a=0:ifa=0then10zzzelse20\n"
             "40 ifa=0then10else20www\n"
             ;
-    QVERIFY(parse(programList, stat));
+    QVERIFY(parse(programList, stat, true));
     int i=0;
     QVERIFY(stat.warningList_[i].line_.textLineNumber_ == 1);
     QVERIFY(stat.warningList_[i].line_.basicLineNumber_ == 10);
@@ -360,7 +378,7 @@ void LibN6XBasicCheckerTest::testCase6()
             "340 COLOR\"AA\"=A$:COLORA$=\"AA\":COLORINKEY$=\"AA\"\n"
             "350 COLORA$=B$+C$:COLORA$+B$=C$:COLOR\"1\"+A$=B$\n"
             ;
-    QVERIFY(parse(programList, stat));
+    QVERIFY(parse(programList, stat, true));
 }
 
 void LibN6XBasicCheckerTest::testCase5()
@@ -628,19 +646,22 @@ void LibN6XBasicCheckerTest::testCaseX()
     files = dir.entryList(QStringList("*.txt"),
                           QDir::Files | QDir::NoSymLinks);
 
+    bool result = true;
     foreach(QString file, files){
         std::ifstream fst((listPath + QDir::separator() + file).toLocal8Bit());
         std::string sjisList((std::istreambuf_iterator<char>(fst)), std::istreambuf_iterator<char>());
         std::wstring unicodeList = babel::sjis_to_unicode(sjisList);
 
         ParserStatus stat;
-        bool result = parse(unicodeList, stat, true, true);
-        if(!stat.errorList_.empty())
+        bool errorTrace = true;
+        bool warningTrace = false;
+        result &= parse(unicodeList, stat, errorTrace, warningTrace);
+        if(!stat.errorList_.empty() && errorTrace)
             std::cout << ((QString("errors found in ") + file).toStdString()) << std::endl;
-        if(!stat.warningList_.empty())
+        if(!stat.warningList_.empty() & warningTrace)
             std::cout << ((QString("warning found in ") + file).toStdString()) << std::endl;
-        QVERIFY(result);
     }
+    QVERIFY(result);
 
 }
 
