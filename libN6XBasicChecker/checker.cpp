@@ -179,9 +179,10 @@ bool talk_parse(std::wstring const& part, ParserStatus& status, StringRule const
             =  (talk_fixed
                 | (talk_sex
                    >> -talk_speed
-                   >> talk_string
-                   /*| #PENDING 歌TALK*/))
-            >> -(L(".") | L("?"));
+                   >> -(L("+") | L("-") | L("#"))
+                   >> talk_string))
+            >> -(L(".") | L("?"))
+            >> -(L(":") > qi::as_wstring[*char_][phx::bind(&play_parse, _1, ref(status), num_expression)]);
 
     std::wstring::const_iterator first = part.begin();
     std::wstring::const_iterator last = part.end();

@@ -60,6 +60,7 @@ bool LibN6XBasicCheckerTest::parse(const std::wstring& program, ParserStatus& st
     }
     return r;
 }
+
 void LibN6XBasicCheckerTest::testCase13()
 {
     ParserStatus stat;
@@ -74,6 +75,7 @@ void LibN6XBasicCheckerTest::testCase13()
             "50 talk\"f1 do'odesu*?kake'qkodemo simase'xka?\n"
             "60 talk\"m1 i'idesu +yo/ano yama'made kyo-soudesu*\n"
             "70 talk\"f1 +yo'oi.\",\"m2 do'x.\n"
+            "80 talk\"f2# dodododo.:o3ccco4cc\n"
             ;
     QVERIFY(parse(programList, stat, true));
 }
