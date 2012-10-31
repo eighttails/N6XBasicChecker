@@ -22,6 +22,8 @@ int main(int argc, char *argv[])
             ("help,h", "ヘルプを表示")
             ("version,v", "バージョンを表示")
             ("play,p", po::value<std::vector<std::string> >(), "PLAY文としてパースする行")
+            ("talk,t", po::value<std::vector<std::string> >(), "TALK文としてパースする行")
+            ("hex,x", po::value<std::vector<std::string> >(), "16進数としてパースする行")
             ;
     po::options_description hidden("不可視オプション");
     hidden.add_options()
@@ -55,6 +57,7 @@ int main(int argc, char *argv[])
         std::stringstream s;
         s << desc;
         std::cout << utf8_to_local(s.str());
+        std::cout << utf8_to_local("p,t,xオプションの行番号指定例: -p100,200-300") << std::endl;
         return 0;
     }
 
@@ -63,12 +66,33 @@ int main(int argc, char *argv[])
 
     //PLAY文としてパースする行
     if(vm.count("play")){
-        //ファイル読み込み
         std::vector<std::string> linesList = vm["play"].as<std::vector<std::string> >();
         for (size_t i = 0; i < linesList.size(); i++){
             std::string lines = linesList[i];
             if(!stat.registerLineRange(local_to_unicode(lines), R_PLAY)){
                 std::cout << utf8_to_local("pオプションの書式が間違っています。") << std::endl;
+                return -1;
+            }
+        }
+    }
+    //TALK文としてパースする行
+    if(vm.count("talk")){
+        std::vector<std::string> linesList = vm["talk"].as<std::vector<std::string> >();
+        for (size_t i = 0; i < linesList.size(); i++){
+            std::string lines = linesList[i];
+            if(!stat.registerLineRange(local_to_unicode(lines), R_TALK)){
+                std::cout << utf8_to_local("tオプションの書式が間違っています。") << std::endl;
+                return -1;
+            }
+        }
+    }
+    //16進数としてパースする行
+    if(vm.count("hex")){
+        std::vector<std::string> linesList = vm["hex"].as<std::vector<std::string> >();
+        for (size_t i = 0; i < linesList.size(); i++){
+            std::string lines = linesList[i];
+            if(!stat.registerLineRange(local_to_unicode(lines), R_HEX)){
+                std::cout << utf8_to_local("xオプションの書式が間違っています。") << std::endl;
                 return -1;
             }
         }
