@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
     desc.add_options()
             ("help,h", "ヘルプを表示")
             ("version,v", "バージョンを表示")
-            //("play,p", po::value<std::vector<std::string> >(), "PLAY文としてパースする行")
+            ("play,p", po::value<std::vector<std::string> >(), "PLAY文としてパースする行")
             ;
     po::options_description hidden("不可視オプション");
     hidden.add_options()
@@ -59,6 +59,21 @@ int main(int argc, char *argv[])
     }
 
     bool ret = true;
+    ParserStatus stat;
+
+    //PLAY文としてパースする行
+    if(vm.count("play")){
+        //ファイル読み込み
+        std::vector<std::string> linesList = vm["play"].as<std::vector<std::string> >();
+        for (size_t i = 0; i < linesList.size(); i++){
+            std::string lines = linesList[i];
+            if(!stat.registerLineRange(local_to_unicode(lines), R_PLAY)){
+                std::cout << utf8_to_local("pオプションの書式が間違っています。") << std::endl;
+                return -1;
+            }
+        }
+    }
+
     // コマンドライン引数から変数に取り込み
     if(vm.count("input-file")){
         //ファイル読み込み
@@ -77,12 +92,11 @@ int main(int argc, char *argv[])
                 return -1;
             }
             std::string sjisList((std::istreambuf_iterator<char>(fst)), std::istreambuf_iterator<char>());
-            std::wstring unocodeList = babel::sjis_to_unicode(sjisList);
+            std::wstring unicodeList = babel::sjis_to_unicode(sjisList);
 
             //パース実行
             Checker checker;
-            ParserStatus stat;
-            bool r = checker.parse(unocodeList, stat);
+            bool r = checker.parse(unicodeList, stat);
 
             //エラー表示
             if(!stat.errorList_.empty()){

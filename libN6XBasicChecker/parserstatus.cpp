@@ -3,7 +3,7 @@
 #include <boost/regex.hpp>
 
 #include "parserstatus.h"
-
+#include "spiritwrap.h"
 
 void ParserStatus::registerLineNumber(int basicLineNumber){
     line_.basicLineNumber_ = basicLineNumber;
@@ -64,5 +64,45 @@ void ParserStatus::registerUsedVariable(const std::wstring& fullName, VarUsage u
         var.referingLines_.insert(VarLineInfo(line_.textLineNumber_, line_.basicLineNumber_, ruleName));
     }else if(usage == VAR_ASSIGN){
         var.assigningLines_.insert(VarLineInfo(line_.textLineNumber_, line_.basicLineNumber_, ruleName));
+    }
+}
+
+bool ParserStatus::registerLineRange(const std::wstring& lines, RangeType type)
+{
+    LineRange range;
+
+    StringRule rangeRule
+            =   (int_ >> L("-") >> int_)[phx::bind(&ParserStatus::registerLineRange, this, _1, _3, ref(type))]
+            |   int_[phx::bind(&ParserStatus::registerLineRange, this, _1, _1, ref(type))];
+
+    StringRule rangesRule
+            =  rangeRule
+            >> *(L(",") >> rangeRule);
+
+    std::wstring::const_iterator first = lines.begin();
+    std::wstring::const_iterator last = lines.end();
+
+    bool r = qi::phrase_parse(first, last, rangesRule, sw::blank);
+
+    if (!r || first != last) {
+        return false;
+    }
+
+    return true;
+}
+
+void ParserStatus::registerLineRange(int start, int end, RangeType type)
+{
+    switch(type){
+    case R_PLAY:
+        playRange_.push_back(std::pair<int, int>(start, end));
+        break;
+    case R_TALK:
+        talkRange_.push_back(std::pair<int, int>(start, end));
+        break;
+    case R_HEX:
+        hexRange_.push_back(std::pair<int, int>(start, end));
+        break;
+    default:;
     }
 }

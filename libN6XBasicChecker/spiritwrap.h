@@ -20,6 +20,8 @@ namespace sw        = qi::standard_wide;
 
 using sw::char_;
 using qi::_1;
+using qi::_2;
+using qi::_3;
 using qi::int_;
 using qi::uint_;
 using qi::double_;

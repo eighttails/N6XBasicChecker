@@ -20,6 +20,13 @@ enum ErrorWarningCode
     W_REDUNDANT_CONTENT,        //GOTO文の後に何か書いてある(実行時エラーにはならない)
 };
 
+enum RangeType
+{
+    R_PLAY,
+    R_TALK,
+    R_HEX,
+};
+
 //エラーやパーサーの状態管理に使われる行番号情報
 struct LineNumberInfo
 {

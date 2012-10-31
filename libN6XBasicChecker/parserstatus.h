@@ -74,6 +74,10 @@ struct ParserStatus
     //使用されている変数を登録する。
     void registerUsedVariable(const std::wstring& fullName, VarUsage usage, bool addArraySuffix, const std::wstring &ruleName);
 
+    //PLAY文、TALK文としてチェックする行番号範囲を指定する。
+    bool registerLineRange(const std::wstring& lines, RangeType type);
+    void registerLineRange(int start, int end, RangeType type);
+
     //行を1行進める。
     void inclementLine(){
         line_.textLineNumber_++;

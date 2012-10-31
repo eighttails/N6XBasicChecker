@@ -214,7 +214,7 @@ bool literal_parse(std::wstring const& part, ParserStatus& status, StringRule co
         if (!play_parse(part, status, num_expression)) return false;
     }
 
-    //TALKチェック
+    //TALK文チェック
     bool talkRange = false;
     for (ParserStatus::LineRange::iterator p = status.talkRange_.begin(); p != status.talkRange_.end(); ++p){
         if(p->first <= line && line <= p->second) talkRange = true;
