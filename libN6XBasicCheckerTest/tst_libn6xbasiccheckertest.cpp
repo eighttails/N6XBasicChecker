@@ -18,6 +18,7 @@ public:
 private:
     bool parse(const std::wstring& program, ParserStatus& stat, bool errorTrace = false, bool warningTrace = false);
 private Q_SLOTS:
+    void testCase14();
     void testCase13();
     void testCase12();
     void testCase11();
@@ -59,6 +60,35 @@ bool LibN6XBasicCheckerTest::parse(const std::wstring& program, ParserStatus& st
         }
     }
     return r;
+}
+
+void LibN6XBasicCheckerTest::testCase14()
+{
+    ParserStatus stat;
+    std::wstring programList;
+
+    //PLAY文のテスト
+    programList =
+            L"10 data \"0123456789abcdef\n"
+            "20 data \"01 23 45 67 89 ab cd ef\n"
+            ;
+    stat.hexRange_.push_back(std::pair<int, int>(10, 20));
+    QVERIFY(parse(programList, stat, true));
+
+    programList =
+            L"10 data \"0i23456789abcdef\n"
+            "20 data \"0i 23 45 67 89 ab cd ef.\n"
+            ;
+    stat = ParserStatus();
+    stat.hexRange_.push_back(std::pair<int, int>(10, 20));
+    QVERIFY(!parse(programList, stat));
+    int i=0;
+    QVERIFY(stat.errorList_[i].line_.textLineNumber_ == 1);
+    QVERIFY(stat.errorList_[i].line_.basicLineNumber_ == 10);
+    QVERIFY(stat.errorList_[i++].code_ == E_HEX);
+    QVERIFY(stat.errorList_[i].line_.textLineNumber_ == 2);
+    QVERIFY(stat.errorList_[i].line_.basicLineNumber_ == 20);
+    QVERIFY(stat.errorList_[i++].code_ == E_HEX);
 }
 
 void LibN6XBasicCheckerTest::testCase13()

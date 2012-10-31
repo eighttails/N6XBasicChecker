@@ -203,16 +203,46 @@ bool talk_parse(std::wstring const& part, ParserStatus& status, StringRule const
 //任意の文字列リテラルが、明示的にPLAY文、TALK分としてチェックするよう指定されている場合にチェックを行う。
 //PLAY文の一部にnum_expressionを使ってパースする箇所があるため、ここまで引き回す。
 bool literal_parse(std::wstring const& part, ParserStatus& status, StringRule const& num_expression){
+    int line = status.line_.basicLineNumber_;
+
     //PLAY文チェック
-    if (status.playMode_){
-        play_parse(part, status, num_expression);
+    bool playRange = false;
+    for (ParserStatus::LineRange::iterator p = status.playRange_.begin(); p != status.playRange_.end(); ++p){
+        if(p->first <= line && line <= p->second) playRange = true;
+    }
+    if (status.playMode_ || playRange){
+        if (!play_parse(part, status, num_expression)) return false;
     }
 
-    //#PENDING TALKチェック
-    if (status.talkMode_){
-        talk_parse(part, status, num_expression);
+    //TALKチェック
+    bool talkRange = false;
+    for (ParserStatus::LineRange::iterator p = status.talkRange_.begin(); p != status.talkRange_.end(); ++p){
+        if(p->first <= line && line <= p->second) talkRange = true;
     }
-    //#PENDING 16進数チェック
+    if (status.talkMode_ || talkRange){
+        if (!talk_parse(part, status, num_expression)) return false;
+    }
+
+    //16進数チェック
+    for (ParserStatus::LineRange::iterator p = status.hexRange_.begin(); p != status.hexRange_.end(); ++p){
+        if(p->first <= line && line <= p->second){
+            std::wstring::const_iterator first = part.begin();
+            std::wstring::const_iterator last = part.end();
+
+            bool r = qi::phrase_parse(first, last, *(sw::xdigit), sw::blank);
+
+            if (!r || first != last) {
+                //出力の際は大文字に変換
+                std::wstring workPart = part;
+                transform(workPart.begin (), workPart.end (), workPart.begin (), toupper);
+
+                status.errorList_.push_back(ErrorInfo(E_HEX, status.line_.textLineNumber_, status.line_.basicLineNumber_, (boost::wformat(L"16進数エラー[%1%]") % workPart).str()));
+                return false;
+            }
+            break;
+        }
+    }
+
     return true;
 }
 

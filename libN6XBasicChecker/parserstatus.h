@@ -30,6 +30,20 @@ struct ParserStatus
     bool playMode_;
     bool talkMode_;
 
+    typedef std::vector<std::pair<int, int> > LineRange;
+    //PLAY文として解釈する行番号範囲のリスト
+    //ここで指定された行番号の範囲内にある文字列リテラルはPLAY文とみなしてチェックする。
+
+    LineRange playRange_;
+
+    //TALK文として解釈する行番号範囲のリスト
+    //ここで指定された行番号の範囲内にある文字列リテラルはTALK文とみなしてチェックする。
+    LineRange talkRange_;
+
+    //16進数として解釈する行番号範囲のリスト
+    //ここで指定された行番号の範囲内にある文字列リテラルは16進数とみなしてチェックする。
+    LineRange hexRange_;
+
     //エラー情報のリスト
     std::vector<ErrorInfo> errorList_;
 
