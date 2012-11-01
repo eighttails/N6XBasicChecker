@@ -3,6 +3,7 @@
 #include <string>
 #include <iostream>
 #include <fstream>
+#include <boost/algorithm/string.hpp>
 
 #include "parserstatus.h"
 #include "checker.h"
@@ -660,7 +661,11 @@ void LibN6XBasicCheckerTest::testCase1()
     QVERIFY(parse(programList, stat, true));
 }
 
-
+struct sArg{
+    std::string playRange_;
+    std::string talkRange_;
+    std::string hexRange_;
+};
 
 void LibN6XBasicCheckerTest::testCaseX()
 {
@@ -671,6 +676,25 @@ void LibN6XBasicCheckerTest::testCaseX()
     //Hashiさんのサイトに掲載されているBASICリストをまとめて回帰テストするためのテストケース。
     QString listPath = qApp->applicationDirPath() + QDir::separator() + "list";
 
+    //引数ファイル
+    //各リストファイルごとに、PLAY文、TALK分としてパースする行番号を指定する
+    std::ifstream fileArgsFile((listPath + QDir::separator() + "list.arg").toLocal8Bit());
+    QVERIFY(!fileArgsFile.fail());
+    std::map<std::string, sArg> argMap;
+    do {
+        //ファイルフォーマットは
+        //ファイル名　pオプション tオプション xオプション
+        //を1行とする。オプションに設定する値がない場合、0を入れる。
+        //例)game.txt 50,100-200 0 1500-1800
+        std::string fileName;
+        fileArgsFile >> fileName;
+        if(fileName.empty()) break;
+        sArg& arg = argMap[fileName];
+        fileArgsFile >> arg.playRange_;
+        fileArgsFile >> arg.talkRange_;
+        fileArgsFile >> arg.hexRange_;
+    } while(!fileArgsFile.eof());
+
     QDir dir(listPath);
     QVERIFY(dir.exists());
 
@@ -680,11 +704,18 @@ void LibN6XBasicCheckerTest::testCaseX()
 
     bool result = true;
     foreach(QString file, files){
-        std::ifstream fst((listPath + QDir::separator() + file).toLocal8Bit());
+        const char* fileName = (listPath + QDir::separator() + file).toLocal8Bit();
+        std::ifstream fst(fileName);
         std::string sjisList((std::istreambuf_iterator<char>(fst)), std::istreambuf_iterator<char>());
         std::wstring unicodeList = babel::sjis_to_unicode(sjisList);
 
         ParserStatus stat;
+        if(argMap.count(file.toLocal8Bit().data())){
+            const sArg& arg = argMap[file.toLocal8Bit().data()];
+            stat.registerLineRange(local_to_unicode(arg.playRange_), R_PLAY);
+            stat.registerLineRange(local_to_unicode(arg.talkRange_), R_TALK);
+            stat.registerLineRange(local_to_unicode(arg.hexRange_), R_HEX);
+        }
         bool errorTrace = true;
         bool warningTrace = false;
         result &= parse(unicodeList, stat, errorTrace, warningTrace);

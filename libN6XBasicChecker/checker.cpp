@@ -814,8 +814,8 @@ bool program_parse(const std::wstring& program, ParserStatus& status)
 
     //DATA文
     StringRule data_element
-            =   +(printable - L("\"") - L(",") - L(":"))
-            |   (L("\"") >> str_literal >> -L("\""));
+            =   qi::as_wstring[+(printable - L("\"") - L(",") - L(":"))][phx::bind(&literal_parse, _1, ref(status), num_expression)]
+            |   (L("\"") >> qi::as_wstring[str_literal][phx::bind(&literal_parse, _1, ref(status), num_expression)] >> -L("\""));
     StringRule st_data
             =   L("data") >> -data_element
                           >> *(L(",") > -data_element);
