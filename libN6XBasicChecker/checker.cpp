@@ -80,7 +80,7 @@ bool play_parse(std::wstring const& part, ParserStatus& status, StringRule const
             =   (L("c") | L("d") | L("e") | L("f") | L("g") | L("a") | L("b"))
             >> -(L("+") | L("-") | L("#"))
             >> -uint_
-            >> -L(".");
+            >> *L(".");
 
     StringRule mml_element
             =   (mml_note
@@ -1102,8 +1102,7 @@ bool program_parse(const std::wstring& program, ParserStatus& status)
     StringRule st_play
             =   L("play")[ref(status.playMode_) = true]
             >>  -str_expression
-            >>  qi::repeat(0, 4)[(L(",") >> -str_expression)]
-            >>  -(L(",") >> str_expression)
+            >>  qi::repeat(0, 5)[(L(",") >> -str_expression)]
             >>  qi::eps[ref(status.playMode_) = false];
 
     //POKE文

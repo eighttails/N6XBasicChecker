@@ -624,8 +624,8 @@ void LibN6XBasicCheckerTest::testCase3()
             "1510 tron:troff\n"
             "1520 wait &hc0,155,253\n"
             "1530 width:width80:width80,25\n"
-            "1540 a$=string$(a+1,b$)"
-            "1550 a$=string$(a+1,b+1)"
+            "1540 a$=string$(a+1,b$)\n"
+            "1550 a$=string$(a+1,b+1)\n"
             ;
     QVERIFY(parse(programList, stat, true));
 }
@@ -686,8 +686,8 @@ void LibN6XBasicCheckerTest::testCaseX()
     do {
         //ファイルフォーマットは
         //ファイル名　pオプション tオプション xオプション
-        //を1行とする。オプションに設定する値がない場合、0を入れる。
-        //例)game.txt 50,100-200 0 1500-1800
+        //を1行とする。オプションに設定する値がない場合、-1を入れる。
+        //例)game.txt 50,100-200 -1 1500-1800
         std::string fileName;
         fileArgsFile >> fileName;
         if(fileName.empty()) break;
