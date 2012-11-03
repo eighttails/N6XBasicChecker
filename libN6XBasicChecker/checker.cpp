@@ -686,6 +686,10 @@ bool program_parse(const std::wstring& program, ParserStatus& status)
     StringRule str_func_str$
             =   L("str$") >> L("(") > num_expression >> L(")");
 
+    //STRING$
+    StringRule str_func_string$
+            =   L("string$") >> L("(") > num_expression >> L(",") >> (str_expression | num_expression) >> L(")");
+
     //TIME$
     StringRule str_func_time$
             =   L("time$") >> L("(") > num_expression >> L(")");
@@ -700,6 +704,7 @@ bool program_parse(const std::wstring& program, ParserStatus& status)
     str_func
             =   str_func_usr
             |   str_func_time$
+            |   str_func_string$
             |   str_func_str$
             |   str_func_space$
             |   str_func_right$

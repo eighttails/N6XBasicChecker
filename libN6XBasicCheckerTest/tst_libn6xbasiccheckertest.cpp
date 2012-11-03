@@ -624,6 +624,8 @@ void LibN6XBasicCheckerTest::testCase3()
             "1510 tron:troff\n"
             "1520 wait &hc0,155,253\n"
             "1530 width:width80:width80,25\n"
+            "1540 a$=string$(a+1,b$)"
+            "1550 a$=string$(a+1,b+1)"
             ;
     QVERIFY(parse(programList, stat, true));
 }
