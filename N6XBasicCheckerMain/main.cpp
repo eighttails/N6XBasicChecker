@@ -98,7 +98,7 @@ int main(int argc, char *argv[])
             }
         }
     }
-    //16進数としてパースする行
+    //10進数としてパースする行
     if(vm.count("digit")){
         std::vector<std::string> linesList = vm["digit"].as<std::vector<std::string> >();
         for (size_t i = 0; i < linesList.size(); i++){
