@@ -14,6 +14,7 @@ enum ErrorWarningCode
     E_PLAY,                     //PLAY文エラー
     E_TALK,                     //TALK文エラー
     E_HEX,                      //16進数リテラルエラー
+    E_DIGIT,                    //10進数リテラルエラー
     W_UNASSIGNED_VARIABLE,      //代入されていない変数
     W_UNREFERED_VARIABLE,       //参照されていない変数
     W_DUPLICATE_VARIABLE,       //識別名が重複している変数
@@ -25,6 +26,7 @@ enum RangeType
     R_PLAY,
     R_TALK,
     R_HEX,
+    R_DIGIT,
 };
 
 //エラーやパーサーの状態管理に使われる行番号情報

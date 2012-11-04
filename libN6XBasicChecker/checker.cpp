@@ -43,7 +43,7 @@ bool play_parse(std::wstring const& part, ParserStatus& status, StringRule const
 
     //音長
     StringRule mml_length
-            =   uint_ || L(".");
+            =   uint_ || *L(".");
 
     //コマンド
     //@コマンド
@@ -243,6 +243,25 @@ bool literal_parse(std::wstring const& part, ParserStatus& status, StringRule co
         }
     }
 
+    //10進数チェック
+    for (ParserStatus::LineRange::iterator p = status.digitRange_.begin(); p != status.digitRange_.end(); ++p){
+        if(p->first <= line && line <= p->second){
+            std::wstring::const_iterator first = part.begin();
+            std::wstring::const_iterator last = part.end();
+
+            bool r = qi::phrase_parse(first, last, -L("-") >> *(sw::digit), sw::blank);
+
+            if (!r || first != last) {
+                //出力の際は大文字に変換
+                std::wstring workPart = part;
+                transform(workPart.begin (), workPart.end (), workPart.begin (), toupper);
+
+                status.errorList_.push_back(ErrorInfo(E_DIGIT, status.line_.textLineNumber_, status.line_.basicLineNumber_, (boost::wformat(L"10進数エラー[%1%]") % workPart).str()));
+                return false;
+            }
+            break;
+        }
+    }
     return true;
 }
 
@@ -819,7 +838,7 @@ bool program_parse(const std::wstring& program, ParserStatus& status)
 
     //DATA文
     StringRule data_element
-            =   qi::as_wstring[+(printable - L("\"") - L(",") - L(":"))][phx::bind(&literal_parse, _1, ref(status), num_expression)]
+            =   qi::as_wstring[+(printable - L("\"") - L(",") - L(":") - L("'"))][phx::bind(&literal_parse, _1, ref(status), num_expression)]
             |   (L("\"") >> qi::as_wstring[str_literal][phx::bind(&literal_parse, _1, ref(status), num_expression)] >> -L("\""));
     StringRule st_data
             =   L("data") >> -data_element

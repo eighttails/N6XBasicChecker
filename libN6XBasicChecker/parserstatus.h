@@ -44,6 +44,10 @@ struct ParserStatus
     //ここで指定された行番号の範囲内にある文字列リテラルは16進数とみなしてチェックする。
     LineRange hexRange_;
 
+    //10進数として解釈する行番号範囲のリスト
+    //ここで指定された行番号の範囲内にある文字列リテラルは10進数の符号付き整数とみなしてチェックする。
+    LineRange digitRange_;
+
     //エラー情報のリスト
     std::vector<ErrorInfo> errorList_;
 

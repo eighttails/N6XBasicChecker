@@ -667,6 +667,7 @@ struct sArg{
     std::string playRange_;
     std::string talkRange_;
     std::string hexRange_;
+    std::string digitRange_;
 };
 
 void LibN6XBasicCheckerTest::testCaseX()
@@ -695,6 +696,7 @@ void LibN6XBasicCheckerTest::testCaseX()
         fileArgsFile >> arg.playRange_;
         fileArgsFile >> arg.talkRange_;
         fileArgsFile >> arg.hexRange_;
+        fileArgsFile >> arg.digitRange_;
     } while(!fileArgsFile.eof());
 
     QDir dir(listPath);
@@ -717,6 +719,7 @@ void LibN6XBasicCheckerTest::testCaseX()
             stat.registerLineRange(local_to_unicode(arg.playRange_), R_PLAY);
             stat.registerLineRange(local_to_unicode(arg.talkRange_), R_TALK);
             stat.registerLineRange(local_to_unicode(arg.hexRange_), R_HEX);
+            stat.registerLineRange(local_to_unicode(arg.digitRange_), R_DIGIT);
         }
         bool errorTrace = true;
         bool warningTrace = false;

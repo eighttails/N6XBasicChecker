@@ -24,6 +24,7 @@ int main(int argc, char *argv[])
             ("play,p", po::value<std::vector<std::string> >(), "PLAY文としてパースする行")
             ("talk,t", po::value<std::vector<std::string> >(), "TALK文としてパースする行")
             ("hex,x", po::value<std::vector<std::string> >(), "16進数としてパースする行")
+            ("digit,d", po::value<std::vector<std::string> >(), "10進数の整数(符号付き)としてパースする行")
             ;
     po::options_description hidden("不可視オプション");
     hidden.add_options()
@@ -57,7 +58,7 @@ int main(int argc, char *argv[])
         std::stringstream s;
         s << desc;
         std::cout << utf8_to_local(s.str());
-        std::cout << utf8_to_local("p,t,xオプションの行番号指定例: -p100,200-300") << std::endl;
+        std::cout << utf8_to_local("p,t,x,dオプションの行番号指定例: -p100,200-300") << std::endl;
         return 0;
     }
 
@@ -97,7 +98,17 @@ int main(int argc, char *argv[])
             }
         }
     }
-
+    //16進数としてパースする行
+    if(vm.count("digit")){
+        std::vector<std::string> linesList = vm["digit"].as<std::vector<std::string> >();
+        for (size_t i = 0; i < linesList.size(); i++){
+            std::string lines = linesList[i];
+            if(!stat.registerLineRange(local_to_unicode(lines), R_DIGIT)){
+                std::cout << utf8_to_local("dオプションの書式が間違っています。") << std::endl;
+                return -1;
+            }
+        }
+    }
     // コマンドライン引数から変数に取り込み
     if(vm.count("input-file")){
         //ファイル読み込み

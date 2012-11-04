@@ -103,6 +103,9 @@ void ParserStatus::registerLineRange(int start, int end, RangeType type)
     case R_HEX:
         hexRange_.push_back(std::pair<int, int>(start, end));
         break;
+    case R_DIGIT:
+        digitRange_.push_back(std::pair<int, int>(start, end));
+        break;
     default:;
     }
 }
