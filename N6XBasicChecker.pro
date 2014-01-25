@@ -2,5 +2,6 @@ TEMPLATE = subdirs
 
 SUBDIRS += \
     libN6XBasicChecker \
-    N6XBasicCheckerMain \
-    libN6XBasicCheckerTest
+    libN6XBasicCheckerTest \
+    libtxt2bas \
+    N6XBasicCheckerMain

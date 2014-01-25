@@ -32,3 +32,17 @@ DEPENDPATH += $$PWD/../libN6XBasicChecker
 win32:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../libN6XBasicChecker/release/libN6XBasicChecker.a
 else:win32:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../libN6XBasicChecker/debug/libN6XBasicChecker.a
 else:unix:!symbian: PRE_TARGETDEPS += $$OUT_PWD/../libN6XBasicChecker/libN6XBasicChecker.a
+
+
+win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../libtxt2bas/release/ -ltxt2bas
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../libtxt2bas/debug/ -ltxt2bas
+else:unix: LIBS += -L$$OUT_PWD/../libtxt2bas/ -ltxt2bas
+
+INCLUDEPATH += $$PWD/../libtxt2bas
+DEPENDPATH += $$PWD/../libtxt2bas
+
+win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../libtxt2bas/release/libtxt2bas.a
+else:win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../libtxt2bas/debug/libtxt2bas.a
+else:win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../libtxt2bas/release/txt2bas.lib
+else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../libtxt2bas/debug/txt2bas.lib
+else:unix: PRE_TARGETDEPS += $$OUT_PWD/../libtxt2bas/libtxt2bas.a
