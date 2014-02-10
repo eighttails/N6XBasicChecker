@@ -26,7 +26,7 @@ else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../libN6XBasicCheck
 else:symbian: LIBS += -lN6XBasicChecker
 else:unix: LIBS += -L$$OUT_PWD/../libN6XBasicChecker/ -lN6XBasicChecker -lboost_program_options -lboost_regex
 
-INCLUDEPATH += $$PWD/../libN6XBasicChecker $$PWD/../babel
+INCLUDEPATH += $$PWD/../libN6XBasicChecker $$PWD/../babel $PWD/../libtxt2bas
 DEPENDPATH += $$PWD/../libN6XBasicChecker
 
 win32:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../libN6XBasicChecker/release/libN6XBasicChecker.a

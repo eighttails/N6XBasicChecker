@@ -12,6 +12,9 @@ namespace po = boost::program_options;
 
 #include "babelwrap.h"
 
+extern"C"{
+#include "txt2bas.h"
+}
 
 int main(int argc, char *argv[])
 {
@@ -25,6 +28,8 @@ int main(int argc, char *argv[])
             ("talk,t", po::value<std::vector<std::string> >(), "TALK文としてパースする行")
             ("hex,x", po::value<std::vector<std::string> >(), "16進数としてパースする行")
             ("digit,d", po::value<std::vector<std::string> >(), "10進数の整数(符号付き)としてパースする行")
+            ("output-mode,b", po::value<int>()->default_value(5), "テープイメージ出力モード(5または6。省略時は5)")
+            ("output-file,o", po::value<std::string>(), "テープイメージ出力ファイル")
             ;
     po::options_description hidden("不可視オプション");
     hidden.add_options()
@@ -39,9 +44,15 @@ int main(int argc, char *argv[])
     cmdline_options.add(desc).add(hidden);
 
     po::variables_map vm;
+    //構文エラー
+    bool argError = false;
+    try{
     po::store(po::command_line_parser(argc, argv).
               options(cmdline_options).positional(p).run(), vm);
     po::notify(vm);
+    } catch (...){
+        argError = true;
+    }
 
 
     //バージョン情報
@@ -53,12 +64,13 @@ int main(int argc, char *argv[])
     }
 
     //ヘルプオプションが指定、またはファイル名が指定されていない場合はヘルプを表示
-    if (vm.count("help") || !vm.count("input-file")) {
+    if (vm.count("help") || !vm.count("input-file") || argError) {
         std::cout << utf8_to_local("Usage: N6XBasicChecker ファイル名 [オプション]") << std::endl;
         std::stringstream s;
         s << desc;
         std::cout << utf8_to_local(s.str());
-        std::cout << utf8_to_local("p,t,x,dオプションの行番号指定例: -p100,200-300") << std::endl;
+        std::cout << utf8_to_local("p,t,x,dオプションの行番号指定例: -p 100,200-300") << std::endl;
+        std::cout << utf8_to_local("b,oオプションの書式: -b 5 -o [出力ファイル名]") << std::endl;
         return 0;
     }
 
@@ -158,6 +170,20 @@ int main(int argc, char *argv[])
             std::cout << utf8_to_local("Ok") << std::endl;
 
             ret &= r;
+
+            //txt2bas呼び出し
+            if(vm.count("output-mode") && vm.count("output-file")){
+                int outMode = vm["output-mode"].as<int>();
+                if(outMode != 5 && outMode != 6){
+                    std::cout << utf8_to_local("bオプションの書式が間違っています。") << std::endl;
+                    return -1;
+                }
+                std::string outFile = vm["output-file"].as<std::string>();
+                int srmode = 0;
+                if(outMode == 6) srmode = 1;
+
+                ret &= txt2bas_main(srmode, const_cast<char*>(fileName.c_str()), const_cast<char*>(outFile.c_str())) ? false : true;
+            }
         }
     }
 

@@ -11,10 +11,10 @@ TEMPLATE = lib
 CONFIG += staticlib
 
 SOURCES += \
-    txt2bas.c \
-    parse6.c \
+    buffer.c \
     parse5.c \
-    buffer.c
+    parse6.c \
+    txt2bas.c
 
 HEADERS += \
     txt2bas.h \

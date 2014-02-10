@@ -19,6 +19,7 @@ extern FILE *infp, *outfp;
 // ------------------------------------------------------------
 // function prototype
 // ------------------------------------------------------------
+int txt2bas_main(int , char *, char* );
 
 // main.c
 void t2b_exit(char *msg);

@@ -32,35 +32,18 @@ void mk_tail(void);
 // function definition
 // ------------------------------------------------------------
 
-#if 0
+
 // ------------------------------------------------------------
 // main : txt2bas main routine
-int main(int argc, char **argv)
+int txt2bas_main(int srmode, char *infile, char* outfile)
 {
-	int srmode;
-
-	// check arguments
-	if (argc == 4) {
-		if (strcmp(argv[1], "-6") == 0) {
-			srmode = 1;
-		} else if (strcmp(argv[1], "-5") == 0) {
-			srmode = 0;
-		} else {
-			usage();
-		}
-	} else if (argc == 3) {
-		srmode = 0;
-	} else {
-		usage();
-	}
-
 	// open files
-	if ((infp = fopen(argv[argc - 2], "r")) == NULL) {
-		fprintf(stderr, "Can't open input file %s\n", argv[argc - 2]);
+    if ((infp = fopen(infile, "r")) == NULL) {
+        fprintf(stderr, "Can't open input file %s\n", infile);
 		exit(1);
 	}
-	if ((outfp = fopen(argv[argc - 1], "wb")) == NULL) {
-		fprintf(stderr, "Can't open output file %s\n", argv[argc - 1]);
+    if ((outfp = fopen(outfile, "wb")) == NULL) {
+        fprintf(stderr, "Can't open output file %s\n", outfile);
 		fclose(infp);
 		exit(1);
 	}
@@ -86,7 +69,7 @@ int main(int argc, char **argv)
 	// exit
 	return(0);
 }
-#endif // if 0
+
 
 // ------------------------------------------------------------
 // usage : 
