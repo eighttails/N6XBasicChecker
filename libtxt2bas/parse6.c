@@ -61,7 +61,7 @@ int parsemain6(void)
 		if (ret < 0) {
 
 			// if no match, output 1 byte as is
-			if (buf[0] == '\n') {
+            if (buf[0] == '\r' || buf[0] == '\n') {
 				// if return code, exit
 				fputc(0, outfp);
 				return 0;
@@ -113,7 +113,7 @@ int parsemain6(void)
 					int c;
 					c = buf_fgetc();
 					for (;;) {
-						if (c == '\n') {
+                        if (c == '\r' || c == '\n') {
 							buf_ungetc(1);
 							break;
 						}
@@ -164,7 +164,7 @@ int parsemain6(void)
 				c = buf_fgetc();
 				quoteflag = 0;
 				for (;;) {
-					if (c == '\n') {
+                    if (c == '\r' || c == '\n') {
 						buf_ungetc(1);
 						break;
 					}
@@ -182,7 +182,7 @@ int parsemain6(void)
 				// raw output until return
 				int c;
 				c = buf_fgetc();
-				while (c != '\n') {
+                while (c != '\r' && c != '\n') {
 					fputc(c, outfp);
 					c = buf_fgetc();	  
 				}

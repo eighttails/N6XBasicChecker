@@ -93,7 +93,7 @@ int getlinenumber(void)
 	do {
 		c = buf_fgetc();
 	} while (/*c == '\t' ||*/ c == ' ');
-	if (c == '\n') return 0;//skip line
+    if (c == '\r' || c == '\n') return 0;//skip line
 	while (isdigit(c) != 0) {
 		line = line * 10 + c - '0';
 		c = buf_fgetc();
@@ -101,7 +101,7 @@ int getlinenumber(void)
 	// skip cr/tab/space
 	while (/*c == '\t' ||*/ c == ' ')
 		c = buf_fgetc();
-	if (c == '\n') return -1;//skip line (?UL Error)
+    if (c == '\r' || c == '\n') return -1;//skip line (?UL Error)
 	buf_ungetc(1);
 	if (prevline >= line)
 		t2b_exit("Illegal line number found in");

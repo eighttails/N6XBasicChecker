@@ -47,7 +47,7 @@ int parsemain5(void)
     ret = findcode5();
     if (ret == 0) {
       // if no match, output 1 byte as is
-      if (buf[0] == '\n') {
+      if (buf[0] == '\r' || buf[0] == '\n') {
 	// if return code, exit
 	fputc(0, outfp);
 	return 0;
@@ -58,7 +58,7 @@ int parsemain5(void)
 	int c;
 	c = buf_fgetc();
 	for (;;) {
-	  if (c == '\n') {
+      if (c == '\r' || c == '\n') {
 	    buf_ungetc(1);
 	    break;
 	  }
@@ -80,7 +80,7 @@ int parsemain5(void)
 	c = buf_fgetc();
 	quoteflag = 0;
 	for (;;) {
-	  if (c == '\n') {
+      if (c == '\r' || c == '\n') {
 	    buf_ungetc(1);
 	    break;
 	  }
@@ -99,7 +99,7 @@ int parsemain5(void)
 	int c;
 	c = buf_fgetc();
 	for (;;) {
-	  if (c == '\n') {
+      if (c == '\r' || c == '\n') {
 	    buf_ungetc(1);
 	    break;
 	  }
