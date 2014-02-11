@@ -238,7 +238,11 @@ void LibN6XBasicCheckerTest::testCase10()
             "20 gosub10yyy\n"
             "30 a=0:ifa=0then10zzzelse20\n"
             "40 ifa=0then10else20www\n"
-            ;
+            "50 goto10'コメント\n"                      //コメントの場合は警告を出さない
+            "60 gosub10'コメント\n"                     //コメントの場合は警告を出さない
+            "70 a=0:ifa=0then10zzzelse20'コメント\n"    //コメントの場合は警告を出さない
+            "80 ifa=0then10else20'コメント\n"           //コメントの場合は警告を出さない
+                        ;
     QVERIFY(parse(programList, stat, true));
     int i=0;
     QVERIFY(stat.warningList_[i].line_.textLineNumber_ == 1);
@@ -596,7 +600,14 @@ void LibN6XBasicCheckerTest::testCase3()
             "1230 put(0,0),d:put@(0,0),d,or:put@step(0,0),d,and\n"
             "1240 read a,b$,c(0),d$(0)\n"
             "1250 a=0:'コメント\n"
+            "1251 a=1+a'コメント\n"
+            "1252 fori=0to10'コメント\n"
+            "1253 a$=a$' コメント"
+            "1254 ifa=0thenb=0' コメント"
+            "1255 ifa=0thenb=0else100' コメント"
+            "1256 ifa=0thenb=0elseb=1' コメント"
             "1260 rem コメント\n"
+            "1261 a=0:rem コメント\n"
             "1270 renum:renum10:renum,20:renum10,10\n"
             "1280 restore:restore 1280\n"
             "1290 resume:resume0:resumenext:resume1290\n"

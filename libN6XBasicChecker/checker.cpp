@@ -746,7 +746,7 @@ bool program_parse(const std::wstring& program, ParserStatus& status)
     StringRule num_assign
             =   (num_array_var | num_var)[phx::bind(&ParserStatus::registerUsedVariable, ref(status), _1, VAR_ASSIGN, false, L"num_assign")]
             >>  L("=")
-                > qi::as_wstring[*(printable - lit(":"))]
+                > qi::as_wstring[*(printable - lit(":") - lit("'"))]
                 [phx::bind(&partial_parse, _1, ref(status), num_expression)];
     StringRule str_assign
             =   (str_array_var | str_var)[phx::bind(&ParserStatus::registerUsedVariable, ref(status), _1, VAR_ASSIGN, false, L"str_assign")]
@@ -912,7 +912,7 @@ bool program_parse(const std::wstring& program, ParserStatus& status)
             >> L("=")
                > qi::as_wstring[*(char_ - lit("to"))][phx::bind(&partial_parse, _1, ref(status), num_expression)]
             >> L("to")
-               > qi::as_wstring[*(char_ - lit("step") - lit(":"))][phx::bind(&partial_parse, _1, ref(status), num_expression)]
+               > qi::as_wstring[*(char_ - lit("step") - lit(":") - lit("'"))][phx::bind(&partial_parse, _1, ref(status), num_expression)]
             >> -(L("step") >> num_expression);
     StringRule st_next
             =   L("next") >> -(num_var[phx::bind(&ParserStatus::registerUsedVariable, ref(status), _1, VAR_REFER, false, L"st_next")]
@@ -935,7 +935,7 @@ bool program_parse(const std::wstring& program, ParserStatus& status)
     //GOSUB〜RETURN文
     StringRule st_gosub
             =   L("gosub") >> linenumber[phx::bind(&ParserStatus::registerReferredLineNumber, ref(status), _1)]
-                           >> -qi::as_wstring[+(char_ - lit(":"))][phx::bind(&ParserStatus::warnRedundantContent, ref(status), _1)];
+                           >> -qi::as_wstring[+(char_ - lit(":") - lit("'"))][phx::bind(&ParserStatus::warnRedundantContent, ref(status), _1)];
     StringRule st_return
             =   L("return");
 
@@ -943,22 +943,22 @@ bool program_parse(const std::wstring& program, ParserStatus& status)
     //PC-6000Techknowによると、「g o t o」でも通るため、トークンを分ける
     StringRule st_goto
             =   L("g") >> L("o")  >> L("t") >> L("o") > linenumber[phx::bind(&ParserStatus::registerReferredLineNumber, ref(status), _1)]
-                          >> -qi::as_wstring[+(char_ - lit(":"))][phx::bind(&ParserStatus::warnRedundantContent, ref(status), _1)];
+                          >> -qi::as_wstring[+(char_ - lit(":") - lit("'"))][phx::bind(&ParserStatus::warnRedundantContent, ref(status), _1)];
 
     //IF文
     StringRule st_then
             =   (L("then") >> ((linenumber[phx::bind(&ParserStatus::registerReferredLineNumber, ref(status), _1)]
-                                >> -qi::as_wstring[+(char_ - lit(":"))][phx::bind(&ParserStatus::warnRedundantContent, ref(status), _1)]) | statement)
+                                >> -qi::as_wstring[+(char_ - lit(":") - lit("'"))][phx::bind(&ParserStatus::warnRedundantContent, ref(status), _1)]) | statement)
                  >> *(L(":") >> -statement))
             |   st_goto;
     StringRule st_if
             =   L("if") >> qi::as_wstring[*(char_ - lit("then") - lit("goto"))]
                            [phx::bind(&partial_parse, _1, ref(status), logical_expression)]
-                        >> qi::as_wstring[*(char_ - lit("else"))]
+                        >> qi::as_wstring[*(char_ - lit("else") - lit("'"))]
                            [phx::bind(&partial_parse, _1, ref(status), st_then)]
                         >> -((L("else") >> statement)
                             | (L("else") >> linenumber[phx::bind(&ParserStatus::registerReferredLineNumber, ref(status), _1)]
-                               >> -qi::as_wstring[+(char_ - lit(":"))][phx::bind(&ParserStatus::warnRedundantContent, ref(status), _1)]));
+                               >> -qi::as_wstring[+(char_ - lit(":") - lit("'"))][phx::bind(&ParserStatus::warnRedundantContent, ref(status), _1)]));
 
     //INPUT文
     StringRule st_input
@@ -1167,7 +1167,9 @@ bool program_parse(const std::wstring& program, ParserStatus& status)
 
     //REM文
     StringRule st_rem
-            =   (L("rem") | L("'")) >> *printable;
+            =   L("rem") >> *printable;
+    StringRule st_rem_apos
+            =   L("'") >> *printable;
 
     //RENUM文
     StringRule st_renum
@@ -1258,6 +1260,7 @@ bool program_parse(const std::wstring& program, ParserStatus& status)
             |   st_resume
             |   st_restore
             |   st_renum
+            |   st_rem_apos
             |   st_rem
             |   st_read
             |   st_put_at
@@ -1337,7 +1340,8 @@ bool program_parse(const std::wstring& program, ParserStatus& status)
     //行
     StringRule line
             =   linenumber[phx::bind(&ParserStatus::registerLineNumber, ref(status), _1)]
-            >   +(L(":") || statement);
+            >   +(L(":") || statement)
+            >>  -st_rem_apos;
 
     std::wstring::const_iterator first = program.begin();
     std::wstring::const_iterator last = program.end();
