@@ -23,7 +23,7 @@ static int line;	// current line number
 // ------------------------------------------------------------
 
 void usage(void);
-int getlinenumber(void);
+int getlinenumber(int srmode);
 void mk_head(void);
 void mk_tail(void);
 
@@ -53,7 +53,7 @@ int txt2bas_main(int srmode, char *infile, char* outfile)
 	for (;;) {
 		if (buf_fgets() != 0)
 			break;
-		if (getlinenumber() <= 0) continue;
+        if (getlinenumber(srmode) <= 0) continue;
 		if (srmode == 0) {
 			parsemain5();
 		} else {
@@ -82,9 +82,10 @@ void usage(void)
 
 // ------------------------------------------------------------
 // getlinenumber : get and output line number
-int getlinenumber(void)
+int getlinenumber(int srmode)
 {
 	int c;
+    int indent = 0;
 	static int prevline = -1;
 
 	line = 0;
@@ -99,8 +100,10 @@ int getlinenumber(void)
 		c = buf_fgetc();
 	}
 	// skip cr/tab/space
-	while (/*c == '\t' ||*/ c == ' ')
+    while (/*c == '\t' ||*/ c == ' '){
 		c = buf_fgetc();
+        indent++;
+    }
     if (c == '\r' || c == '\n') return -1;//skip line (?UL Error)
 	buf_ungetc(1);
 	if (prevline >= line)
@@ -114,6 +117,11 @@ int getlinenumber(void)
 	// line number
 	fputc(line & 0x00ff, outfp);
 	fputc((line & 0xff00) >> 8, outfp);
+
+    // indent
+    while(--indent > 0 && srmode){
+        fputc(' ', outfp);
+    }
 
 	return line;// > 0 : true
 }
