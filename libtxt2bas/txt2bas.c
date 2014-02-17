@@ -4,11 +4,10 @@
 /* 2000.03.26. by ishioka                           */
 /* 2003.05.05. by ishioka                           */
 /* 2012.04.28. by fuzzball                          */
+/* 2014.02.17. by eighttails                        */
 /****************************************************/
 
 #include "txt2bas.h"
-
-#define	_VER	"modified 002"
 
 // ------------------------------------------------------------
 // variables
@@ -18,14 +17,6 @@ FILE *infp, *outfp;	// input/output file pointer
 static int line;	// current line number
 
 
-// ------------------------------------------------------------
-// function prototype
-// ------------------------------------------------------------
-
-void usage(void);
-int getlinenumber(int srmode);
-void mk_head(void);
-void mk_tail(void);
 
 
 // ------------------------------------------------------------
@@ -75,7 +66,7 @@ int txt2bas_main(int srmode, char *infile, char* outfile)
 // usage : 
 void usage(void)
 {
-	fprintf(stderr, "txt2bas version 0.7 [%s] : usage\n", _VER);
+    fprintf(stderr, "txt2bas version 0.8 : usage\n");
 	fprintf(stderr, "  txt2bas [-56] infile outfile\n");
 	exit(1);
 }
@@ -143,6 +134,7 @@ void mk_head(void)
 	int i;
 
 	for (i = 0; i < 10; i++)
+
 		fputc(0xd3, outfp);
 	// filename is "t2b"
 	fprintf(outfp, "t2b");

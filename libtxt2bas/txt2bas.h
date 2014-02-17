@@ -2,6 +2,7 @@
 /* txt2bas                                          */
 /* main.h                                           */
 /* 2000.03.26. by ishioka                           */
+/* 2014.02.17. by eighttails                        */
 /****************************************************/
 
 #include <stdio.h>
@@ -35,3 +36,8 @@ void buf_ungetc(int n);
 void buf_match(void);
 void buf_nomatch(void);
 void buf_progid(int n);
+
+void usage(void);
+int getlinenumber(int srmode);
+void mk_head(void);
+void mk_tail(void);

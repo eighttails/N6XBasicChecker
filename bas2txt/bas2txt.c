@@ -8,8 +8,6 @@
 
 #include "bas2txt.h"
 
-#define	_VER	"modified 002"
-
 // ------------------------------------------------------------
 // variables
 // ------------------------------------------------------------
@@ -117,7 +115,7 @@ int main(int argc, char **argv)
 // usage : 
 void usage(void)
 {
-	fprintf(stderr, "bas2txt version 0.2 [%s] : usage\n", _VER);
+    fprintf(stderr, "bas2txt version 0.3 [%s] : usage\n");
 	fprintf(stderr, "  bas2txt [-56] [-a] infile outfile\n");
 	exit(1);
 }
