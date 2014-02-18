@@ -30,6 +30,7 @@ int main(int argc, char *argv[])
             ("digit,d", po::value<std::vector<std::string> >(), "10進数の整数(符号付き)としてパースする行")
             ("output-mode,b", po::value<int>()->default_value(5), "テープイメージ出力モード(5または6。省略時は5)")
             ("output-file,o", po::value<std::string>(), "テープイメージ出力ファイル")
+            ("basic-file,f", po::value<std::string>()->default_value("t2b"), "テープイメージ内のBASICリストファイル名")
             ;
     po::options_description hidden("不可視オプション");
     hidden.add_options()
@@ -182,7 +183,9 @@ int main(int argc, char *argv[])
                 int srmode = 0;
                 if(outMode == 6) srmode = 1;
 
-                ret &= txt2bas_main(srmode, const_cast<char*>(fileName.c_str()), const_cast<char*>(outFile.c_str())) ? false : true;
+                std::string basFile = vm["basic-file"].as<std::string>();
+
+                ret &= txt2bas_main(srmode, const_cast<char*>(fileName.c_str()), const_cast<char*>(outFile.c_str()), const_cast<char*>(basFile.c_str())) ? false : true;
             }
         }
     }

@@ -20,7 +20,7 @@ extern FILE *infp, *outfp;
 // ------------------------------------------------------------
 // function prototype
 // ------------------------------------------------------------
-int txt2bas_main(int , char *, char* );
+int txt2bas_main(int , char *, char*, char* );
 
 // main.c
 void t2b_exit(char *msg);
@@ -39,5 +39,5 @@ void buf_progid(int n);
 
 void usage(void);
 int getlinenumber(int srmode);
-void mk_head(void);
+void mk_head(char *filename);
 void mk_tail(void);

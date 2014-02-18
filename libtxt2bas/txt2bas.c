@@ -26,7 +26,7 @@ static int line;	// current line number
 
 // ------------------------------------------------------------
 // main : txt2bas main routine
-int txt2bas_main(int srmode, char *infile, char* outfile)
+int txt2bas_main(int srmode, char *infile, char* outfile, char* basfilename)
 {
 	// open files
     if ((infp = fopen(infile, "r")) == NULL) {
@@ -40,7 +40,7 @@ int txt2bas_main(int srmode, char *infile, char* outfile)
 	}
 
 	// main process
-	mk_head();
+    mk_head(basfilename);
 	for (;;) {
 		if (buf_fgets() != 0)
 			break;
@@ -67,7 +67,7 @@ int txt2bas_main(int srmode, char *infile, char* outfile)
 void usage(void)
 {
     fprintf(stderr, "txt2bas version 0.8 : usage\n");
-	fprintf(stderr, "  txt2bas [-56] infile outfile\n");
+    fprintf(stderr, "  txt2bas [-56] infile outfile basfile\n");
 	exit(1);
 }
 
@@ -129,17 +129,15 @@ void t2b_exit(char *msg)
 
 // ------------------------------------------------------------
 // mk_head : make tape image header
-void mk_head(void)
+void mk_head(char* filename)
 {
 	int i;
+    char fname[7] = {};
+    strncpy(fname, filename, 6);
+    for (i = 0; i < 10; i++)
+        fputc(0xd3, outfp);
 
-	for (i = 0; i < 10; i++)
-
-		fputc(0xd3, outfp);
-	// filename is "t2b"
-	fprintf(outfp, "t2b");
-	for (i = 0; i < 3; i++)
-		fputc(0x00, outfp);
+    fwrite(fname, 6, 1, outfp);
 }
 
 // ------------------------------------------------------------
