@@ -42,7 +42,7 @@ int main(int argc, char **argv)
     for (;;) {
         if (buf_fgets() != 0)
             break;
-        if (getlinenumber(srmode) <= 0) continue;
+        if (getlinenumber(srmode) < 0) continue;
         if (srmode == 0) {
             parsemain5();
         } else {

@@ -44,7 +44,7 @@ int txt2bas_main(int srmode, char *infile, char* outfile, char* basfilename)
 	for (;;) {
 		if (buf_fgets() != 0)
 			break;
-        if (getlinenumber(srmode) <= 0) continue;
+        if (getlinenumber(srmode) < 0) continue;
 		if (srmode == 0) {
 			parsemain5();
 		} else {
@@ -79,7 +79,7 @@ int getlinenumber(int srmode)
     int indent = 0;
 	static int prevline = -1;
 
-	line = 0;
+    line = -1;
 
 	// skip cr/tab/space
 	do {
@@ -87,7 +87,8 @@ int getlinenumber(int srmode)
 	} while (/*c == '\t' ||*/ c == ' ');
     if (c == '\r' || c == '\n') return 0;//skip line
 	while (isdigit(c) != 0) {
-		line = line * 10 + c - '0';
+        if(line < 0) line = 0;
+        line = line * 10 + c - '0';
 		c = buf_fgetc();
 	}
 	// skip cr/tab/space
