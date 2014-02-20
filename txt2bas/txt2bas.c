@@ -6,7 +6,7 @@
 // main : txt2bas main routine
 int main(int argc, char **argv)
 {
-    int srmode;
+    int srmode=0;
 
     // check arguments
     if (argc == 5) {

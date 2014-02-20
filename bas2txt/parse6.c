@@ -6,6 +6,7 @@
 /* 2012.04.25. by fuzzball                          */
 /****************************************************/
 
+#include <math.h>
 #include "bas2txt.h"
 
 #define WORDLEN		8
@@ -101,7 +102,7 @@ int parsemain6(void)
 			if (c == 0x80) {
 				val = 0.0;
 			} else {
-				val = val * (1 << (c - 0x80));
+                val = val * pow(2.0, (c - 0x80));
 			}
 			buf_fprintfG(val);
 		} else {
