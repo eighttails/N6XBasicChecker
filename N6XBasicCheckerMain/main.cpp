@@ -185,7 +185,9 @@ int main(int argc, char *argv[])
 
                 std::string basFile = vm["basic-file"].as<std::string>();
 
+                std::cout << utf8_to_local("テープイメージ出力: ") << outFile << std::endl;
                 ret &= txt2bas_main(srmode, const_cast<char*>(fileName.c_str()), const_cast<char*>(outFile.c_str()), const_cast<char*>(basFile.c_str())) ? false : true;
+                std::cout << utf8_to_local("Ok") << std::endl;
             }
         }
     }
