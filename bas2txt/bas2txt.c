@@ -72,7 +72,7 @@ int main(int argc, char **argv)
 		fprintf(stderr, "Can't open input file %s\n", argv[argc - 2]);
 		exit(1);
 	}
-	if ((outfp = fopen(argv[argc - 1], "w")) == NULL) {
+    if ((outfp = fopen(argv[argc - 1], "wb")) == NULL) {
 		fprintf(stderr, "Can't open output file %s\n", argv[argc - 1]);
 		fclose(infp);
 		exit(1);
