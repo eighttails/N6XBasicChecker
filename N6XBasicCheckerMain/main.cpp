@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
 {
     babel::init_babel();
 
-    po::options_description desc("オプション");
+    po::options_description desc("オプション", 200);
     desc.add_options()
             ("help,h", "ヘルプを表示")
             ("version,v", "バージョンを表示")
@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
         s << desc;
         std::cout << utf8_to_local(s.str());
         std::cout << utf8_to_local("p,t,x,dオプションの行番号指定例: -p 100,200-300") << std::endl;
-        std::cout << utf8_to_local("b,oオプションの書式: -b 5 -o [出力ファイル名]") << std::endl;
+        std::cout << utf8_to_local("b,o,fオプションの書式: -b 5 -o 出力ファイル名 -f BASICリストファイル名") << std::endl;
         return 0;
     }
 
