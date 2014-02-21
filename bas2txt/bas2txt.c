@@ -115,7 +115,7 @@ int main(int argc, char **argv)
 // usage : 
 void usage(void)
 {
-    fprintf(stderr, "bas2txt version 0.3 [%s] : usage\n");
+    fprintf(stderr, "bas2txt version 0.3 : usage\n");
 	fprintf(stderr, "  bas2txt [-56] [-a] infile outfile\n");
 	exit(1);
 }
