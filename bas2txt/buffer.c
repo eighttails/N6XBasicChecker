@@ -82,8 +82,10 @@ void buf_fputc(int c)
 		}
 		//if (c <= 0x1f) {
 		if (prev == 0 && c == '\n') {
-			fputc(c, outfp);
-		} else {
+            //fputc(c, outfp);
+            fputc('\r', outfp);
+            fputc('\n', outfp);
+        } else {
 			if (useascii && (c >= ' ') && (c <= '~')) {
 				fputc(c, outfp);
 			} else {
