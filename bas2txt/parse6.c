@@ -20,6 +20,9 @@
 // N66SR : E9
 #define CODEQUOTE	(0xe9)
 
+// N66SR : 9F
+#define CODEELSE	(0x9f)
+
 // ------------------------------------------------------------
 // variables
 // ------------------------------------------------------------
@@ -133,7 +136,9 @@ int parsemain6(void)
 				if ((c == ':') && (*(inptr) == CODEREM) && (*(inptr + 1) == CODEQUOTE)) {
 					inptr++;
 					// output nothing
-				} else {
+                } else if ((c == ':') && (*(inptr) == CODEELSE)) {
+                    // output nothing
+                } else {
 					buf_fputc(c);
 					if (c == '"') {
 						// raw output until " or return
