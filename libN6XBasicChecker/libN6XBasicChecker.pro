@@ -10,11 +10,12 @@ TARGET = N6XBasicChecker
 TEMPLATE = lib
 CONFIG += staticlib
 
+#コンパイル時のメモリ削減
+QMAKE_CXXFLAGS += --param ggc-min-expand=25 --param ggc-min-heapsize=8192
+
 #WindowsではBOOSTDIR環境変数をセット
 win32{
 INCLUDEPATH += $(BOOSTDIR)/include
-#コンパイル時のメモリ削減
-QMAKE_CXXFLAGS += --param ggc-min-expand=25 --param ggc-min-heapsize=8192
 }
 INCLUDEPATH += $$PWD/../babel
 
