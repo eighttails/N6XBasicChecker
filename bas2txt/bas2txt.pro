@@ -3,6 +3,10 @@ CONFIG += console
 CONFIG -= app_bundle
 CONFIG -= qt
 
+win32{
+QMAKE_LFLAGS = -static -static-libgcc -static-libstdc++
+}
+
 SOURCES += \
     bas2txt.c \
     buffer.c \
