@@ -15,10 +15,12 @@ TEMPLATE = app
 
 SOURCES += main.cpp
 
+QMAKE_LFLAGS = -static
+
 #WindowsではBOOSTDIR環境変数をセット
 win32{
 INCLUDEPATH += $(BOOSTDIR)/include
-QMAKE_LFLAGS = -static -static-libgcc -static-libstdc++
+QMAKE_LFLAGS = -static-libgcc -static-libstdc++
 }
 
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../libN6XBasicChecker/release/ -lN6XBasicChecker -L$(BOOSTDIR)/lib/ -lboost_program_options-mt -lboost_regex-mt
@@ -46,3 +48,8 @@ else:win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../libt
 else:win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../libtxt2bas/release/txt2bas.lib
 else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../libtxt2bas/debug/txt2bas.lib
 else:unix: PRE_TARGETDEPS += $$OUT_PWD/../libtxt2bas/libtxt2bas.a
+
+DISTFILES += \
+    ../N6XBasicChecker.txt \
+    ../bas2txt.txt \
+    ../txt2bas.txt
