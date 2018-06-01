@@ -54,10 +54,10 @@ bool play_parse(std::wstring const& part, ParserStatus& status, StringRule const
             =   L("o") >> -mml_value;
     //Tコマンド
     StringRule mml_t
-            =   L("t") >> -(mml_length | mml_value);
+            =   L("t") >> -mml_value;
     //Lコマンド
     StringRule mml_l
-            =   L("l") >> -(mml_length | mml_value);
+            =   L("l") >> -mml_value;
     //Rコマンド
     StringRule mml_r
             =   L("r") >> -(mml_length | mml_value);

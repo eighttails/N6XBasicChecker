@@ -120,7 +120,7 @@ void LibN6XBasicCheckerTest::testCase12()
     programList =
             L"10 play\"cde\n"
             "20 play\"@3c+d-8e8.\n"
-            "30 play\"v8l8t255s=i;m=j;n=k;\n"
+            "30 play\"v8l8t255s=i;m=j;n=k;t=t1;\n"
             ;
     QVERIFY(parse(programList, stat, true));
 
