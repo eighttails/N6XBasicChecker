@@ -363,8 +363,11 @@ bool program_parse(const std::wstring& program, ParserStatus& status)
                           | +sw::digit >> exponent_part);
 
     //数値リテラル(16進)
+    //16進数リテラルの後に"and","eqv"が続くと
+    //先頭のa,eが16進数リテラル側に取り込まれてしまうので
+    //そうしたケースを除外する
     StringRule num_hex_literal
-            =   L("&h") >> hex;
+            =   L("&h") >> +(sw::xdigit >> !(L("nd") | L("qv")));
 
     //数値
     StringRule num_value
