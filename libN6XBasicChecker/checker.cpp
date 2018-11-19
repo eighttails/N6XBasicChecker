@@ -15,15 +15,15 @@
 //渡された部分文字列を何としてパースするかは引数ruleとして渡される。
 bool partial_parse(std::wstring const& part, ParserStatus& status, StringRule const& rule)
 {
-    std::wstring::const_iterator first = part.begin();
-    std::wstring::const_iterator last = part.end();
+    auto first = part.cbegin();
+    auto last = part.cend();
 
     bool r = qi::phrase_parse(first, last, rule, sw::blank);
 
     if (!r || first != last) {
         //出力の際は大文字に変換
         std::wstring workPart = part;
-        transform(workPart.begin (), workPart.end (), workPart.begin (), toupper);
+        transform(workPart.begin(), workPart.end(), workPart.begin(), toupper);
 
         status.errorList_.push_back(ErrorInfo(E_PART_SYNTAX, status.line_.textLineNumber_, status.line_.basicLineNumber_, (boost::wformat(L"部分シンタックスエラー[%1%]") % workPart).str()));
         return false;
@@ -97,15 +97,15 @@ bool play_parse(std::wstring const& part, ParserStatus& status, StringRule const
     StringRule mml
         =   *(mml_element >> -L(";"));
 
-    std::wstring::const_iterator first = part.begin();
-    std::wstring::const_iterator last = part.end();
+    auto first = part.cbegin();
+    auto last = part.cend();
 
     bool r = qi::phrase_parse(first, last, mml, sw::blank);
 
     if (!r || first != last) {
         //出力の際は大文字に変換
         std::wstring workPart = part;
-        transform(workPart.begin (), workPart.end (), workPart.begin (), toupper);
+        transform(workPart.begin(), workPart.end(), workPart.begin(), toupper);
 
         status.errorList_.push_back(ErrorInfo(E_PLAY, status.line_.textLineNumber_, status.line_.basicLineNumber_, (boost::wformat(L"MMLエラー[%1%]") % workPart).str()));
         return false;
@@ -184,15 +184,15 @@ bool talk_parse(std::wstring const& part, ParserStatus& status, StringRule const
             >> -(L(".") | L("?"))
             >> -(L(":") > qi::as_wstring[*char_][phx::bind(&play_parse, _1, ref(status), num_expression)]);
 
-    std::wstring::const_iterator first = part.begin();
-    std::wstring::const_iterator last = part.end();
+    auto first = part.cbegin();
+    auto last = part.cend();
 
     bool r = qi::phrase_parse(first, last, talk, sw::blank);
 
     if (!r || first != last) {
         //出力の際は大文字に変換
         std::wstring workPart = part;
-        transform(workPart.begin (), workPart.end (), workPart.begin (), toupper);
+        transform(workPart.begin(), workPart.end(), workPart.begin(), toupper);
 
         status.errorList_.push_back(ErrorInfo(E_TALK, status.line_.textLineNumber_, status.line_.basicLineNumber_, (boost::wformat(L"TALK文エラー[%1%]") % workPart).str()));
         return false;
@@ -207,8 +207,8 @@ bool literal_parse(std::wstring const& part, ParserStatus& status, StringRule co
 
     //PLAY文チェック
     bool playRange = false;
-    for (ParserStatus::LineRange::iterator p = status.playRange_.begin(); p != status.playRange_.end(); ++p){
-        if(p->first <= line && line <= p->second) playRange = true;
+    for (const auto& p : status.playRange_){
+        if(p.first <= line && line <= p.second) playRange = true;
     }
     if (status.playMode_ || playRange){
         if (!play_parse(part, status, num_expression)) return false;
@@ -216,25 +216,25 @@ bool literal_parse(std::wstring const& part, ParserStatus& status, StringRule co
 
     //TALK文チェック
     bool talkRange = false;
-    for (ParserStatus::LineRange::iterator p = status.talkRange_.begin(); p != status.talkRange_.end(); ++p){
-        if(p->first <= line && line <= p->second) talkRange = true;
+    for (const auto& p : status.talkRange_){
+        if(p.first <= line && line <= p.second) talkRange = true;
     }
     if (status.talkMode_ || talkRange){
         if (!talk_parse(part, status, num_expression)) return false;
     }
 
     //16進数チェック
-    for (ParserStatus::LineRange::iterator p = status.hexRange_.begin(); p != status.hexRange_.end(); ++p){
-        if(p->first <= line && line <= p->second){
-            std::wstring::const_iterator first = part.begin();
-            std::wstring::const_iterator last = part.end();
+    for (const auto& p : status.hexRange_){
+        if(p.first <= line && line <= p.second){
+            auto first = part.cbegin();
+            auto last = part.cend();
 
             bool r = qi::phrase_parse(first, last, *(sw::xdigit), sw::blank);
 
             if (!r || first != last) {
                 //出力の際は大文字に変換
                 std::wstring workPart = part;
-                transform(workPart.begin (), workPart.end (), workPart.begin (), toupper);
+                transform(workPart.begin(), workPart.end(), workPart.begin(), toupper);
 
                 status.errorList_.push_back(ErrorInfo(E_HEX, status.line_.textLineNumber_, status.line_.basicLineNumber_, (boost::wformat(L"16進数エラー[%1%]") % workPart).str()));
                 return false;
@@ -244,17 +244,17 @@ bool literal_parse(std::wstring const& part, ParserStatus& status, StringRule co
     }
 
     //10進数チェック
-    for (ParserStatus::LineRange::iterator p = status.digitRange_.begin(); p != status.digitRange_.end(); ++p){
-        if(p->first <= line && line <= p->second){
-            std::wstring::const_iterator first = part.begin();
-            std::wstring::const_iterator last = part.end();
+    for (const auto& p : status.digitRange_){
+        if(p.first <= line && line <= p.second){
+            auto first = part.cbegin();
+            auto last = part.cend();
 
             bool r = qi::phrase_parse(first, last, -L("-") >> *(sw::digit), sw::blank);
 
             if (!r || first != last) {
                 //出力の際は大文字に変換
                 std::wstring workPart = part;
-                transform(workPart.begin (), workPart.end (), workPart.begin (), toupper);
+                transform(workPart.begin(), workPart.end(), workPart.begin(), toupper);
 
                 status.errorList_.push_back(ErrorInfo(E_DIGIT, status.line_.textLineNumber_, status.line_.basicLineNumber_, (boost::wformat(L"10進数エラー[%1%]") % workPart).str()));
                 return false;
@@ -1346,8 +1346,8 @@ bool program_parse(const std::wstring& program, ParserStatus& status)
             >   +(L(":") || statement)
             >>  -st_rem_apos;
 
-    std::wstring::const_iterator first = program.begin();
-    std::wstring::const_iterator last = program.end();
+    auto first = program.cbegin();
+    auto last = program.cend();
 
     bool r = qi::phrase_parse(first, last, line, sw::blank);
 
@@ -1472,7 +1472,7 @@ void Checker::makeZenHanMap()
 
 void Checker::replaceString( std::wstring& str, const std::wstring& from, const std::wstring& to )
 {
-    std::wstring::size_type  p( str.find( from ) );
+    auto p( str.find( from ) );
 
     while( p != std::wstring::npos )
     {
@@ -1484,9 +1484,8 @@ void Checker::replaceString( std::wstring& str, const std::wstring& from, const 
 void Checker::convZenHan(std::wstring& programList)
 {
     //全角半角テーブルに従って全角文字を半角に置換
-    std::map<std::wstring, std::wstring>::const_iterator p;
-    for (p = zenhanMap_.begin(); p != zenhanMap_.end(); ++p){
-        replaceString(programList, p->first, p->second);
+    for (const auto& p : zenhanMap_){
+        replaceString(programList, p.first, p.second);
     }
 }
 
@@ -1518,8 +1517,7 @@ void print_info(boost::spirit::info const& what)
 void Checker::afterCheck(ParserStatus& stat)
 {
     //行番号チェック
-    for (size_t i = 0; i < stat.ReferredLineNumberList_.size(); i++){
-        const ReferredLineNumber& ref = stat.ReferredLineNumberList_[i];
+    for (const auto& ref : stat.ReferredLineNumberList_){
         if(stat.basicLineNumberList_.count(ref.targetLineNumber_) == 0){
             stat.errorList_.push_back(ErrorInfo(E_LINE_NOT_FOUND, ref.refererLine_.textLineNumber_, ref.refererLine_.basicLineNumber_,
                                                 (boost::wformat(L"BASIC行%1%は存在しません") % ref.targetLineNumber_).str()));
@@ -1527,46 +1525,42 @@ void Checker::afterCheck(ParserStatus& stat)
     }
 
     //変数チェック
-    std::map<std::wstring, std::map<std::wstring, UsedVar> >::const_iterator i;
-    std::map<std::wstring, UsedVar>::const_iterator j;
-    std::set<VarLineInfo>::const_iterator k;
-
-    for(i = stat.usedVariables_.begin(); i != stat.usedVariables_.end(); ++i){
-        const std::map<std::wstring, UsedVar>& subMap = (*i).second;
-        for(j = subMap.begin(); j != subMap.end(); ++j){
-            const UsedVar& var = (*j).second;
+    for(const auto& i : stat.usedVariables_){
+        const auto& subMap = i.second;
+        for(const auto& j : subMap){
+            const auto& var = j.second;
 
             //警告出力の際は大文字に変換
             std::wstring workIdent = var.identName_;
-            transform(workIdent.begin (), workIdent.end (), workIdent.begin (), toupper);
+            transform(workIdent.begin(), workIdent.end(), workIdent.begin(), toupper);
             std::wstring workVarName = var.varName_;
-            transform(workVarName.begin (), workVarName.end (), workVarName.begin (), toupper);
+            transform(workVarName.begin(), workVarName.end(), workVarName.begin(), toupper);
 
             //識別子重複チェック(2文字目までが一致しているが、違う名前が使われている変数)
             if(subMap.size() > 1){
-                for(k = var.assigningLines_.begin(); k != var.assigningLines_.end(); ++k){
-                    stat.warningList_.push_back(ErrorInfo(W_DUPLICATE_VARIABLE, (*k).line_.textLineNumber_, (*k).line_.basicLineNumber_,
+                for(const auto& k : var.assigningLines_){
+                    stat.warningList_.push_back(ErrorInfo(W_DUPLICATE_VARIABLE, k.line_.textLineNumber_, k.line_.basicLineNumber_,
                                                           (boost::wformat(L"[%1%]として識別される変数が複数存在します[%2%]") % workIdent % workVarName).str()));
                 }
-                for(k = var.referingLines_.begin(); k != var.referingLines_.end(); ++k){
-                    stat.warningList_.push_back(ErrorInfo(W_DUPLICATE_VARIABLE, (*k).line_.textLineNumber_, (*k).line_.basicLineNumber_,
+                for(const auto& k : var.referingLines_){
+                    stat.warningList_.push_back(ErrorInfo(W_DUPLICATE_VARIABLE, k.line_.textLineNumber_, k.line_.basicLineNumber_,
                                                           (boost::wformat(L"[%1%]として識別される変数が複数存在します[%2%]") % workIdent % workVarName).str()));
                 }
             }
 
             //参照されているが代入されていない変数
             if(var.assigningLines_.empty()){
-                for(k = var.referingLines_.begin(); k != var.referingLines_.end(); ++k){
-                    stat.warningList_.push_back(ErrorInfo(W_UNASSIGNED_VARIABLE, (*k).line_.textLineNumber_, (*k).line_.basicLineNumber_,
+                for(const auto& k : var.referingLines_){
+                    stat.warningList_.push_back(ErrorInfo(W_UNASSIGNED_VARIABLE, k.line_.textLineNumber_, k.line_.basicLineNumber_,
                                                           (boost::wformat(L"変数[%1%]はどこからも代入されていません") % workVarName).str()));
                 }
             }
 
             //代入されているが参照されていない変数
             if(var.referingLines_.empty()){
-                for(k = var.assigningLines_.begin(); k != var.assigningLines_.end(); ++k){
-                    if((*k).ruleName_ != L"st_for"){ //forのループカウンタとして使われている場合は警告を出さない
-                        stat.warningList_.push_back(ErrorInfo(W_UNREFERED_VARIABLE, (*k).line_.textLineNumber_, (*k).line_.basicLineNumber_,
+                for(const auto& k : var.assigningLines_){
+                    if(k.ruleName_ != L"st_for"){ //forのループカウンタとして使われている場合は警告を出さない
+                        stat.warningList_.push_back(ErrorInfo(W_UNREFERED_VARIABLE, k.line_.textLineNumber_, k.line_.basicLineNumber_,
                                                               (boost::wformat(L"変数[%1%]はどこからも参照されていません") % workVarName).str()));
                     }
                 }
@@ -1588,15 +1582,14 @@ bool Checker::parse(const std::wstring& programList, ParserStatus& stat, bool tr
     //全角を半角に
     convZenHan(workProgramList);
     //大文字を小文字に
-    transform(workProgramList.begin (), workProgramList.end (), workProgramList.begin (), tolower);
+    transform(workProgramList.begin(), workProgramList.end(), workProgramList.begin(), tolower);
 
     //プログラムを行ごとに分割
     std::vector<std::wstring> list;
     boost::algorithm::split(list, workProgramList, boost::is_any_of(L"\n"));
 
-    for(size_t i = 0; i < list.size(); i++){
+    for(const auto& line : list){
         stat.inclementLine();
-        const std::wstring line = list[i];
         if (line.empty()) continue;
 
         // 1行の構文解析結果を判定
@@ -1617,7 +1610,7 @@ bool Checker::parse(const std::wstring& programList, ParserStatus& stat, bool tr
         if(!r){
             //出力の際は大文字に変換
             std::wstring workLine = line;
-            transform(workLine.begin (), workLine.end (), workLine.begin (), toupper);
+            transform(workLine.begin(), workLine.end(), workLine.begin(), toupper);
 
             stat.errorList_.push_back(ErrorInfo(E_SYNTAX, stat.line_.textLineNumber_, stat.line_.basicLineNumber_, (boost::wformat(L"シンタックスエラー[%1%]") % workLine).str()));
         }

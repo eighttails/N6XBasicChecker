@@ -79,8 +79,8 @@ bool ParserStatus::registerLineRange(const std::wstring& lines, RangeType type)
             =  rangeRule
             >> *(L(",") >> rangeRule);
 
-    std::wstring::const_iterator first = lines.begin();
-    std::wstring::const_iterator last = lines.end();
+    auto first = lines.cbegin();
+    auto last = lines.cend();
 
     bool r = qi::phrase_parse(first, last, rangesRule, sw::blank);
 
