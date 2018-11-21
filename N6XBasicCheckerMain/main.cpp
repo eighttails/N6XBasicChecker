@@ -147,12 +147,43 @@ int main(int argc, char *argv[])
             Checker checker;
             bool r = checker.parse(unicodeList, stat);
 
+            //変数一覧表示
+            if(vm.count("list-variables")){
+                // 変数名をキー、行番号のリストを値としたマップ
+                std::map<std::wstring, std::set<int>> variableList;
+
+                for(const auto& var : stat.usedVariables_ ){
+                    //出力の際は大文字に変換
+                    auto varName = var.first;
+                    transform(varName.begin(), varName.end(), varName.begin(), toupper);
+                    auto varMap = var.second;
+                    for (const auto& v : varMap ){
+                        // 代入している行と参照している行を統合
+                        for(const auto& varLine : v.second.assigningLines_){
+                            variableList[varName].insert(varLine.line_.basicLineNumber_);
+                        }
+                        for(const auto& varLine : v.second.referingLines_){
+                            variableList[varName].insert(varLine.line_.basicLineNumber_);
+                        }
+                    }
+                }
+                std::cout << utf8_to_local("変数一覧: ") << std::endl;
+                std::cout << utf8_to_local("変数名: [ 使用行番号リスト ] ") << std::endl;
+                for(const auto& var : variableList){
+                    std::cout << unicode_to_local(var.first) << utf8_to_local(":\t[ ");
+                    for (const auto& l : var.second){
+                        std::cout << l << " ";
+                    }
+                    std::cout << utf8_to_local("]") << std::endl;
+                }
+            }
+
+
             //エラー表示
             if(!stat.errorList_.empty()){
                 std::cout << utf8_to_local("エラー:") << std::endl;
             }
-            for(size_t i = 0; i < stat.errorList_.size(); i++){
-                const ErrorInfo& err = stat.errorList_[i];
+            for(const auto& err : stat.errorList_){
                 std::cout << utf8_to_local("テキスト行:") << err.line_.textLineNumber_
                           << utf8_to_local(" BASIC行:") <<
                              ((err.line_.basicLineNumber_ == -1) ? utf8_to_local("N/A") : boost::lexical_cast<std::string>(err.line_.basicLineNumber_))
@@ -162,8 +193,7 @@ int main(int argc, char *argv[])
             if(!stat.warningList_.empty()){
                 std::cout << utf8_to_local("警告:") << std::endl;
             }
-            for(size_t i = 0; i < stat.warningList_.size(); i++){
-                const ErrorInfo& err = stat.warningList_[i];
+            for(const ErrorInfo& err : stat.warningList_){
                 std::cout << utf8_to_local("テキスト行:") << err.line_.textLineNumber_
                           << utf8_to_local(" BASIC行:") <<
                              ((err.line_.basicLineNumber_ == -1) ? utf8_to_local("N/A") : boost::lexical_cast<std::string>(err.line_.basicLineNumber_))
