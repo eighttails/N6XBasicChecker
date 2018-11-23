@@ -10,12 +10,12 @@ TARGET = N6XBasicChecker
 TEMPLATE = lib
 CONFIG += staticlib
 
-#コンパイル時のメモリ削減
-QMAKE_CXXFLAGS += -Wa,-mbig-obj
 
-#WindowsではBOOSTDIR環境変数をセット
 win32{
+#WindowsではBOOSTDIR環境変数をセット
 INCLUDEPATH += $(BOOSTDIR)/include
+#コンパイル時のメモリ対策
+QMAKE_CXXFLAGS += -Wa,-mbig-obj
 }
 INCLUDEPATH += $$PWD/../babel
 
