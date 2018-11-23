@@ -53,6 +53,7 @@ N/Aと表示されます。
 オプションは以下のものが使用できます。
   -h [ --help ]         ヘルプを表示
   -v [ --version ]      バージョンを表示
+  -l [ --list-variables ]        変数一覧を出力
   -p [ --play ] arg     PLAY文としてパースする行
   -t [ --talk ] arg     TALK文としてパースする行
   -x [ --hex ] arg      16進数としてパースする行
@@ -122,6 +123,14 @@ UIの操作性をあげてもしょうがないかと思い、見送ることに
 　チェックをする予定はありません。
 
 【更新履歴】
+ver. 1.6.0　2018/11/23
+機能追加
+・変数一覧出力機能を追加
+バグ修正
+・「IFA=&H01ANDB=&H00」といったような16進数リテラルの後にANDが入ると
+　「&H01A」までが16進数リテラルと判定されてその後の構文解析に失敗する不具合を修正。
+・最近の開発環境(GCC7.2,Boost1.64以降)でコンパイルが通るように修正
+
 ver. 1.5　2014/02/21
 機能追加
 ・isio様作のtxt2basの機能を取り込み
@@ -191,37 +200,24 @@ Qtには依存していません。
 以下にビルド手順を記します。
 
 ■Windows
-・Qt SDKをダウンロードしてインストール
-http://qt.nokia.com/downloads/sdk-windows-cpp
+最低限必要なのがGCC,QtSDK,Boostです。
+これらを個別にダウンロードしてもビルドできますが、MSYS2環境を利用するのが簡単です。 
 
-・MinGWをインストール
-http://sourceforge.net/projects/mingw/files/Installer/mingw-get-inst/
-ここから最新版のインストーラをダウンロードします。
-（執筆時点ではmingw-get-inst-20120426）
-インストーラーでは「C++ compiler」と「MSYS Basic Sytem」にチェックを入れます。
-環境変数PATHにC:\MinGW\bin および C:\MinGW\msys\1.0\bin を追加します。
+http://sourceforge.net/projects/msys2/[こちら]からMSYS2をダウンロードしてインストールしてください。
+VC++はサポートしていません。
 
-・BOOST　1.50をビルド、インストール
-http://sourceforge.net/projects/boost/files/boost/1.50.0/boost_1_50_0.zip/download
-ここからboost 1.50をダウンロードし、解凍します。
-MinGW Shellから解凍したフォルダに移動し、
-./bootstrap.sh --with-toolset=mingw
-./b2 install --prefix=(任意のフォルダ)
-でboostをビルド、インストールします。
-ここでprefixに指定したフォルダを環境変数BOOSTDIRにセットします。
-私はMSYS配下にライブラリを置きたくなかったのでこうしていますが、
-MSYS以下に置いて使いたい人は、prefixや環境変数も不要だと思います。多分。
+MSYS2はパッケージのバージョンアップが早く、またバージョンアップによるデグレードが非常に多いため、パッケージのアップデート(`pacman -Sy`)を行わず、バージョンを固定して使うことをおすすめします。作者がビルド、動作を確認しているのは以下のインストーラーで構築した環境です。(64ビット用)
+https://sourceforge.net/projects/msys2/files/Base/x86_64/msys2-x86_64-20170918.exe
+MSYSをインストールしたフォルダのmingw32.exe(32ビット版をビルドする場合)またはmingw64.exe(64ビット版をビルドする場合)を実行。
 
-・N6XBasicCheckerのビルド
-N6XBasicCheckerのソースを解凍して、N6XBasicChecker.proをQt Creatorで開きます。
-「プロジェクト」モードの概要−ツールチェインをMinGW(32bit)に変更します。
-これでコンパイラをQt付属のものではなく、先ほどインストールしたMinGWのものに変更します。
-後は普通にビルドすればOKです。
+ダウンロードしたN6XBasicCheckerのソースをMSYS上のホームフォルダに解凍。
+`cd N6XBasicChecker/win32` を実行し、ソースフォルダのwin32フォルダにカレントを移動。
+`./buildrelease.sh` を実行すると、N6XBasicChecker-build-(i686|x86_64)-w64-mingw32というフォルダにEXEがビルドされます。
 
 ■Linux
-2012年7月時点でのDebian sidでの手順です。
+2018年11月時点でのDebian sidでの手順です。
 rootで
-apt-get install qtcreator libboost-dev
+apt-get install qtcreator libboost-all-dev
 を実行し、開発環境をインストールします。
 N6XBasicCheckerのソースを解凍して、N6XBasicChecker.proをQt Creatorで開きます。
 後は普通にビルドすればOKです。
