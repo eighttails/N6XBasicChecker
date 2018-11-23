@@ -20,7 +20,7 @@ QMAKE_LFLAGS = -static
 #WindowsではBOOSTDIR環境変数をセット
 win32{
 INCLUDEPATH += $(BOOSTDIR)/include
-QMAKE_LFLAGS = -static-libgcc -static-libstdc++
+QMAKE_LFLAGS += -static-libgcc -static-libstdc++
 }
 
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../libN6XBasicChecker/release/ -lN6XBasicChecker -L$(BOOSTDIR)/lib/ -lboost_program_options-mt -lboost_regex-mt

@@ -80,7 +80,7 @@ struct ParserStatus
 
     //PLAY文、TALK文としてチェックする行番号範囲を指定する。
     bool registerLineRange(const std::wstring& lines, RangeType type);
-    void registerLineRange(int start, int end, RangeType type);
+    void registerLineRangeInt(int start, int end, RangeType type);
 
     //行を1行進める。
     void inclementLine(){

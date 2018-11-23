@@ -72,8 +72,8 @@ bool ParserStatus::registerLineRange(const std::wstring& lines, RangeType type)
     LineRange range;
 
     StringRule rangeRule
-            =   (int_ >> L("-") >> int_)[phx::bind(&ParserStatus::registerLineRange, this, _1, _3, ref(type))]
-            |   int_[phx::bind(&ParserStatus::registerLineRange, this, _1, _1, ref(type))];
+            =   (int_ >> L("-") >> int_)[phx::bind(&ParserStatus::registerLineRangeInt, this, _1, _3, ref(type))]
+            |   int_[phx::bind(&ParserStatus::registerLineRangeInt, this, _1, _1, ref(type))];
 
     StringRule rangesRule
             =  rangeRule
@@ -91,7 +91,7 @@ bool ParserStatus::registerLineRange(const std::wstring& lines, RangeType type)
     return true;
 }
 
-void ParserStatus::registerLineRange(int start, int end, RangeType type)
+void ParserStatus::registerLineRangeInt(int start, int end, RangeType type)
 {
     switch(type){
     case R_PLAY:

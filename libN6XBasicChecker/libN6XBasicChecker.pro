@@ -11,7 +11,7 @@ TEMPLATE = lib
 CONFIG += staticlib
 
 #コンパイル時のメモリ削減
-QMAKE_CXXFLAGS += --param ggc-min-expand=25 --param ggc-min-heapsize=8192
+QMAKE_CXXFLAGS += -Wa,-mbig-obj
 
 #WindowsではBOOSTDIR環境変数をセット
 win32{
