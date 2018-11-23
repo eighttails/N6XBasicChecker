@@ -15,7 +15,7 @@ win32{
 #WindowsではBOOSTDIR環境変数をセット
 INCLUDEPATH += $(BOOSTDIR)/include
 #コンパイル時のメモリ対策
-QMAKE_CXXFLAGS += -Wa,-mbig-obj
+QMAKE_CXXFLAGS += --param ggc-min-expand=25 --param ggc-min-heapsize=8192 -Wa,-mbig-obj
 }
 INCLUDEPATH += $$PWD/../babel
 
