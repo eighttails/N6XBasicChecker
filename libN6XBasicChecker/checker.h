@@ -14,7 +14,7 @@ public:
     //構文解析
     bool parse(const std::wstring& programList, ParserStatus& stat, bool trace = false);
 
-    static const char* version(){ return "1.6"; }
+    static const char* version(){ return "1.6.0"; }
 private:
     //全角→半角変換
     void convZenHan(std::wstring& programList);
