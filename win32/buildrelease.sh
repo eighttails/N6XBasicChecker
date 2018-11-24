@@ -1,6 +1,10 @@
 #!/bin/bash
 
-pacman -S --needed --noconfirm $MINGW_PACKAGE_PREFIX-toolchain $MINGW_PACKAGE_PREFIX-qt5 $MINGW_PACKAGE_PREFIX-boost 
+#依存ライブラリ
+pacman -S --needed --noconfirm \
+    $MINGW_PACKAGE_PREFIX-toolchain \
+    $MINGW_PACKAGE_PREFIX-qt5 \
+    $MINGW_PACKAGE_PREFIX-boost 
 
 export SCRIPT_DIR=$(dirname $(readlink -f ${BASH_SOURCE:-$0}))
 
