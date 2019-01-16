@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
     //バージョン情報
     if (vm.count("version")) {
         std::cout << "N6XBasicChecker ver." << Checker::version() << std::endl
-                  << "Copyright 2012-2018 Tadahito Yao(@eighttails)" << std::endl
+                  << "Copyright 2012-2019 Tadahito Yao(@eighttails)" << std::endl
                   << "http://eighttails.seesaa.net" << std::endl;
         return 0;
     }
