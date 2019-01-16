@@ -149,8 +149,8 @@ int main(int argc, char *argv[])
 
             //変数一覧表示
             if(vm.count("list-variables")){
-                // 変数名をキー、行番号のリストを値としたマップ
-                std::map<std::wstring, std::set<int>> variableList;
+                std::cout << utf8_to_local("変数一覧: ") << std::endl;
+                std::cout << utf8_to_local("変数名: [ 代入行番号リスト ][ 参照行番号リスト ] ") << std::endl;
 
                 for(const auto& var : stat.usedVariables_ ){
                     //出力の際は大文字に変換
@@ -158,26 +158,19 @@ int main(int argc, char *argv[])
                     transform(varName.begin(), varName.end(), varName.begin(), toupper);
                     auto varMap = var.second;
                     for (const auto& v : varMap ){
-                        // 代入している行と参照している行を統合
+                        // 代入している行と参照している行を出力
+                        std::cout << unicode_to_local(varName) << utf8_to_local(":\t[ ");
                         for(const auto& varLine : v.second.assigningLines_){
-                            variableList[varName].insert(varLine.line_.basicLineNumber_);
+                            std::cout << varLine.line_.basicLineNumber_ << " ";
                         }
+                        std::cout << utf8_to_local("][ ");
                         for(const auto& varLine : v.second.referingLines_){
-                            variableList[varName].insert(varLine.line_.basicLineNumber_);
+                            std::cout << varLine.line_.basicLineNumber_ << " ";
                         }
+                        std::cout << utf8_to_local("]") << std::endl;
                     }
-                }
-                std::cout << utf8_to_local("変数一覧: ") << std::endl;
-                std::cout << utf8_to_local("変数名: [ 使用行番号リスト ] ") << std::endl;
-                for(const auto& var : variableList){
-                    std::cout << unicode_to_local(var.first) << utf8_to_local(":\t[ ");
-                    for (const auto& l : var.second){
-                        std::cout << l << " ";
-                    }
-                    std::cout << utf8_to_local("]") << std::endl;
                 }
             }
-
 
             //エラー表示
             if(!stat.errorList_.empty()){
