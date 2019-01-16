@@ -1,11 +1,21 @@
 #!/bin/bash
 
-pacman -S --needed --noconfirm $MINGW_PACKAGE_PREFIX-toolchain $MINGW_PACKAGE_PREFIX-qt5 $MINGW_PACKAGE_PREFIX-boost 
+#依存ライブラリ
+pacman -S --needed --noconfirm \
+    $MINGW_PACKAGE_PREFIX-toolchain \
+    $MINGW_PACKAGE_PREFIX-qt5 \
+    $MINGW_PACKAGE_PREFIX-boost 
 
 export SCRIPT_DIR=$(dirname $(readlink -f ${BASH_SOURCE:-$0}))
 
 #並列ビルド
 MINGW32MAKE="mingw32-make -j$NUMBER_OF_PROCESSORS"
+
+if [ -z $1 ]; then
+    cd $SCRIPT_DIR/../../
+else
+    cd $1 
+fi
 
 N6XBC_DBUILD_DIR=N6XBasicChecker-build-$MINGW_CHOST
 

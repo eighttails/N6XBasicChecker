@@ -30,7 +30,7 @@ mkdir -p $WIN_BIN_DIR
 pushd $RELEASE_DIR
 
 #プログラム本体をビルド
-$SCRIPT_DIR/buildrelease.sh
+$SCRIPT_DIR/buildrelease.sh "$PWD"
 
 pushd N6XBasicChecker-build-$MINGW_CHOST
 cp -f N6XBasicCheckerMain/release/N6XBasicChecker.exe $WIN_BIN_DIR
