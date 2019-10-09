@@ -2,6 +2,7 @@
 
 #依存ライブラリ
 pacman -S --needed --noconfirm \
+    --disable-download-timeout \
     $MINGW_PACKAGE_PREFIX-toolchain \
     $MINGW_PACKAGE_PREFIX-qt5 \
     $MINGW_PACKAGE_PREFIX-boost 
