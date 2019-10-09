@@ -27,7 +27,6 @@ static char buf[WORDLEN];	// token buffer
 
 typedef struct _p6code6 {
 	char	*str;
-	int		ffflag; // has 0xff or not
 	int		number;
 } p6code6;
 
@@ -155,10 +154,10 @@ int parsemain6(void)
 			} else if (p6codelist6[ret].number == CODE_QUOTE) {
 				fputc(':', outfp);
 				fputc(CODE_REM, outfp);
-			} else if (p6codelist6[ret].ffflag == 1) {
+            } else if (p6codelist6[ret].number & 0xff00) {
 				fputc(0xff, outfp);
 			}
-			fputc(p6codelist6[ret].number, outfp);
+            fputc(p6codelist6[ret].number, outfp);
 			if (p6codelist6[ret].number == CODE_DATA) {
 				// raw output until return or colon
 				int c, quoteflag;
