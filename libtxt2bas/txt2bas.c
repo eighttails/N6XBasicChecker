@@ -66,7 +66,7 @@ int txt2bas_main(int srmode, char *infile, char* outfile, char* basfilename)
 // usage : 
 void usage(void)
 {
-    fprintf(stderr, "txt2bas version 0.8 : usage\n");
+    fprintf(stderr, "txt2bas version 0.9 : usage\n");
     fprintf(stderr, "  txt2bas [-56] infile outfile basfile\n");
 	exit(1);
 }
