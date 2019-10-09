@@ -977,7 +977,7 @@ bool program_parse(const std::wstring& program, ParserStatus& status)
     StringRule st_kanji
             =   L("kanji") >> -L("step")
                            >> coord_2d
-                           >> L(",") >> num_expression //色
+                           >> L(",") >> -num_expression //色
                            >> L(",") >> expression
                            >> *(-L(",") >> expression);
     //KEY文
