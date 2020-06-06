@@ -5,7 +5,8 @@ pacman -S --needed --noconfirm \
     --disable-download-timeout \
     $MINGW_PACKAGE_PREFIX-toolchain \
     $MINGW_PACKAGE_PREFIX-qt5 \
-    $MINGW_PACKAGE_PREFIX-boost 
+    $MINGW_PACKAGE_PREFIX-boost \
+    2>/dev/null
 
 export SCRIPT_DIR=$(dirname $(readlink -f ${BASH_SOURCE:-$0}))
 
