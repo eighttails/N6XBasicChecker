@@ -29,22 +29,22 @@ static int line;	// current line number
 int txt2bas_main(int srmode, char *infile, char* outfile, char* basfilename)
 {
 	// open files
-    if ((infp = fopen(infile, "r")) == NULL) {
-        fprintf(stderr, "Can't open input file %s\n", infile);
+	if ((infp = fopen(infile, "r")) == NULL) {
+		fprintf(stderr, "Can't open input file %s\n", infile);
 		exit(1);
 	}
-    if ((outfp = fopen(outfile, "wb")) == NULL) {
-        fprintf(stderr, "Can't open output file %s\n", outfile);
+	if ((outfp = fopen(outfile, "wb")) == NULL) {
+		fprintf(stderr, "Can't open output file %s\n", outfile);
 		fclose(infp);
 		exit(1);
 	}
 
 	// main process
-    mk_head(basfilename);
+	mk_head(basfilename);
 	for (;;) {
 		if (buf_fgets() != 0)
 			break;
-        if (getlinenumber(srmode) < 0) continue;
+		if (getlinenumber(srmode) < 0) continue;
 		if (srmode == 0) {
 			parsemain5();
 		} else {
@@ -66,8 +66,8 @@ int txt2bas_main(int srmode, char *infile, char* outfile, char* basfilename)
 // usage : 
 void usage(void)
 {
-    fprintf(stderr, "txt2bas version 0.9 : usage\n");
-    fprintf(stderr, "  txt2bas [-56] infile outfile basfile\n");
+	fprintf(stderr, "txt2bas version 0.9 : usage\n");
+	fprintf(stderr, "  txt2bas [-56] infile outfile basfile\n");
 	exit(1);
 }
 
@@ -76,27 +76,27 @@ void usage(void)
 int getlinenumber(int srmode)
 {
 	int c;
-    int indent = 0;
+	int indent = 0;
 	static int prevline = -1;
 
-    line = -1;
+	line = -1;
 
 	// skip cr/tab/space
 	do {
 		c = buf_fgetc();
 	} while (/*c == '\t' ||*/ c == ' ');
-    if (c == '\r' || c == '\n') return 0;//skip line
+	if (c == '\r' || c == '\n') return 0;//skip line
 	while (isdigit(c) != 0) {
-        if(line < 0) line = 0;
-        line = line * 10 + c - '0';
+		if(line < 0) line = 0;
+		line = line * 10 + c - '0';
 		c = buf_fgetc();
 	}
 	// skip cr/tab/space
-    while (/*c == '\t' ||*/ c == ' '){
+	while (/*c == '\t' ||*/ c == ' '){
 		c = buf_fgetc();
-        indent++;
-    }
-    if (c == '\r' || c == '\n') return -1;//skip line (?UL Error)
+		indent++;
+	}
+	if (c == '\r' || c == '\n') return -1;//skip line (?UL Error)
 	buf_ungetc(1);
 	if (prevline >= line)
 		t2b_exit("Illegal line number found in");
@@ -110,10 +110,10 @@ int getlinenumber(int srmode)
 	fputc(line & 0x00ff, outfp);
 	fputc((line & 0xff00) >> 8, outfp);
 
-    // indent
-    while(--indent > 0 && srmode){
-        fputc(' ', outfp);
-    }
+	// indent
+	while(--indent > 0 && srmode){
+		fputc(' ', outfp);
+	}
 
 	return line;// > 0 : true
 }
@@ -133,12 +133,12 @@ void t2b_exit(char *msg)
 void mk_head(char* filename)
 {
 	int i;
-    char fname[7] = {};
-    strncpy(fname, filename, 6);
-    for (i = 0; i < 10; i++)
-        fputc(0xd3, outfp);
+	char fname[7] = {};
+	strncpy(fname, filename, 6);
+	for (i = 0; i < 10; i++)
+		fputc(0xd3, outfp);
 
-    fwrite(fname, 6, 1, outfp);
+	fwrite(fname, 6, 1, outfp);
 }
 
 // ------------------------------------------------------------

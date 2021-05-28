@@ -39,7 +39,7 @@ int buf_fgets(void)
 {
 	bufid_read = 0;
 	bufid_write = 0;
-	if (fgets(buf, BUFSIZE, infp) == NULL) 
+	if (fgets(buf, BUFSIZE, infp) == NULL)
 		return 1;
 	else {
 		buf_conv();

@@ -62,7 +62,7 @@ int parsemain6(void)
 		if (ret < 0) {
 
 			// if no match, output 1 byte as is
-            if (buf[0] == '\r' || buf[0] == '\n') {
+			if (buf[0] == '\r' || buf[0] == '\n') {
 				// if return code, exit
 				fputc(0, outfp);
 				return 0;
@@ -72,7 +72,7 @@ int parsemain6(void)
 				dval = readnumber(10, &hasPeriod);
 				ival = (int)dval;
 				if (((hasPeriod == 0) && (lineNumberFlag == 0) && (ival < 32768)) ||
-					((hasPeriod == 0) && (lineNumberFlag == 1) && (ival < 65529))) {
+						((hasPeriod == 0) && (lineNumberFlag == 1) && (ival < 65529))) {
 					if (lineNumberFlag == 1) {
 						fputc(PREFIX_LINENUM, outfp);
 						fputc(ival & 0xff, outfp);
@@ -114,14 +114,14 @@ int parsemain6(void)
 					int c;
 					c = buf_fgetc();
 					for (;;) {
-                        if (c == '\r' || c == '\n') {
+						if (c == '\r' || c == '\n') {
 							buf_ungetc(1);
 							break;
 						}
 						fputc(c, outfp);
 						if (c == '"')
 							break;
-						c = buf_fgetc();	  
+						c = buf_fgetc();
 					}
 					buf_match();
 				} else if (isalpha(buf[0])) {
@@ -136,7 +136,7 @@ int parsemain6(void)
 							break;
 						}
 						fputc(c, outfp);
-						c = buf_fgetc();	  
+						c = buf_fgetc();
 					}
 					buf_match();
 				}
@@ -155,17 +155,17 @@ int parsemain6(void)
 			} else if (p6codelist6[ret].number == CODE_QUOTE) {
 				fputc(':', outfp);
 				fputc(CODE_REM, outfp);
-            } else if (p6codelist6[ret].number & 0xff00) {
+			} else if (p6codelist6[ret].number & 0xff00) {
 				fputc(0xff, outfp);
 			}
-            fputc(p6codelist6[ret].number, outfp);
+			fputc(p6codelist6[ret].number, outfp);
 			if (p6codelist6[ret].number == CODE_DATA) {
 				// raw output until return or colon
 				int c, quoteflag;
 				c = buf_fgetc();
 				quoteflag = 0;
 				for (;;) {
-                    if (c == '\r' || c == '\n') {
+					if (c == '\r' || c == '\n') {
 						buf_ungetc(1);
 						break;
 					}
@@ -175,7 +175,7 @@ int parsemain6(void)
 					else if (c == '"') {
 						quoteflag = 1 - quoteflag;
 					}
-					c = buf_fgetc();	  
+					c = buf_fgetc();
 				}
 				buf_match();
 			} else if ((p6codelist6[ret].number == CODE_REM) ||
@@ -183,9 +183,9 @@ int parsemain6(void)
 				// raw output until return
 				int c;
 				c = buf_fgetc();
-                while (c != '\r' && c != '\n') {
+				while (c != '\r' && c != '\n') {
 					fputc(c, outfp);
-					c = buf_fgetc();	  
+					c = buf_fgetc();
 				}
 				buf_ungetc(1);
 				buf_match();
@@ -235,14 +235,14 @@ double readnumber(int base, int *hasPeriod)
 	double val;
 	double basesub;
 	int c;
-  
+
 	val = 0;
 	c = buf_fgetc();
 	while (((base == 10) && (isdigit(c) != 0)) ||
 		   ((base == 16) && (isxdigit(c) != 0)) ||
 		   ((base == 8) && (c >= '0') && (c <= '7'))) {
 		val *= base;
-		if (isdigit(c) != 0) 
+		if (isdigit(c) != 0)
 			val += c - '0';
 		else
 			//if (c < 'a')
@@ -286,7 +286,7 @@ void writefloat(double val)
 	if ( val == 0 ) {
 		exp2 = 0;
 	} else {
-	val = frexp(val, &exp2);
+		val = frexp(val, &exp2);
 		val = val * 2 - 1;
 		//exp2++;
 

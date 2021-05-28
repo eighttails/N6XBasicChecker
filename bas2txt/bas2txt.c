@@ -53,17 +53,17 @@ int main(int argc, char **argv)
 			usage();
 		}
 		switch (argv[i][1]) {
-			case '5':
-				srmode = 0;
-				break;
-			case '6':
-				srmode = 1;
-				break;
-			case 'a':
-				useascii = 1;
-				break;
-			default:
-				usage();
+		case '5':
+			srmode = 0;
+			break;
+		case '6':
+			srmode = 1;
+			break;
+		case 'a':
+			useascii = 1;
+			break;
+		default:
+			usage();
 		}
 	}
 
@@ -72,7 +72,7 @@ int main(int argc, char **argv)
 		fprintf(stderr, "Can't open input file %s\n", argv[argc - 2]);
 		exit(1);
 	}
-    if ((outfp = fopen(argv[argc - 1], "wb")) == NULL) {
+	if ((outfp = fopen(argv[argc - 1], "wb")) == NULL) {
 		fprintf(stderr, "Can't open output file %s\n", argv[argc - 1]);
 		fclose(infp);
 		exit(1);
@@ -115,7 +115,7 @@ int main(int argc, char **argv)
 // usage : 
 void usage(void)
 {
-    fprintf(stderr, "bas2txt version 0.3 : usage\n");
+	fprintf(stderr, "bas2txt version 0.3 : usage\n");
 	fprintf(stderr, "  bas2txt [-56] [-a] infile outfile\n");
 	exit(1);
 }

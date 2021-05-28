@@ -92,9 +92,9 @@ int parsemain6(void)
 			val = 0.0;
 			for (j = 0; j < 4; j++) {
 				c = buf_fgetc();
-			 	for (k = 0; k < 8; k++) {
+				for (k = 0; k < 8; k++) {
 					if (c & (1 << k)) {
-			 			val += 1.0;
+						val += 1.0;
 					}
 					val /= 2.0;
 				}
@@ -105,7 +105,7 @@ int parsemain6(void)
 			if (c == 0x80) {
 				val = 0.0;
 			} else {
-                val = val * pow(2.0, (c - 0x80));
+				val = val * pow(2.0, (c - 0x80));
 			}
 			buf_fprintfG(val);
 		} else {
@@ -136,9 +136,9 @@ int parsemain6(void)
 				if ((c == ':') && (*(inptr) == CODEREM) && (*(inptr + 1) == CODEQUOTE)) {
 					inptr++;
 					// output nothing
-                } else if ((c == ':') && (*(inptr) == CODEELSE)) {
-                    // output nothing
-                } else {
+				} else if ((c == ':') && (*(inptr) == CODEELSE)) {
+					// output nothing
+				} else {
 					buf_fputc(c);
 					if (c == '"') {
 						// raw output until " or return

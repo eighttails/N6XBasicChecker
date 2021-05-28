@@ -12,28 +12,28 @@
 
 class LibN6XBasicCheckerTest : public QObject
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    LibN6XBasicCheckerTest();
+	LibN6XBasicCheckerTest();
 private:
-    bool parse(const std::wstring& program, ParserStatus& stat, bool errorTrace = false, bool warningTrace = false);
+	bool parse(const std::wstring& program, ParserStatus& stat, bool errorTrace = false, bool warningTrace = false);
 private Q_SLOTS:
-    void testCase14();
-    void testCase13();
-    void testCase12();
-    void testCase11();
-    void testCase10();
-    void testCase9();
-    void testCase8();
-    void testCase7();
-    void testCase6();
-    void testCase5();
-    void testCase4();
-    void testCase3();
-    void testCase2();
-    void testCase1();
-    void testCaseX();
+	void testCase14();
+	void testCase13();
+	void testCase12();
+	void testCase11();
+	void testCase10();
+	void testCase9();
+	void testCase8();
+	void testCase7();
+	void testCase6();
+	void testCase5();
+	void testCase4();
+	void testCase3();
+	void testCase2();
+	void testCase1();
+	void testCaseX();
 };
 
 LibN6XBasicCheckerTest::LibN6XBasicCheckerTest()
@@ -42,64 +42,64 @@ LibN6XBasicCheckerTest::LibN6XBasicCheckerTest()
 
 bool LibN6XBasicCheckerTest::parse(const std::wstring& program, ParserStatus& stat, bool errorTrace, bool warningTrace)
 {
-    Checker checker;
-    bool r = checker.parse(program, stat, errorTrace);
-    if(!r && errorTrace){
-        for(size_t i = 0; i < stat.errorList_.size(); i++){
-            const ErrorInfo& err = stat.errorList_[i];
-            std::cout << utf8_to_local("テキスト行:") << err.line_.textLineNumber_
-                      << utf8_to_local(" BASIC行:") << err.line_.basicLineNumber_
-                      << " " << unicode_to_local(err.info_) << std::endl;
-        }
-    }
-    if(warningTrace){
-        for(size_t i = 0; i < stat.warningList_.size(); i++){
-            const ErrorInfo& err = stat.warningList_[i];
-            std::cout << utf8_to_local("テキスト行:") << err.line_.textLineNumber_
-                      << utf8_to_local(" BASIC行:") << err.line_.basicLineNumber_
-                      << " " << unicode_to_local(err.info_) << std::endl;
-        }
-    }
-    return r;
+	Checker checker;
+	bool r = checker.parse(program, stat, errorTrace);
+	if(!r && errorTrace){
+		for(size_t i = 0; i < stat.errorList_.size(); i++){
+			const ErrorInfo& err = stat.errorList_[i];
+			std::cout << utf8_to_local("テキスト行:") << err.line_.textLineNumber_
+					  << utf8_to_local(" BASIC行:") << err.line_.basicLineNumber_
+					  << " " << unicode_to_local(err.info_) << std::endl;
+		}
+	}
+	if(warningTrace){
+		for(size_t i = 0; i < stat.warningList_.size(); i++){
+			const ErrorInfo& err = stat.warningList_[i];
+			std::cout << utf8_to_local("テキスト行:") << err.line_.textLineNumber_
+					  << utf8_to_local(" BASIC行:") << err.line_.basicLineNumber_
+					  << " " << unicode_to_local(err.info_) << std::endl;
+		}
+	}
+	return r;
 }
 
 void LibN6XBasicCheckerTest::testCase14()
 {
-    ParserStatus stat;
-    std::wstring programList;
+	ParserStatus stat;
+	std::wstring programList;
 
-    //PLAY文のテスト
-    programList =
-            L"10 data \"0123456789abcdef\n"
+	//PLAY文のテスト
+	programList =
+			L"10 data \"0123456789abcdef\n"
             "20 data \"01 23 45 67 89 ab cd ef\n"
             ;
-    stat.hexRange_.push_back(std::pair<int, int>(10, 20));
-    QVERIFY(parse(programList, stat, true));
+	stat.hexRange_.push_back(std::pair<int, int>(10, 20));
+	QVERIFY(parse(programList, stat, true));
 
-    programList =
-            L"10 data \"0i23456789abcdef\n"
+	programList =
+			L"10 data \"0i23456789abcdef\n"
             "20 data \"0i 23 45 67 89 ab cd ef.\n"
             ;
-    stat = ParserStatus();
-    stat.hexRange_.push_back(std::pair<int, int>(10, 20));
-    QVERIFY(!parse(programList, stat));
-    int i=0;
-    QVERIFY(stat.errorList_[i].line_.textLineNumber_ == 1);
-    QVERIFY(stat.errorList_[i].line_.basicLineNumber_ == 10);
-    QVERIFY(stat.errorList_[i++].code_ == E_HEX);
-    QVERIFY(stat.errorList_[i].line_.textLineNumber_ == 2);
-    QVERIFY(stat.errorList_[i].line_.basicLineNumber_ == 20);
-    QVERIFY(stat.errorList_[i++].code_ == E_HEX);
+	stat = ParserStatus();
+	stat.hexRange_.push_back(std::pair<int, int>(10, 20));
+	QVERIFY(!parse(programList, stat));
+	int i=0;
+	QVERIFY(stat.errorList_[i].line_.textLineNumber_ == 1);
+	QVERIFY(stat.errorList_[i].line_.basicLineNumber_ == 10);
+	QVERIFY(stat.errorList_[i++].code_ == E_HEX);
+	QVERIFY(stat.errorList_[i].line_.textLineNumber_ == 2);
+	QVERIFY(stat.errorList_[i].line_.basicLineNumber_ == 20);
+	QVERIFY(stat.errorList_[i++].code_ == E_HEX);
 }
 
 void LibN6XBasicCheckerTest::testCase13()
 {
-    ParserStatus stat;
-    std::wstring programList;
+	ParserStatus stat;
+	std::wstring programList;
 
-    //TALK文のテスト(BASICマニュアルから抜粋)
-    programList =
-            L"10 talk\"f1 ka'mesax +koxniciwa.\n"
+	//TALK文のテスト(BASICマニュアルから抜粋)
+	programList =
+			L"10 talk\"f1 ka'mesax +koxniciwa.\n"
             "20 talk\"m1 usagi' sa'x +koxniciwa.\n"
             "30 talk\"f1 kyo'uwa +i'i te'xkidesune?\n"
             "40 talk\"m1 hoxtode'su +ne\n"
@@ -108,166 +108,166 @@ void LibN6XBasicCheckerTest::testCase13()
             "70 talk\"f1 +yo'oi.\",\"m2 do'x.\n"
             "80 talk\"f2# dodododo.:o3ccco4cc\n"
             ;
-    QVERIFY(parse(programList, stat, true));
+	QVERIFY(parse(programList, stat, true));
 }
 
 void LibN6XBasicCheckerTest::testCase12()
 {
-    ParserStatus stat;
-    std::wstring programList;
+	ParserStatus stat;
+	std::wstring programList;
 
-    //PLAY文のテスト
-    programList =
-            L"10 play\"cde\n"
+	//PLAY文のテスト
+	programList =
+			L"10 play\"cde\n"
             "20 play\"@3c+d-8e8.\n"
             "30 play\"v8l8t255s=i;m=j;n=k;t=t1;\n"
             ;
-    QVERIFY(parse(programList, stat, true));
+	QVERIFY(parse(programList, stat, true));
 
-    programList =
-            L"10 play\"qwerty\n"
+	programList =
+			L"10 play\"qwerty\n"
             "20 play\"@=kcde\n"
             "30 play\"c8+\n"
             ;
-    stat = ParserStatus();
-    QVERIFY(!parse(programList, stat));
-    int i=0;
-    QVERIFY(stat.errorList_[i].line_.textLineNumber_ == 1);
-    QVERIFY(stat.errorList_[i].line_.basicLineNumber_ == 10);
-    QVERIFY(stat.errorList_[i++].code_ == E_PLAY);
-    QVERIFY(stat.errorList_[i].line_.textLineNumber_ == 2);
-    QVERIFY(stat.errorList_[i].line_.basicLineNumber_ == 20);
-    QVERIFY(stat.errorList_[i++].code_ == E_PLAY);
-    QVERIFY(stat.errorList_[i].line_.textLineNumber_ == 3);
-    QVERIFY(stat.errorList_[i].line_.basicLineNumber_ == 30);
-    QVERIFY(stat.errorList_[i++].code_ == E_PLAY);
+	stat = ParserStatus();
+	QVERIFY(!parse(programList, stat));
+	int i=0;
+	QVERIFY(stat.errorList_[i].line_.textLineNumber_ == 1);
+	QVERIFY(stat.errorList_[i].line_.basicLineNumber_ == 10);
+	QVERIFY(stat.errorList_[i++].code_ == E_PLAY);
+	QVERIFY(stat.errorList_[i].line_.textLineNumber_ == 2);
+	QVERIFY(stat.errorList_[i].line_.basicLineNumber_ == 20);
+	QVERIFY(stat.errorList_[i++].code_ == E_PLAY);
+	QVERIFY(stat.errorList_[i].line_.textLineNumber_ == 3);
+	QVERIFY(stat.errorList_[i].line_.basicLineNumber_ == 30);
+	QVERIFY(stat.errorList_[i++].code_ == E_PLAY);
 }
 
 void LibN6XBasicCheckerTest::testCase11()
 {
-    ParserStatus stat;
-    std::wstring programList;
+	ParserStatus stat;
+	std::wstring programList;
 
-    //変数の参照、代入の管理
-    //文字列系
-    programList =
-            L"10 aiu$=\"aaaa\n"     //ai$代入(その1) 10,50行はaiu$,20行はaio$として代入。ともにai$として識別される
-            "20 aio$=\"aaaa\n"      //ai$代入(その2)
-            "30 aiu$(0)=\"aaaa\n"   //ai$配列(参照)同じai$でも単なる変数と配列は区別される。ここでは参照されていないという警告になる。
-            "40 print aiu$\n"       //ai$参照
-            "50 a i u $=\"bbbb\n"   //ai$代入(その3) 変数は空白を含んでいても同一とみなされる。
-            "60 a$=\"aaaa\n"        //どこからも参照されない変数
-            "70 printb$\n"          //どこからも代入されていない変数
-            ;
-    QVERIFY(parse(programList, stat, true));
-    int i=0;
-    QVERIFY(stat.warningList_[i].line_.textLineNumber_ == 1);
-    QVERIFY(stat.warningList_[i].line_.basicLineNumber_ == 10);
-    QVERIFY(stat.warningList_[i++].code_ == W_DUPLICATE_VARIABLE);
-    QVERIFY(stat.warningList_[i].line_.textLineNumber_ == 2);
-    QVERIFY(stat.warningList_[i].line_.basicLineNumber_ == 20);
-    QVERIFY(stat.warningList_[i++].code_ == W_DUPLICATE_VARIABLE);
-    QVERIFY(stat.warningList_[i].line_.textLineNumber_ == 2);
-    QVERIFY(stat.warningList_[i].line_.basicLineNumber_ == 20);
-    QVERIFY(stat.warningList_[i++].code_ == W_UNREFERED_VARIABLE);
-    QVERIFY(stat.warningList_[i].line_.textLineNumber_ == 3);
-    QVERIFY(stat.warningList_[i].line_.basicLineNumber_ == 30);
-    QVERIFY(stat.warningList_[i++].code_ == W_UNREFERED_VARIABLE);
-    QVERIFY(stat.warningList_[i].line_.textLineNumber_ == 4);
-    QVERIFY(stat.warningList_[i].line_.basicLineNumber_ == 40);
-    QVERIFY(stat.warningList_[i++].code_ == W_DUPLICATE_VARIABLE);
-    QVERIFY(stat.warningList_[i].line_.textLineNumber_ == 5);
-    QVERIFY(stat.warningList_[i].line_.basicLineNumber_ == 50);
-    QVERIFY(stat.warningList_[i++].code_ == W_DUPLICATE_VARIABLE);
-    QVERIFY(stat.warningList_[i].line_.textLineNumber_ == 6);
-    QVERIFY(stat.warningList_[i].line_.basicLineNumber_ == 60);
-    QVERIFY(stat.warningList_[i++].code_ == W_UNREFERED_VARIABLE);
-    QVERIFY(stat.warningList_[i].line_.textLineNumber_ == 7);
-    QVERIFY(stat.warningList_[i].line_.basicLineNumber_ == 70);
-    QVERIFY(stat.warningList_[i++].code_ == W_UNASSIGNED_VARIABLE);
+	//変数の参照、代入の管理
+	//文字列系
+	programList =
+			L"10 aiu$=\"aaaa\n"     //ai$代入(その1) 10,50行はaiu$,20行はaio$として代入。ともにai$として識別される
+			"20 aio$=\"aaaa\n"      //ai$代入(その2)
+			"30 aiu$(0)=\"aaaa\n"   //ai$配列(参照)同じai$でも単なる変数と配列は区別される。ここでは参照されていないという警告になる。
+			"40 print aiu$\n"       //ai$参照
+			"50 a i u $=\"bbbb\n"   //ai$代入(その3) 変数は空白を含んでいても同一とみなされる。
+			"60 a$=\"aaaa\n"        //どこからも参照されない変数
+			"70 printb$\n"          //どこからも代入されていない変数
+			;
+	QVERIFY(parse(programList, stat, true));
+	int i=0;
+	QVERIFY(stat.warningList_[i].line_.textLineNumber_ == 1);
+	QVERIFY(stat.warningList_[i].line_.basicLineNumber_ == 10);
+	QVERIFY(stat.warningList_[i++].code_ == W_DUPLICATE_VARIABLE);
+	QVERIFY(stat.warningList_[i].line_.textLineNumber_ == 2);
+	QVERIFY(stat.warningList_[i].line_.basicLineNumber_ == 20);
+	QVERIFY(stat.warningList_[i++].code_ == W_DUPLICATE_VARIABLE);
+	QVERIFY(stat.warningList_[i].line_.textLineNumber_ == 2);
+	QVERIFY(stat.warningList_[i].line_.basicLineNumber_ == 20);
+	QVERIFY(stat.warningList_[i++].code_ == W_UNREFERED_VARIABLE);
+	QVERIFY(stat.warningList_[i].line_.textLineNumber_ == 3);
+	QVERIFY(stat.warningList_[i].line_.basicLineNumber_ == 30);
+	QVERIFY(stat.warningList_[i++].code_ == W_UNREFERED_VARIABLE);
+	QVERIFY(stat.warningList_[i].line_.textLineNumber_ == 4);
+	QVERIFY(stat.warningList_[i].line_.basicLineNumber_ == 40);
+	QVERIFY(stat.warningList_[i++].code_ == W_DUPLICATE_VARIABLE);
+	QVERIFY(stat.warningList_[i].line_.textLineNumber_ == 5);
+	QVERIFY(stat.warningList_[i].line_.basicLineNumber_ == 50);
+	QVERIFY(stat.warningList_[i++].code_ == W_DUPLICATE_VARIABLE);
+	QVERIFY(stat.warningList_[i].line_.textLineNumber_ == 6);
+	QVERIFY(stat.warningList_[i].line_.basicLineNumber_ == 60);
+	QVERIFY(stat.warningList_[i++].code_ == W_UNREFERED_VARIABLE);
+	QVERIFY(stat.warningList_[i].line_.textLineNumber_ == 7);
+	QVERIFY(stat.warningList_[i].line_.basicLineNumber_ == 70);
+	QVERIFY(stat.warningList_[i++].code_ == W_UNASSIGNED_VARIABLE);
 
-    //数値系
-    programList =
-            L"10 aiu=0\n"       //ai代入(その1) 10,50行はaiu,20行はaioとして代入。ともにaiとして識別される
-            "20 aio=0\n"        //ai代入(その2)
-            "30 aiu(0)=0\n"     //ai配列(参照)同じaiでも単なる変数と配列は区別される。ここでは参照されていないという警告になる。
-            "40 print aiu\n"    //ai参照
-            "50 a i u =0\n"     //ai代入(その3) 変数は空白を含んでいても同一とみなされる。
-            "60 a=0\n"          //どこからも参照されない変数
-            "70 printb\n"       //どこからも代入されていない変数
-            ;
-    stat = ParserStatus();
-    QVERIFY(parse(programList, stat, true));
-    i=0;
-    QVERIFY(stat.warningList_[i].line_.textLineNumber_ == 1);
-    QVERIFY(stat.warningList_[i].line_.basicLineNumber_ == 10);
-    QVERIFY(stat.warningList_[i++].code_ == W_DUPLICATE_VARIABLE);
-    QVERIFY(stat.warningList_[i].line_.textLineNumber_ == 2);
-    QVERIFY(stat.warningList_[i].line_.basicLineNumber_ == 20);
-    QVERIFY(stat.warningList_[i++].code_ == W_DUPLICATE_VARIABLE);
-    QVERIFY(stat.warningList_[i].line_.textLineNumber_ == 2);
-    QVERIFY(stat.warningList_[i].line_.basicLineNumber_ == 20);
-    QVERIFY(stat.warningList_[i++].code_ == W_UNREFERED_VARIABLE);
-    QVERIFY(stat.warningList_[i].line_.textLineNumber_ == 3);
-    QVERIFY(stat.warningList_[i].line_.basicLineNumber_ == 30);
-    QVERIFY(stat.warningList_[i++].code_ == W_UNREFERED_VARIABLE);
-    QVERIFY(stat.warningList_[i].line_.textLineNumber_ == 4);
-    QVERIFY(stat.warningList_[i].line_.basicLineNumber_ == 40);
-    QVERIFY(stat.warningList_[i++].code_ == W_DUPLICATE_VARIABLE);
-    QVERIFY(stat.warningList_[i].line_.textLineNumber_ == 5);
-    QVERIFY(stat.warningList_[i].line_.basicLineNumber_ == 50);
-    QVERIFY(stat.warningList_[i++].code_ == W_DUPLICATE_VARIABLE);
-    QVERIFY(stat.warningList_[i].line_.textLineNumber_ == 6);
-    QVERIFY(stat.warningList_[i].line_.basicLineNumber_ == 60);
-    QVERIFY(stat.warningList_[i++].code_ == W_UNREFERED_VARIABLE);
-    QVERIFY(stat.warningList_[i].line_.textLineNumber_ == 7);
-    QVERIFY(stat.warningList_[i].line_.basicLineNumber_ == 70);
-    QVERIFY(stat.warningList_[i++].code_ == W_UNASSIGNED_VARIABLE);
+	//数値系
+	programList =
+			L"10 aiu=0\n"       //ai代入(その1) 10,50行はaiu,20行はaioとして代入。ともにaiとして識別される
+			"20 aio=0\n"        //ai代入(その2)
+			"30 aiu(0)=0\n"     //ai配列(参照)同じaiでも単なる変数と配列は区別される。ここでは参照されていないという警告になる。
+			"40 print aiu\n"    //ai参照
+			"50 a i u =0\n"     //ai代入(その3) 変数は空白を含んでいても同一とみなされる。
+			"60 a=0\n"          //どこからも参照されない変数
+			"70 printb\n"       //どこからも代入されていない変数
+			;
+	stat = ParserStatus();
+	QVERIFY(parse(programList, stat, true));
+	i=0;
+	QVERIFY(stat.warningList_[i].line_.textLineNumber_ == 1);
+	QVERIFY(stat.warningList_[i].line_.basicLineNumber_ == 10);
+	QVERIFY(stat.warningList_[i++].code_ == W_DUPLICATE_VARIABLE);
+	QVERIFY(stat.warningList_[i].line_.textLineNumber_ == 2);
+	QVERIFY(stat.warningList_[i].line_.basicLineNumber_ == 20);
+	QVERIFY(stat.warningList_[i++].code_ == W_DUPLICATE_VARIABLE);
+	QVERIFY(stat.warningList_[i].line_.textLineNumber_ == 2);
+	QVERIFY(stat.warningList_[i].line_.basicLineNumber_ == 20);
+	QVERIFY(stat.warningList_[i++].code_ == W_UNREFERED_VARIABLE);
+	QVERIFY(stat.warningList_[i].line_.textLineNumber_ == 3);
+	QVERIFY(stat.warningList_[i].line_.basicLineNumber_ == 30);
+	QVERIFY(stat.warningList_[i++].code_ == W_UNREFERED_VARIABLE);
+	QVERIFY(stat.warningList_[i].line_.textLineNumber_ == 4);
+	QVERIFY(stat.warningList_[i].line_.basicLineNumber_ == 40);
+	QVERIFY(stat.warningList_[i++].code_ == W_DUPLICATE_VARIABLE);
+	QVERIFY(stat.warningList_[i].line_.textLineNumber_ == 5);
+	QVERIFY(stat.warningList_[i].line_.basicLineNumber_ == 50);
+	QVERIFY(stat.warningList_[i++].code_ == W_DUPLICATE_VARIABLE);
+	QVERIFY(stat.warningList_[i].line_.textLineNumber_ == 6);
+	QVERIFY(stat.warningList_[i].line_.basicLineNumber_ == 60);
+	QVERIFY(stat.warningList_[i++].code_ == W_UNREFERED_VARIABLE);
+	QVERIFY(stat.warningList_[i].line_.textLineNumber_ == 7);
+	QVERIFY(stat.warningList_[i].line_.basicLineNumber_ == 70);
+	QVERIFY(stat.warningList_[i++].code_ == W_UNASSIGNED_VARIABLE);
 
 
 }
 
 void LibN6XBasicCheckerTest::testCase10()
 {
-    ParserStatus stat;
-    std::wstring programList;
+	ParserStatus stat;
+	std::wstring programList;
 
-    //GOTO,GOSUBの後に余分な記述があった場合に警告を出す
-    programList =
-            L"10 goto10xxx\n"
+	//GOTO,GOSUBの後に余分な記述があった場合に警告を出す
+	programList =
+			L"10 goto10xxx\n"
             "20 gosub10yyy\n"
             "30 a=0:ifa=0then10zzzelse20\n"
             "40 ifa=0then10else20www\n"
             "50 goto10'コメント\n"                      //コメントの場合は警告を出さない
-            "60 gosub10'コメント\n"                     //コメントの場合は警告を出さない
-            "70 a=0:ifa=0then10zzzelse20'コメント\n"    //コメントの場合は警告を出さない
-            "80 ifa=0then10else20'コメント\n"           //コメントの場合は警告を出さない
-                        ;
-    QVERIFY(parse(programList, stat, true));
-    int i=0;
-    QVERIFY(stat.warningList_[i].line_.textLineNumber_ == 1);
-    QVERIFY(stat.warningList_[i].line_.basicLineNumber_ == 10);
-    QVERIFY(stat.warningList_[i++].code_ == W_REDUNDANT_CONTENT);
-    QVERIFY(stat.warningList_[i].line_.textLineNumber_ == 2);
-    QVERIFY(stat.warningList_[i].line_.basicLineNumber_ == 20);
-    QVERIFY(stat.warningList_[i++].code_ == W_REDUNDANT_CONTENT);
-    QVERIFY(stat.warningList_[i].line_.textLineNumber_ == 3);
-    QVERIFY(stat.warningList_[i].line_.basicLineNumber_ == 30);
-    QVERIFY(stat.warningList_[i++].code_ == W_REDUNDANT_CONTENT);
-    QVERIFY(stat.warningList_[i].line_.textLineNumber_ == 4);
-    QVERIFY(stat.warningList_[i].line_.basicLineNumber_ == 40);
-    QVERIFY(stat.warningList_[i++].code_ == W_REDUNDANT_CONTENT);
+			"60 gosub10'コメント\n"                     //コメントの場合は警告を出さない
+			"70 a=0:ifa=0then10zzzelse20'コメント\n"    //コメントの場合は警告を出さない
+			"80 ifa=0then10else20'コメント\n"           //コメントの場合は警告を出さない
+			;
+	QVERIFY(parse(programList, stat, true));
+	int i=0;
+	QVERIFY(stat.warningList_[i].line_.textLineNumber_ == 1);
+	QVERIFY(stat.warningList_[i].line_.basicLineNumber_ == 10);
+	QVERIFY(stat.warningList_[i++].code_ == W_REDUNDANT_CONTENT);
+	QVERIFY(stat.warningList_[i].line_.textLineNumber_ == 2);
+	QVERIFY(stat.warningList_[i].line_.basicLineNumber_ == 20);
+	QVERIFY(stat.warningList_[i++].code_ == W_REDUNDANT_CONTENT);
+	QVERIFY(stat.warningList_[i].line_.textLineNumber_ == 3);
+	QVERIFY(stat.warningList_[i].line_.basicLineNumber_ == 30);
+	QVERIFY(stat.warningList_[i++].code_ == W_REDUNDANT_CONTENT);
+	QVERIFY(stat.warningList_[i].line_.textLineNumber_ == 4);
+	QVERIFY(stat.warningList_[i].line_.basicLineNumber_ == 40);
+	QVERIFY(stat.warningList_[i++].code_ == W_REDUNDANT_CONTENT);
 }
 
 void LibN6XBasicCheckerTest::testCase9()
 {
-    ParserStatus stat;
-    std::wstring programList;
+	ParserStatus stat;
+	std::wstring programList;
 
-    //行番号存在チェック
-    programList =
-            L"10 rem\n"         //正常系
-            "20 goto 10\n"
+	//行番号存在チェック
+	programList =
+			L"10 rem\n"         //正常系
+			"20 goto 10\n"
             "30 gosub 10\n"
             "40 ifa=0then10else20\n"
             "50 onagoto10,20,30\n"
@@ -275,7 +275,7 @@ void LibN6XBasicCheckerTest::testCase9()
             "70 restore10\n"
             "80 run10\n"
             "90 goto 999\n"     //異常系
-            "100 gosub 999\n"
+			"100 gosub 999\n"
             "110 ifa=0then999else20\n"
             "120 ifa=0then10else999\n"
             "130 onagoto1000,1010,1020\n"
@@ -283,80 +283,80 @@ void LibN6XBasicCheckerTest::testCase9()
             "150 restore999\n"
             "160 run999\n"
             ;
-    QVERIFY(!parse(programList, stat));
-    int i=0;
-    QVERIFY(stat.errorList_[i].line_.textLineNumber_ == 9);
-    QVERIFY(stat.errorList_[i].line_.basicLineNumber_ == 90);
-    QVERIFY(stat.errorList_[i++].code_ == E_LINE_NOT_FOUND);
-    QVERIFY(stat.errorList_[i].line_.textLineNumber_ == 10);
-    QVERIFY(stat.errorList_[i].line_.basicLineNumber_ == 100);
-    QVERIFY(stat.errorList_[i++].code_ == E_LINE_NOT_FOUND);
-    QVERIFY(stat.errorList_[i].line_.textLineNumber_ == 11);
-    QVERIFY(stat.errorList_[i].line_.basicLineNumber_ == 110);
-    QVERIFY(stat.errorList_[i++].code_ == E_LINE_NOT_FOUND);
-    QVERIFY(stat.errorList_[i].line_.textLineNumber_ == 12);
-    QVERIFY(stat.errorList_[i].line_.basicLineNumber_ == 120);
-    QVERIFY(stat.errorList_[i++].code_ == E_LINE_NOT_FOUND);
-    QVERIFY(stat.errorList_[i].line_.textLineNumber_ == 13);
-    QVERIFY(stat.errorList_[i].line_.basicLineNumber_ == 130);
-    QVERIFY(stat.errorList_[i++].code_ == E_LINE_NOT_FOUND);
-    QVERIFY(stat.errorList_[i].line_.textLineNumber_ == 13);
-    QVERIFY(stat.errorList_[i].line_.basicLineNumber_ == 130);
-    QVERIFY(stat.errorList_[i++].code_ == E_LINE_NOT_FOUND);
-    QVERIFY(stat.errorList_[i].line_.textLineNumber_ == 13);
-    QVERIFY(stat.errorList_[i].line_.basicLineNumber_ == 130);
-    QVERIFY(stat.errorList_[i++].code_ == E_LINE_NOT_FOUND);
-    QVERIFY(stat.errorList_[i].line_.textLineNumber_ == 14);
-    QVERIFY(stat.errorList_[i].line_.basicLineNumber_ == 140);
-    QVERIFY(stat.errorList_[i++].code_ == E_LINE_NOT_FOUND);
-    QVERIFY(stat.errorList_[i].line_.textLineNumber_ == 14);
-    QVERIFY(stat.errorList_[i].line_.basicLineNumber_ == 140);
-    QVERIFY(stat.errorList_[i++].code_ == E_LINE_NOT_FOUND);
-    QVERIFY(stat.errorList_[i].line_.textLineNumber_ == 14);
-    QVERIFY(stat.errorList_[i].line_.basicLineNumber_ == 140);
-    QVERIFY(stat.errorList_[i++].code_ == E_LINE_NOT_FOUND);
-    QVERIFY(stat.errorList_[i].line_.textLineNumber_ == 15);
-    QVERIFY(stat.errorList_[i].line_.basicLineNumber_ == 150);
-    QVERIFY(stat.errorList_[i++].code_ == E_LINE_NOT_FOUND);
-    QVERIFY(stat.errorList_[i].line_.textLineNumber_ == 16);
-    QVERIFY(stat.errorList_[i].line_.basicLineNumber_ == 160);
-    QVERIFY(stat.errorList_[i++].code_ == E_LINE_NOT_FOUND);
+	QVERIFY(!parse(programList, stat));
+	int i=0;
+	QVERIFY(stat.errorList_[i].line_.textLineNumber_ == 9);
+	QVERIFY(stat.errorList_[i].line_.basicLineNumber_ == 90);
+	QVERIFY(stat.errorList_[i++].code_ == E_LINE_NOT_FOUND);
+	QVERIFY(stat.errorList_[i].line_.textLineNumber_ == 10);
+	QVERIFY(stat.errorList_[i].line_.basicLineNumber_ == 100);
+	QVERIFY(stat.errorList_[i++].code_ == E_LINE_NOT_FOUND);
+	QVERIFY(stat.errorList_[i].line_.textLineNumber_ == 11);
+	QVERIFY(stat.errorList_[i].line_.basicLineNumber_ == 110);
+	QVERIFY(stat.errorList_[i++].code_ == E_LINE_NOT_FOUND);
+	QVERIFY(stat.errorList_[i].line_.textLineNumber_ == 12);
+	QVERIFY(stat.errorList_[i].line_.basicLineNumber_ == 120);
+	QVERIFY(stat.errorList_[i++].code_ == E_LINE_NOT_FOUND);
+	QVERIFY(stat.errorList_[i].line_.textLineNumber_ == 13);
+	QVERIFY(stat.errorList_[i].line_.basicLineNumber_ == 130);
+	QVERIFY(stat.errorList_[i++].code_ == E_LINE_NOT_FOUND);
+	QVERIFY(stat.errorList_[i].line_.textLineNumber_ == 13);
+	QVERIFY(stat.errorList_[i].line_.basicLineNumber_ == 130);
+	QVERIFY(stat.errorList_[i++].code_ == E_LINE_NOT_FOUND);
+	QVERIFY(stat.errorList_[i].line_.textLineNumber_ == 13);
+	QVERIFY(stat.errorList_[i].line_.basicLineNumber_ == 130);
+	QVERIFY(stat.errorList_[i++].code_ == E_LINE_NOT_FOUND);
+	QVERIFY(stat.errorList_[i].line_.textLineNumber_ == 14);
+	QVERIFY(stat.errorList_[i].line_.basicLineNumber_ == 140);
+	QVERIFY(stat.errorList_[i++].code_ == E_LINE_NOT_FOUND);
+	QVERIFY(stat.errorList_[i].line_.textLineNumber_ == 14);
+	QVERIFY(stat.errorList_[i].line_.basicLineNumber_ == 140);
+	QVERIFY(stat.errorList_[i++].code_ == E_LINE_NOT_FOUND);
+	QVERIFY(stat.errorList_[i].line_.textLineNumber_ == 14);
+	QVERIFY(stat.errorList_[i].line_.basicLineNumber_ == 140);
+	QVERIFY(stat.errorList_[i++].code_ == E_LINE_NOT_FOUND);
+	QVERIFY(stat.errorList_[i].line_.textLineNumber_ == 15);
+	QVERIFY(stat.errorList_[i].line_.basicLineNumber_ == 150);
+	QVERIFY(stat.errorList_[i++].code_ == E_LINE_NOT_FOUND);
+	QVERIFY(stat.errorList_[i].line_.textLineNumber_ == 16);
+	QVERIFY(stat.errorList_[i].line_.basicLineNumber_ == 160);
+	QVERIFY(stat.errorList_[i++].code_ == E_LINE_NOT_FOUND);
 }
 
 void LibN6XBasicCheckerTest::testCase8()
 {
-    ParserStatus stat;
-    std::wstring programList;
+	ParserStatus stat;
+	std::wstring programList;
 
-    //異常系
-    programList =
-            L"10 rem\n"
+	//異常系
+	programList =
+			L"10 rem\n"
             "10 rem\n"
             "20 rem\n"
             "15 rem\n"
             "30 rem\n"
             ;
-    QVERIFY(!parse(programList, stat));
-    int i=0;
-    QVERIFY(stat.errorList_[i].line_.textLineNumber_ == 2);
-    QVERIFY(stat.errorList_[i].line_.basicLineNumber_ == 10);
-    QVERIFY(stat.errorList_[i++].code_ == E_INVALID_LINENUMBER);
-    QVERIFY(stat.errorList_[i].line_.textLineNumber_ == 2);
-    QVERIFY(stat.errorList_[i].line_.basicLineNumber_ == 10);
-    QVERIFY(stat.errorList_[i++].code_ == E_INVALID_LINENUMBER);
-    QVERIFY(stat.errorList_[i].line_.textLineNumber_ == 4);
-    QVERIFY(stat.errorList_[i].line_.basicLineNumber_ == 15);
-    QVERIFY(stat.errorList_[i++].code_ == E_INVALID_LINENUMBER);
+	QVERIFY(!parse(programList, stat));
+	int i=0;
+	QVERIFY(stat.errorList_[i].line_.textLineNumber_ == 2);
+	QVERIFY(stat.errorList_[i].line_.basicLineNumber_ == 10);
+	QVERIFY(stat.errorList_[i++].code_ == E_INVALID_LINENUMBER);
+	QVERIFY(stat.errorList_[i].line_.textLineNumber_ == 2);
+	QVERIFY(stat.errorList_[i].line_.basicLineNumber_ == 10);
+	QVERIFY(stat.errorList_[i++].code_ == E_INVALID_LINENUMBER);
+	QVERIFY(stat.errorList_[i].line_.textLineNumber_ == 4);
+	QVERIFY(stat.errorList_[i].line_.basicLineNumber_ == 15);
+	QVERIFY(stat.errorList_[i++].code_ == E_INVALID_LINENUMBER);
 }
 
 void LibN6XBasicCheckerTest::testCase7()
 {
-    //えすびさんに提供してもらったテストケース
-    ParserStatus stat;
-    std::wstring programList;
-    //異常系
-    programList =
-            L"500 A$=\"1\",\"b\":B$=\"AA\"+\n"
+	//えすびさんに提供してもらったテストケース
+	ParserStatus stat;
+	std::wstring programList;
+	//異常系
+	programList =
+			L"500 A$=\"1\",\"b\":B$=\"AA\"+\n"
             "510 A=1+:B=111TO\n"
             "520 COLORA$=B$+1:COLORB$+1=A$\n"
             "530 COLORA$=B$*1:COLORB$*1=A$\n"
@@ -367,34 +367,34 @@ void LibN6XBasicCheckerTest::testCase7()
             "580 COLOR(\"AA\"<>A):COLOR(A$><1):COLOR(INKEY$<=1)\n"
             "590 COLOR1+A$=B$\n"
             ;
-    QVERIFY(!parse(programList, stat));
-    int i=0;
-    QVERIFY(stat.errorList_[i++].line_.basicLineNumber_ == 500);
-    QVERIFY(stat.errorList_[i++].line_.basicLineNumber_ == 510);
-    QVERIFY(stat.errorList_[i++].line_.basicLineNumber_ == 520);
-    QVERIFY(stat.errorList_[i++].line_.basicLineNumber_ == 530);
-    QVERIFY(stat.errorList_[i++].line_.basicLineNumber_ == 540);
-    //QVERIFY(stat.errorList_[i++].line_.basicLineNumber_ == 550); エミュレータでエラーにならなかったので、テストケースから除外
-    QVERIFY(stat.errorList_[i++].line_.basicLineNumber_ == 560);
-    QVERIFY(stat.errorList_[i++].line_.basicLineNumber_ == 560);
-    QVERIFY(stat.errorList_[i++].line_.basicLineNumber_ == 560);
-    QVERIFY(stat.errorList_[i++].line_.basicLineNumber_ == 570);
-    QVERIFY(stat.errorList_[i++].line_.basicLineNumber_ == 570);
-    QVERIFY(stat.errorList_[i++].line_.basicLineNumber_ == 580);
-    QVERIFY(stat.errorList_[i++].line_.basicLineNumber_ == 590);
+	QVERIFY(!parse(programList, stat));
+	int i=0;
+	QVERIFY(stat.errorList_[i++].line_.basicLineNumber_ == 500);
+	QVERIFY(stat.errorList_[i++].line_.basicLineNumber_ == 510);
+	QVERIFY(stat.errorList_[i++].line_.basicLineNumber_ == 520);
+	QVERIFY(stat.errorList_[i++].line_.basicLineNumber_ == 530);
+	QVERIFY(stat.errorList_[i++].line_.basicLineNumber_ == 540);
+	//QVERIFY(stat.errorList_[i++].line_.basicLineNumber_ == 550); エミュレータでエラーにならなかったので、テストケースから除外
+	QVERIFY(stat.errorList_[i++].line_.basicLineNumber_ == 560);
+	QVERIFY(stat.errorList_[i++].line_.basicLineNumber_ == 560);
+	QVERIFY(stat.errorList_[i++].line_.basicLineNumber_ == 560);
+	QVERIFY(stat.errorList_[i++].line_.basicLineNumber_ == 570);
+	QVERIFY(stat.errorList_[i++].line_.basicLineNumber_ == 570);
+	QVERIFY(stat.errorList_[i++].line_.basicLineNumber_ == 580);
+	QVERIFY(stat.errorList_[i++].line_.basicLineNumber_ == 590);
 
 }
 
 void LibN6XBasicCheckerTest::testCase6()
 {
-    //えすびさんに提供してもらったテストケース
-    //モード4までの対応とのことだが、構文系のテストとして利用させていただきます。
+	//えすびさんに提供してもらったテストケース
+	//モード4までの対応とのことだが、構文系のテストとして利用させていただきます。
 
-    ParserStatus stat;
-    std::wstring programList;
-    //正常系
-    programList =
-            L"110 A=1:A$=\"11\":C=EXP(1):D$=MID$(INKEY$,1,2)\n"
+	ParserStatus stat;
+	std::wstring programList;
+	//正常系
+	programList =
+			L"110 A=1:A$=\"11\":C=EXP(1):D$=MID$(INKEY$,1,2)\n"
             "120 A$=\"11\"+\"33\":B$=INKEY$+LEFT$(\"aa\",1)\n"
             "130 A$=\"1\"+\"a\"+\"BB\"+LEFT$(\"AA\",1)+MID$(B$,1,2)+\"11\"\n"
             "140 A=1+3+B+CSRLIN+STICK(0)\n"
@@ -415,17 +415,17 @@ void LibN6XBasicCheckerTest::testCase6()
             "340 COLOR\"AA\"=A$:COLORA$=\"AA\":COLORINKEY$=\"AA\"\n"
             "350 COLORA$=B$+C$:COLORA$+B$=C$:COLOR\"1\"+A$=B$\n"
             ;
-    QVERIFY(parse(programList, stat, true));
+	QVERIFY(parse(programList, stat, true));
 }
 
 void LibN6XBasicCheckerTest::testCase5()
 {
-    ParserStatus stat;
-    std::wstring programList;
+	ParserStatus stat;
+	std::wstring programList;
 
-    //エラー
-    programList =
-            L"10 print\"abcあいう\":got10\n"
+	//エラー
+	programList =
+			L"10 print\"abcあいう\":got10\n"
             "20 a=abs(\"aa\")\n"
             "30 a=asc(-a)\n"
             "40 auto,\n"
@@ -435,27 +435,27 @@ void LibN6XBasicCheckerTest::testCase5()
             "80 locate,,\n"
             "90 fori=x:toy\n"
             ;
-    QVERIFY(!parse(programList, stat));
-    int i=0;
-    QCOMPARE(stat.errorList_[i++].line_.basicLineNumber_, 10);
-    QCOMPARE(stat.errorList_[i++].line_.basicLineNumber_, 20);
-    QCOMPARE(stat.errorList_[i++].line_.basicLineNumber_, 30);
-    QCOMPARE(stat.errorList_[i++].line_.basicLineNumber_, 40);
-    QCOMPARE(stat.errorList_[i++].line_.basicLineNumber_, 50);
-    QCOMPARE(stat.errorList_[i++].line_.basicLineNumber_, 60);
-    QCOMPARE(stat.errorList_[i++].line_.basicLineNumber_, 70);
-    QCOMPARE(stat.errorList_[i++].line_.basicLineNumber_, 80);
-    QCOMPARE(stat.errorList_[i++].line_.basicLineNumber_, 90);
+	QVERIFY(!parse(programList, stat));
+	int i=0;
+	QCOMPARE(stat.errorList_[i++].line_.basicLineNumber_, 10);
+	QCOMPARE(stat.errorList_[i++].line_.basicLineNumber_, 20);
+	QCOMPARE(stat.errorList_[i++].line_.basicLineNumber_, 30);
+	QCOMPARE(stat.errorList_[i++].line_.basicLineNumber_, 40);
+	QCOMPARE(stat.errorList_[i++].line_.basicLineNumber_, 50);
+	QCOMPARE(stat.errorList_[i++].line_.basicLineNumber_, 60);
+	QCOMPARE(stat.errorList_[i++].line_.basicLineNumber_, 70);
+	QCOMPARE(stat.errorList_[i++].line_.basicLineNumber_, 80);
+	QCOMPARE(stat.errorList_[i++].line_.basicLineNumber_, 90);
 }
 
 void LibN6XBasicCheckerTest::testCase4()
 {
-    ParserStatus stat;
-    std::wstring programList;
+	ParserStatus stat;
+	std::wstring programList;
 
-    //正常系(全角)
-    programList =
-            L"１０　ｐｒｉｎｔ”ａｂｃあいう\n"
+	//正常系(全角)
+	programList =
+			L"１０　ｐｒｉｎｔ”ａｂｃあいう\n"
             "２０　ｐｒｉｎｔ”ａｂｃあいう”：ｇｏｔｏ１０\n"
             "３０　？”ａｂｃあいう”\n"
             "４０　ｐｒｉｎｔａｂｃｄｅ　＄：ｐｒｉｎｔａｂｃｄｅ\n"
@@ -466,16 +466,16 @@ void LibN6XBasicCheckerTest::testCase4()
             "９０　ｐｒｉｎｔａ　ａｎｄ　ｂ：ｐｒｉｎｔａ　ｏｒ　ｂ：ｐｒｉｎｔ　ａ　ｘｏｒ　ｂ：ｐｒｉｎｔａｉｎｐｂ：ｐｒｉｎｔａｅｑｖｂ\n"
             "１００　ａ＄＝”１”\n"
             ;
-    QVERIFY(parse(programList, stat, true));
+	QVERIFY(parse(programList, stat, true));
 }
 
 void LibN6XBasicCheckerTest::testCase3()
 {
-    ParserStatus stat;
-    std::wstring programList;
-    //正常系(各関数、ステートメント)
-    programList =
-            L"10 print\"abcあいう\n"
+	ParserStatus stat;
+	std::wstring programList;
+	//正常系(各関数、ステートメント)
+	programList =
+			L"10 print\"abcあいう\n"
             "20 print\"abcあいう\":print\"abc\"a\"abc\"a$:printa$\"abc\"a\"abc\":goto10\n"
             "30 ?\"abcあいう\"\n"
             "40 printabcde $:printabcde:printa;:printa,\n"
@@ -642,109 +642,109 @@ void LibN6XBasicCheckerTest::testCase3()
             "1540 a$=string$(a+1,b$)\n"
             "1550 a$=string$(a+1,b+1)\n"
             ;
-    QVERIFY(parse(programList, stat, true));
+	QVERIFY(parse(programList, stat, true));
 }
 
 void LibN6XBasicCheckerTest::testCase2()
 {
-    ParserStatus stat;
-    std::wstring programList;
-    //エラー行判定
-    programList =
-            L"10 goto 10: go to10\n"
+	ParserStatus stat;
+	std::wstring programList;
+	//エラー行判定
+	programList =
+			L"10 goto 10: go to10\n"
             "20 goo 20\n"       //エラー
-            "\n"
+			"\n"
             "30 goto 30\n"
             "40 goto-40\n"     //エラー
-            ;
-    QVERIFY(!parse(programList, stat));
-    QVERIFY(stat.errorList_.size() == 2);
-    QVERIFY(stat.errorList_[0].line_.textLineNumber_ ==  2);
-    QVERIFY(stat.errorList_[0].line_.basicLineNumber_ == 20);
-    QVERIFY(stat.errorList_[1].line_.textLineNumber_ ==  5);
-    QVERIFY(stat.errorList_[1].line_.basicLineNumber_ == 40);
+			;
+	QVERIFY(!parse(programList, stat));
+	QVERIFY(stat.errorList_.size() == 2);
+	QVERIFY(stat.errorList_[0].line_.textLineNumber_ ==  2);
+	QVERIFY(stat.errorList_[0].line_.basicLineNumber_ == 20);
+	QVERIFY(stat.errorList_[1].line_.textLineNumber_ ==  5);
+	QVERIFY(stat.errorList_[1].line_.basicLineNumber_ == 40);
 }
 
 void LibN6XBasicCheckerTest::testCase1()
 {
-    ParserStatus stat;
-    std::wstring programList;
-    //正常系
-    programList =
-            L"10 goto 10: go to10\n"
+	ParserStatus stat;
+	std::wstring programList;
+	//正常系
+	programList =
+			L"10 goto 10: go to10\n"
             "\n"
             "20 goto 20\n"
             ;
-    QVERIFY(parse(programList, stat, true));
+	QVERIFY(parse(programList, stat, true));
 }
 
 struct sArg{
-    std::string playRange_;
-    std::string talkRange_;
-    std::string hexRange_;
-    std::string digitRange_;
+	std::string playRange_;
+	std::string talkRange_;
+	std::string hexRange_;
+	std::string digitRange_;
 };
 
 void LibN6XBasicCheckerTest::testCaseX()
 {
-    babel::init_babel();
-    //tst_libn6xbasiccheckertesttestのバイナリと同階層にある
-    //listというディレクトリ内のBASICリストファイルを順次パースする。
-    //listディレクトリ内に配置するBASICリストファイルは自分で用意すること。
-    //Hashiさんのサイトに掲載されているBASICリストをまとめて回帰テストするためのテストケース。
-    QString listPath = qApp->applicationDirPath() + QDir::separator() + "list";
+	babel::init_babel();
+	//tst_libn6xbasiccheckertesttestのバイナリと同階層にある
+	//listというディレクトリ内のBASICリストファイルを順次パースする。
+	//listディレクトリ内に配置するBASICリストファイルは自分で用意すること。
+	//Hashiさんのサイトに掲載されているBASICリストをまとめて回帰テストするためのテストケース。
+	QString listPath = qApp->applicationDirPath() + QDir::separator() + "list";
 
-    //引数ファイル
-    //各リストファイルごとに、PLAY文、TALK分としてパースする行番号を指定する
-    std::ifstream fileArgsFile((listPath + QDir::separator() + "list.arg").toLocal8Bit());
-    QVERIFY(!fileArgsFile.fail());
-    std::map<std::string, sArg> argMap;
-    do {
-        //ファイルフォーマットは
-        //ファイル名　pオプション tオプション xオプション
-        //を1行とする。オプションに設定する値がない場合、-1を入れる。
-        //例)game.txt 50,100-200 -1 1500-1800
-        std::string fileName;
-        fileArgsFile >> fileName;
-        if(fileName.empty()) break;
-        sArg& arg = argMap[fileName];
-        fileArgsFile >> arg.playRange_;
-        fileArgsFile >> arg.talkRange_;
-        fileArgsFile >> arg.hexRange_;
-        fileArgsFile >> arg.digitRange_;
-    } while(!fileArgsFile.eof());
+	//引数ファイル
+	//各リストファイルごとに、PLAY文、TALK分としてパースする行番号を指定する
+	std::ifstream fileArgsFile((listPath + QDir::separator() + "list.arg").toLocal8Bit());
+	QVERIFY(!fileArgsFile.fail());
+	std::map<std::string, sArg> argMap;
+	do {
+		//ファイルフォーマットは
+		//ファイル名　pオプション tオプション xオプション
+		//を1行とする。オプションに設定する値がない場合、-1を入れる。
+		//例)game.txt 50,100-200 -1 1500-1800
+		std::string fileName;
+		fileArgsFile >> fileName;
+		if(fileName.empty()) break;
+		sArg& arg = argMap[fileName];
+		fileArgsFile >> arg.playRange_;
+		fileArgsFile >> arg.talkRange_;
+		fileArgsFile >> arg.hexRange_;
+		fileArgsFile >> arg.digitRange_;
+	} while(!fileArgsFile.eof());
 
-    QDir dir(listPath);
-    QVERIFY(dir.exists());
+	QDir dir(listPath);
+	QVERIFY(dir.exists());
 
-    QStringList files;
-    files = dir.entryList(QStringList("*.txt"),
-                          QDir::Files | QDir::NoSymLinks);
+	QStringList files;
+	files = dir.entryList(QStringList("*.txt"),
+						  QDir::Files | QDir::NoSymLinks);
 
-    bool result = true;
-    foreach(QString file, files){
-        const char* fileName = (listPath + QDir::separator() + file).toLocal8Bit();
-        std::ifstream fst(fileName);
-        std::string sjisList((std::istreambuf_iterator<char>(fst)), std::istreambuf_iterator<char>());
-        std::wstring unicodeList = babel::sjis_to_unicode(sjisList);
+	bool result = true;
+	foreach(QString file, files){
+		const char* fileName = (listPath + QDir::separator() + file).toLocal8Bit();
+		std::ifstream fst(fileName);
+		std::string sjisList((std::istreambuf_iterator<char>(fst)), std::istreambuf_iterator<char>());
+		std::wstring unicodeList = babel::sjis_to_unicode(sjisList);
 
-        ParserStatus stat;
-        if(argMap.count(file.toLocal8Bit().data())){
-            const sArg& arg = argMap[file.toLocal8Bit().data()];
-            stat.registerLineRange(local_to_unicode(arg.playRange_), R_PLAY);
-            stat.registerLineRange(local_to_unicode(arg.talkRange_), R_TALK);
-            stat.registerLineRange(local_to_unicode(arg.hexRange_), R_HEX);
-            stat.registerLineRange(local_to_unicode(arg.digitRange_), R_DIGIT);
-        }
-        bool errorTrace = true;
-        bool warningTrace = false;
-        result &= parse(unicodeList, stat, errorTrace, warningTrace);
-        if(!stat.errorList_.empty() && errorTrace)
-            std::cout << ((QString("errors found in ") + file).toStdString()) << std::endl;
-        if(!stat.warningList_.empty() & warningTrace)
-            std::cout << ((QString("warning found in ") + file).toStdString()) << std::endl;
-    }
-    QVERIFY(result);
+		ParserStatus stat;
+		if(argMap.count(file.toLocal8Bit().data())){
+			const sArg& arg = argMap[file.toLocal8Bit().data()];
+			stat.registerLineRange(local_to_unicode(arg.playRange_), R_PLAY);
+			stat.registerLineRange(local_to_unicode(arg.talkRange_), R_TALK);
+			stat.registerLineRange(local_to_unicode(arg.hexRange_), R_HEX);
+			stat.registerLineRange(local_to_unicode(arg.digitRange_), R_DIGIT);
+		}
+		bool errorTrace = true;
+		bool warningTrace = false;
+		result &= parse(unicodeList, stat, errorTrace, warningTrace);
+		if(!stat.errorList_.empty() && errorTrace)
+			std::cout << ((QString("errors found in ") + file).toStdString()) << std::endl;
+		if(!stat.warningList_.empty() & warningTrace)
+			std::cout << ((QString("warning found in ") + file).toStdString()) << std::endl;
+	}
+	QVERIFY(result);
 
 }
 
