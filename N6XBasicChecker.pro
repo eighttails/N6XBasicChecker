@@ -5,8 +5,10 @@ SUBDIRS += \
     libN6XBasicCheckerTest \
     libtxt2bas \
     N6XBasicCheckerMain \
+    p6top6t \
     txt2bas \
-    bas2txt
+    bas2txt \
+    p6top6t
 
 N6XBasicCheckerMain.depends = libN6XBasicChecker libtxt2bas
 libN6XBasicCheckerTest.depends = libN6XBasicChecker
