@@ -24,6 +24,7 @@ int main(int argc, char *argv[])
 	desc.add_options()
 			("help,h", "ヘルプを表示")
 			("version,v", "バージョンを表示")
+			("utf8,u", "出力をUTF-8でエンコード")
 			("list-variables,l", "変数一覧を出力")
 			("play,p", po::value<std::vector<std::string> >(), "PLAY文としてパースする行")
 			("talk,t", po::value<std::vector<std::string> >(), "TALK文としてパースする行")
@@ -56,11 +57,15 @@ int main(int argc, char *argv[])
 		argError = true;
 	}
 
+	//出力のエンコード設定
+	if (vm.count("utf8")) {
+		utf8Output = true;
+	}
 
 	//バージョン情報
 	if (vm.count("version")) {
 		std::cout << "N6XBasicChecker ver." << Checker::version() << std::endl
-				  << "Copyright 2012-2019 Tadahito Yao(@eighttails)" << std::endl
+				  << "Copyright 2012-2021 Tadahito Yao(@eighttails)" << std::endl
 				  << "http://eighttails.seesaa.net" << std::endl;
 		return 0;
 	}
@@ -75,6 +80,8 @@ int main(int argc, char *argv[])
 		std::cout << utf8_to_local("b,o,fオプションの書式: -b 5 -o 出力ファイル名 -f BASICリストファイル名") << std::endl;
 		return 0;
 	}
+
+
 
 	bool ret = true;
 	ParserStatus stat;
