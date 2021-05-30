@@ -124,8 +124,8 @@ uint32_t input_datasize( uint32_t max )
 	char tmp[80];	// サイズ入力用バッファ
 	
 	while( !dsize ){
-		gets( tmp );
-		
+        fgets( tmp, sizeof(tmp), stdin );
+
 		if( strlen( tmp ) ) dsize = atol( tmp );
 		else                dsize = max;
 		
@@ -146,7 +146,7 @@ void read_beta( P6CAS *ft, FILE *infp, FILE *outfp )
 	// サイズ入力
 	printf( "サイズを入力して下さい。（全ての場合は何も入力せずにEnter）\n> " );
 	bsize = input_datasize( fsize - ftell( infp ) );
-	
+
 	
 	db = get_dbblock( ft );	// DATAブロック情報 領域確保 & 初期化
 	
@@ -414,7 +414,7 @@ int main( int argc, char **argv )
 	// P6T情報 領域確保 & 初期化
 	if( !(fout=(P6CAS *)malloc( sizeof(P6CAS) ))) exit( 1 );
 	memset( fout, 0, sizeof(P6CAS) );
-	strncpy( fout->header, "P6", 2 );
+    strncpy( fout->header, "P6", 2 );
 	// 出力ファイル名を設定
 	strcpy( fout->fname, argv[1] );
 	strcpy( strrchr( fout->fname, '.' ), ".p6t" );
@@ -449,7 +449,8 @@ int main( int argc, char **argv )
 		if( !(fout->ask=malloc( sizeof(char)*512 )) ) exit( 1 );	// とりあえず512byteあれば十分か?
 		printf( "オートスタートコマンドを入力してください（改行は'\\n' LOAD終了待ちは'\\r' 末尾には不要）\n" );
 		printf( "'CLOAD\\rRUN' の場合は何も入力せずにEnter\n> " );
-		gets( fout->ask );
+        fgets( fout->ask, sizeof(fout->ask), stdin );
+
 		// 入力なければ"CLOAD RUN"
 		if( !strlen( fout->ask ) ) strcpy( fout->ask, "CLOAD\\rRUN" );
 		// エスケープシーケンスの処理
