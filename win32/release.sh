@@ -36,6 +36,7 @@ pushd N6XBasicChecker-build-$MINGW_CHOST
 cp -f N6XBasicCheckerMain/release/N6XBasicChecker.exe $WIN_BIN_DIR
 cp -f txt2bas/release/txt2bas.exe $WIN_BIN_DIR
 cp -f bas2txt/release/bas2txt.exe $WIN_BIN_DIR
+cp -f p6top6t/release/p6top6t.exe $WIN_BIN_DIR
 cp -f $SCRIPT_DIR/../*.txt $WIN_BIN_DIR
 popd
 
