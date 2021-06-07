@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "babelwrap.h"
 
 // P6T形式フォーマットVer.2
 //  基本的には「ベタイメージ+フッタ+ベタイメージサイズ(4byte)」という構造
@@ -145,7 +146,6 @@ uint32_t input_datasize( uint32_t max )
 {
     uint32_t dsize=0;
     char tmp[80];	// サイズ入力用バッファ
-    memset(tmp, 0, 80);
 
     while( !dsize ){
         if( getsn( tmp, sizeof(tmp), stdin ) )
@@ -153,7 +153,7 @@ uint32_t input_datasize( uint32_t max )
         else
             dsize = max;
 
-        if( !dsize ) printf("入力が正しくありません。\n> ");
+        if( !dsize ) printf_local("入力が正しくありません。\n> ");
     }
     return dsize;
 }
@@ -168,7 +168,7 @@ void read_beta( P6CAS *ft, FILE *infp, FILE *outfp )
 
 
     // サイズ入力
-    printf( "サイズを入力して下さい。（全ての場合は何も入力せずにEnter）\n> " );
+    printf_local( "サイズを入力して下さい。（全ての場合は何も入力せずにEnter）\n> " );
     bsize = input_datasize( fsize - ftell( infp ) );
 
 
@@ -408,12 +408,12 @@ void db_info( P6DATA *db, FILE *fp )
     fputc( (db->size>>16)&0xff, fp );
     fputc( (db->size>>24)&0xff, fp );
 
-    printf( "ID番号        :%d\n",         db->id );
-    printf( "データ名      :%s\n",         db->name );
-    printf( "無音部の時間  :%d(%04X)\n",   db->stime,  db->stime );
-    printf( "ぴー音の時間  :%d(%04X)\n",   db->ptime,  db->ptime );
-    printf( "オフセット    :%d(%08X)\n",   db->start,  db->start );
-    printf( "データサイズ  :%d(%08X)\n",   db->size,   db->size );
+    printf_local( "ID番号        :%d\n",         db->id );
+    printf_local( "データ名      :%s\n",         db->name );
+    printf_local( "無音部の時間  :%d(%04X)\n",   db->stime,  db->stime );
+    printf_local( "ぴー音の時間  :%d(%04X)\n",   db->ptime,  db->ptime );
+    printf_local( "オフセット    :%d(%08X)\n",   db->start,  db->start );
+    printf_local( "データサイズ  :%d(%08X)\n",   db->size,   db->size );
 }
 
 
@@ -426,14 +426,14 @@ int main( int argc, char **argv )
     uint32_t fpnt=0;		// ファイルポインタ保存用
     uint32_t totalsize=0;	// ベタイメージのトータルサイズ
 
-    printf( "=== P6toP6T2 ===\n" );
+    printf_local( "=== P6toP6T2 ===\n" );
 
     if( argc < 2 ){
-        fprintf( stderr, "Usage: p6top6t2 inputfile\n" );
+        fprintf_local( stderr, "Usage: p6top6t2 inputfile\n" );
         exit( 1 );
     }
 
-    printf( "'%s'の変換を開始します。\n", argv[1] );
+    printf_local( "'%s'の変換を開始します。\n", argv[1] );
 
     // P6T情報 領域確保 & 初期化
     if( !(fout=(P6CAS *)malloc( sizeof(P6CAS) ))) exit( 1 );
@@ -449,7 +449,7 @@ int main( int argc, char **argv )
 
     // オートスタート選択
     do{
-        printf( "オートスタートを有効にしますか？ (0:No 1:Yes)>" );
+        printf_local( "オートスタートを有効にしますか？ (0:No 1:Yes)>" );
         fout->start = getchar() - '0';
         getchar();	// Enter空読み
     }while( fout->start > 1 );
@@ -457,23 +457,23 @@ int main( int argc, char **argv )
     if( fout->start ){
         // BASICモード選択
         do{
-            printf( "BASICモードを選んでください (1-6)>" );
+            printf_local( "BASICモードを選んでください (1-6)>" );
             fout->basic = getchar() - '0';
             getchar();	// Enter空読み
         }while( fout->basic < 1 || fout->basic > 6 );
 
         // ページ数選択
         do{
-            printf( "ページ数を選んでください (1-4)>" );
+            printf_local( "ページ数を選んでください (1-4)>" );
             fout->page = getchar() - '0';
             getchar();	// Enter空読み
         }while( fout->page < 1 || fout->page > 4 );
 
         // オートスタートコマンド入力
         int asksize = sizeof(char)*512;
-        if( !(fout->ask=malloc( asksize )) ) exit( 1 );	// とりあえず512byteあれば十分か?
-        printf( "オートスタートコマンドを入力してください（改行は'\\n' LOAD終了待ちは'\\r' 末尾には不要）\n" );
-        printf( "'CLOAD\\rRUN' の場合は何も入力せずにEnter\n> " );
+        if( !(fout->ask=(char*)malloc( asksize )) ) exit( 1 );	// とりあえず512byteあれば十分か?
+        printf_local( "オートスタートコマンドを入力してください（改行は'\\n' LOAD終了待ちは'\\r' 末尾には不要）\n" );
+        printf_local( "'CLOAD\\rRUN' の場合は何も入力せずにEnter\n> " );
 
         // 入力なければ"CLOAD RUN"
         if( !getsn( fout->ask, asksize, stdin ) ) strcpy( fout->ask, "CLOAD\\rRUN" );
@@ -491,7 +491,7 @@ int main( int argc, char **argv )
                     strcpy( &c[1], &c[2] );
                     break;
                 default:
-                    printf( "!! '%c' 不正な制御文字です。", c[1] );
+                    printf_local( "!! '%c' 不正な制御文字です。", c[1] );
                     exit( 1 );
                 }
             }
@@ -502,7 +502,7 @@ int main( int argc, char **argv )
 
     // 入力ファイルを開く
     if( (infp=fopen(argv[1], "rb")) == NULL ){
-        fprintf( stderr, "p6top6t2: 入力ファイルが開けません '%s'\n", argv[1] );
+        fprintf_local( stderr, "p6top6t2: 入力ファイルが開けません '%s'\n", argv[1] );
         exit( 1 );
     }
     // 入力ファイルサイズ取得
@@ -512,17 +512,17 @@ int main( int argc, char **argv )
 
     // 出力ファイルを開く
     if( (fout->fp=fopen( fout->fname, "wb")) == NULL ){
-        fprintf( stderr, "p6top6t2: 出力ファイルが開けません '%s'\n", fout->fname );
+        fprintf_local( stderr, "p6top6t2: 出力ファイルが開けません '%s'\n", fout->fname );
         exit( 1 );
     }
 
 
     do{
-        printf("\n処理済 %d (/%d)\n\n", (int)fpnt, (int)fsize );
+        printf_local("\n処理済 %d (/%d)\n\n", (int)fpnt, (int)fsize );
         // テープの種類を選択
-        printf( "<< テープの種類を選んでください >>\n" );
+        printf_local( "<< テープの種類を選んでください >>\n" );
         for( i=0; i<NumOfType; i++ )
-            printf( "%d. %s\n", i, TapeType[i] );
+            printf_local( "%d. %s\n", i, TapeType[i] );
         type = getchar() - '0';
         getchar();	// Enter空読み
 
@@ -553,7 +553,7 @@ int main( int argc, char **argv )
 
     // DATAブロック情報出力
     for( i=0; i<fout->dbnum; i++ ){
-        printf( "<< Block No.%d >>\n", i );
+        printf_local( "<< Block No.%d >>\n", i );
         db_info( fdb[i], fout->fp );
         totalsize += fdb[i]->size;
     }
@@ -578,7 +578,7 @@ int main( int argc, char **argv )
     free( fout->ask );
     free( fout );
 
-    printf( "ファイルの変換が完了しました。\n" );
+    printf_local( "ファイルの変換が完了しました。\n" );
 
     return 0;
 }
