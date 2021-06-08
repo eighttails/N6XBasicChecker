@@ -43,6 +43,7 @@ int printf_local(const char *format, ...)
     va_start( ap, format );
     vsprintf( buf, format, ap );
     std::cout << utf8_to_local(buf);
+	std::cout.flush();
     va_end( ap );
     return strlen(buf);
 }

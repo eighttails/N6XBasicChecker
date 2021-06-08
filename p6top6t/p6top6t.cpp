@@ -1,6 +1,7 @@
 // ***************************************************
-//   P6toP6T Ver.2.2                                 *
+//   P6toP6T Ver.2.3                                 *
 //   2013.12.31  by Yumitaro                         *
+//   2021.06.08  by eighttails                       *
 // ***************************************************
 #include <stdint.h>
 #include <stdio.h>
@@ -429,9 +430,14 @@ int main( int argc, char **argv )
     printf_local( "=== P6toP6T2 ===\n" );
 
     if( argc < 2 ){
-        fprintf_local( stderr, "Usage: p6top6t2 inputfile\n" );
+		fprintf_local( stderr, "Usage: p6top6t2 inputfile [-u]\n" );
         exit( 1 );
     }
+
+	// 出力をUTF-8でエンコード
+	if( argc > 2 && !strcmp(argv[2], "-u")){
+		utf8Output = true;
+	}
 
     printf_local( "'%s'の変換を開始します。\n", argv[1] );
 
