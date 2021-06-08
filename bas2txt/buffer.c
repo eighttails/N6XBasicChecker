@@ -80,9 +80,9 @@ void buf_fputc(int c)
 			// for semi-graphic character
 			c -= 0x30;
 		}
-		//if (c <= 0x1f) {
+		// if (c <= 0x1f) {
 		if (prev == 0 && c == '\n') {
-			//fputc(c, outfp);
+			// fputc(c, outfp);
 			fputc('\r', outfp);
 			fputc('\n', outfp);
 		} else {

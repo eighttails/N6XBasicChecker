@@ -130,7 +130,7 @@ int parsemain6(void)
 					int c;
 					c = buf_fgetc();
 					for (;;) {
-						//if (isalnum(c) == 0) {
+						// if (isalnum(c) == 0) {
 						if (isdigit(c) == 0) {
 							buf_ungetc(1);
 							break;
@@ -245,7 +245,7 @@ double readnumber(int base, int *hasPeriod)
 		if (isdigit(c) != 0)
 			val += c - '0';
 		else
-			//if (c < 'a')
+			// if (c < 'a')
 			if (isupper(c) != 0)
 				val += c - 'A' + 10;
 			else
@@ -288,7 +288,7 @@ void writefloat(double val)
 	} else {
 		val = frexp(val, &exp2);
 		val = val * 2 - 1;
-		//exp2++;
+		// exp2++;
 
 		for (i = 1; i < 32; i++) {
 			val *= 2;

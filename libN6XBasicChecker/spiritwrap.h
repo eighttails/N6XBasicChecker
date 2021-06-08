@@ -1,7 +1,7 @@
 #ifndef SPIRITWRAP_H
 #define SPIRITWRAP_H
 
-//boost::spiritに関連するヘッダーおよびtypedef
+// boost::spiritに関連するヘッダーおよびtypedef
 
 #include <boost/spirit/include/qi.hpp>
 #include <boost/spirit/include/phoenix.hpp>
@@ -36,7 +36,7 @@ typedef qi::rule<Iterator, float()> FloatRule;
 typedef qi::rule<Iterator, std::wstring(), sw::blank_type> StringRule;
 typedef qi::rule<Iterator, std::wstring()> NoSkipStringRule;
 
-//リテラルパーサー
+// リテラルパーサー
 #define L(a)    (sw::string(L##a))
 
 #endif // SPIRITWRAP_H

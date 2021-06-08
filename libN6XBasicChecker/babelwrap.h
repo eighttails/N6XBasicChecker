@@ -1,7 +1,7 @@
 #ifndef BABELWRAP_H
 #define BABELWRAP_H
 
-//babelに関連するヘッダーおよびマクロ
+// babelに関連するヘッダーおよびマクロ
 #include <string>
 #include <stdio.h>
 #include "babel.h"

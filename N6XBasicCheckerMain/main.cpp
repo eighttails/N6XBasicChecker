@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
 			("input-file", po::value<std::vector<std::string> >(), "input file")
 			;
 
-	//無名のオプションはファイル名として処理される
+	// 無名のオプションはファイル名として処理される
 	po::positional_options_description p;
 	p.add("input-file", -1);
 
@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
 	cmdline_options.add(desc).add(hidden);
 
 	po::variables_map vm;
-	//構文エラー
+	// 構文エラー
 	bool argError = false;
 	try{
 		po::store(po::command_line_parser(argc, argv).
@@ -57,12 +57,12 @@ int main(int argc, char *argv[])
 		argError = true;
 	}
 
-	//出力のエンコード設定
+	// 出力のエンコード設定
 	if (vm.count("utf8")) {
 		utf8Output = true;
 	}
 
-	//バージョン情報
+	// バージョン情報
 	if (vm.count("version")) {
 		std::cout << "N6XBasicChecker ver." << Checker::version() << std::endl
 				  << "Copyright 2012-2021 Tadahito Yao(@eighttails)" << std::endl
@@ -70,7 +70,7 @@ int main(int argc, char *argv[])
 		return 0;
 	}
 
-	//ヘルプオプションが指定、またはファイル名が指定されていない場合はヘルプを表示
+	// ヘルプオプションが指定、またはファイル名が指定されていない場合はヘルプを表示
 	if (vm.count("help") || !vm.count("input-file") || argError) {
 		std::cout << utf8_to_local("Usage: N6XBasicChecker ファイル名 [オプション]") << std::endl;
 		std::stringstream s;
@@ -86,7 +86,7 @@ int main(int argc, char *argv[])
 	bool ret = true;
 	ParserStatus stat;
 
-	//PLAY文としてパースする行
+	// PLAY文としてパースする行
 	if(vm.count("play")){
 		std::vector<std::string> linesList = vm["play"].as<std::vector<std::string> >();
 		for (size_t i = 0; i < linesList.size(); i++){
@@ -97,7 +97,7 @@ int main(int argc, char *argv[])
 			}
 		}
 	}
-	//TALK文としてパースする行
+	// TALK文としてパースする行
 	if(vm.count("talk")){
 		std::vector<std::string> linesList = vm["talk"].as<std::vector<std::string> >();
 		for (size_t i = 0; i < linesList.size(); i++){
@@ -108,7 +108,7 @@ int main(int argc, char *argv[])
 			}
 		}
 	}
-	//16進数としてパースする行
+	// 16進数としてパースする行
 	if(vm.count("hex")){
 		std::vector<std::string> linesList = vm["hex"].as<std::vector<std::string> >();
 		for (size_t i = 0; i < linesList.size(); i++){
@@ -119,7 +119,7 @@ int main(int argc, char *argv[])
 			}
 		}
 	}
-	//10進数としてパースする行
+	// 10進数としてパースする行
 	if(vm.count("digit")){
 		std::vector<std::string> linesList = vm["digit"].as<std::vector<std::string> >();
 		for (size_t i = 0; i < linesList.size(); i++){
@@ -132,7 +132,7 @@ int main(int argc, char *argv[])
 	}
 	// コマンドライン引数から変数に取り込み
 	if(vm.count("input-file")){
-		//ファイル読み込み
+		// ファイル読み込み
 		std::vector<std::string> fileNames = vm["input-file"].as<std::vector<std::string> >();
 		if(fileNames.size() != 1){
 			std::cout << utf8_to_local("ファイル名は１つのみ指定可能です。") << std::endl;
@@ -150,17 +150,17 @@ int main(int argc, char *argv[])
 			std::string sjisList((std::istreambuf_iterator<char>(fst)), std::istreambuf_iterator<char>());
 			std::wstring unicodeList = babel::sjis_to_unicode(sjisList);
 
-			//パース実行
+			// パース実行
 			Checker checker;
 			bool r = checker.parse(unicodeList, stat);
 
-			//変数一覧表示
+			// 変数一覧表示
 			if(vm.count("list-variables")){
 				std::cout << utf8_to_local("変数一覧: ") << std::endl;
 				std::cout << utf8_to_local("変数名: [ 代入行番号リスト ][ 参照行番号リスト ] ") << std::endl;
 
 				for(const auto& var : stat.usedVariables_ ){
-					//出力の際は大文字に変換
+					// 出力の際は大文字に変換
 					auto varName = var.first;
 					transform(varName.begin(), varName.end(), varName.begin(), toupper);
 					auto varMap = var.second;
@@ -179,7 +179,7 @@ int main(int argc, char *argv[])
 				}
 			}
 
-			//エラー表示
+			// エラー表示
 			if(!stat.errorList_.empty()){
 				std::cout << utf8_to_local("エラー:") << std::endl;
 			}
@@ -189,7 +189,7 @@ int main(int argc, char *argv[])
 							 ((err.line_.basicLineNumber_ == -1) ? utf8_to_local("N/A") : boost::lexical_cast<std::string>(err.line_.basicLineNumber_))
 						  << " " << unicode_to_local(err.info_) << std::endl;
 			}
-			//警告表示
+			// 警告表示
 			if(!stat.warningList_.empty()){
 				std::cout << utf8_to_local("警告:") << std::endl;
 			}
@@ -203,7 +203,7 @@ int main(int argc, char *argv[])
 
 			ret &= r;
 
-			//txt2bas呼び出し
+			// txt2bas呼び出し
 			if(vm.count("output-mode") && vm.count("output-file")){
 				int outMode = vm["output-mode"].as<int>();
 				if(outMode != 5 && outMode != 6){

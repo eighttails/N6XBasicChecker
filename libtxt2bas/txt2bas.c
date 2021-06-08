@@ -85,7 +85,7 @@ int getlinenumber(int srmode)
 	do {
 		c = buf_fgetc();
 	} while (/*c == '\t' ||*/ c == ' ');
-	if (c == '\r' || c == '\n') return 0;//skip line
+	if (c == '\r' || c == '\n') return 0;// skip line
 	while (isdigit(c) != 0) {
 		if(line < 0) line = 0;
 		line = line * 10 + c - '0';
@@ -96,7 +96,7 @@ int getlinenumber(int srmode)
 		c = buf_fgetc();
 		indent++;
 	}
-	if (c == '\r' || c == '\n') return -1;//skip line (?UL Error)
+	if (c == '\r' || c == '\n') return -1;// skip line (?UL Error)
 	buf_ungetc(1);
 	if (prevline >= line)
 		t2b_exit("Illegal line number found in");

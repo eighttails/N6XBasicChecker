@@ -68,7 +68,7 @@ void LibN6XBasicCheckerTest::testCase14()
 	ParserStatus stat;
 	std::wstring programList;
 
-	//PLAY文のテスト
+	// PLAY文のテスト
 	programList =
 			L"10 data \"0123456789abcdef\n"
             "20 data \"01 23 45 67 89 ab cd ef\n"
@@ -97,7 +97,7 @@ void LibN6XBasicCheckerTest::testCase13()
 	ParserStatus stat;
 	std::wstring programList;
 
-	//TALK文のテスト(BASICマニュアルから抜粋)
+	// TALK文のテスト(BASICマニュアルから抜粋)
 	programList =
 			L"10 talk\"f1 ka'mesax +koxniciwa.\n"
             "20 talk\"m1 usagi' sa'x +koxniciwa.\n"
@@ -116,7 +116,7 @@ void LibN6XBasicCheckerTest::testCase12()
 	ParserStatus stat;
 	std::wstring programList;
 
-	//PLAY文のテスト
+	// PLAY文のテスト
 	programList =
 			L"10 play\"cde\n"
             "20 play\"@3c+d-8e8.\n"
@@ -148,16 +148,16 @@ void LibN6XBasicCheckerTest::testCase11()
 	ParserStatus stat;
 	std::wstring programList;
 
-	//変数の参照、代入の管理
-	//文字列系
+	// 変数の参照、代入の管理
+	// 文字列系
 	programList =
-			L"10 aiu$=\"aaaa\n"     //ai$代入(その1) 10,50行はaiu$,20行はaio$として代入。ともにai$として識別される
-			"20 aio$=\"aaaa\n"      //ai$代入(その2)
-			"30 aiu$(0)=\"aaaa\n"   //ai$配列(参照)同じai$でも単なる変数と配列は区別される。ここでは参照されていないという警告になる。
-			"40 print aiu$\n"       //ai$参照
-			"50 a i u $=\"bbbb\n"   //ai$代入(その3) 変数は空白を含んでいても同一とみなされる。
-			"60 a$=\"aaaa\n"        //どこからも参照されない変数
-			"70 printb$\n"          //どこからも代入されていない変数
+			L"10 aiu$=\"aaaa\n"     // ai$代入(その1) 10,50行はaiu$,20行はaio$として代入。ともにai$として識別される
+			"20 aio$=\"aaaa\n"      // ai$代入(その2)
+			"30 aiu$(0)=\"aaaa\n"   // ai$配列(参照)同じai$でも単なる変数と配列は区別される。ここでは参照されていないという警告になる。
+			"40 print aiu$\n"       // ai$参照
+			"50 a i u $=\"bbbb\n"   // ai$代入(その3) 変数は空白を含んでいても同一とみなされる。
+			"60 a$=\"aaaa\n"        // どこからも参照されない変数
+			"70 printb$\n"          // どこからも代入されていない変数
 			;
 	QVERIFY(parse(programList, stat, true));
 	int i=0;
@@ -186,15 +186,15 @@ void LibN6XBasicCheckerTest::testCase11()
 	QVERIFY(stat.warningList_[i].line_.basicLineNumber_ == 70);
 	QVERIFY(stat.warningList_[i++].code_ == W_UNASSIGNED_VARIABLE);
 
-	//数値系
+	// 数値系
 	programList =
-			L"10 aiu=0\n"       //ai代入(その1) 10,50行はaiu,20行はaioとして代入。ともにaiとして識別される
-			"20 aio=0\n"        //ai代入(その2)
-			"30 aiu(0)=0\n"     //ai配列(参照)同じaiでも単なる変数と配列は区別される。ここでは参照されていないという警告になる。
-			"40 print aiu\n"    //ai参照
-			"50 a i u =0\n"     //ai代入(その3) 変数は空白を含んでいても同一とみなされる。
-			"60 a=0\n"          //どこからも参照されない変数
-			"70 printb\n"       //どこからも代入されていない変数
+			L"10 aiu=0\n"       // ai代入(その1) 10,50行はaiu,20行はaioとして代入。ともにaiとして識別される
+			"20 aio=0\n"        // ai代入(その2)
+			"30 aiu(0)=0\n"     // ai配列(参照)同じaiでも単なる変数と配列は区別される。ここでは参照されていないという警告になる。
+			"40 print aiu\n"    // ai参照
+			"50 a i u =0\n"     // ai代入(その3) 変数は空白を含んでいても同一とみなされる。
+			"60 a=0\n"          // どこからも参照されない変数
+			"70 printb\n"       // どこからも代入されていない変数
 			;
 	stat = ParserStatus();
 	QVERIFY(parse(programList, stat, true));
@@ -232,16 +232,16 @@ void LibN6XBasicCheckerTest::testCase10()
 	ParserStatus stat;
 	std::wstring programList;
 
-	//GOTO,GOSUBの後に余分な記述があった場合に警告を出す
+	// GOTO,GOSUBの後に余分な記述があった場合に警告を出す
 	programList =
 			L"10 goto10xxx\n"
             "20 gosub10yyy\n"
             "30 a=0:ifa=0then10zzzelse20\n"
             "40 ifa=0then10else20www\n"
-            "50 goto10'コメント\n"                      //コメントの場合は警告を出さない
-			"60 gosub10'コメント\n"                     //コメントの場合は警告を出さない
-			"70 a=0:ifa=0then10zzzelse20'コメント\n"    //コメントの場合は警告を出さない
-			"80 ifa=0then10else20'コメント\n"           //コメントの場合は警告を出さない
+            "50 goto10'コメント\n"                      // コメントの場合は警告を出さない
+			"60 gosub10'コメント\n"                     // コメントの場合は警告を出さない
+			"70 a=0:ifa=0then10zzzelse20'コメント\n"    // コメントの場合は警告を出さない
+			"80 ifa=0then10else20'コメント\n"           // コメントの場合は警告を出さない
 			;
 	QVERIFY(parse(programList, stat, true));
 	int i=0;
@@ -264,9 +264,9 @@ void LibN6XBasicCheckerTest::testCase9()
 	ParserStatus stat;
 	std::wstring programList;
 
-	//行番号存在チェック
+	// 行番号存在チェック
 	programList =
-			L"10 rem\n"         //正常系
+			L"10 rem\n"         // 正常系
 			"20 goto 10\n"
             "30 gosub 10\n"
             "40 ifa=0then10else20\n"
@@ -274,7 +274,7 @@ void LibN6XBasicCheckerTest::testCase9()
             "60 onagosub10,20,30\n"
             "70 restore10\n"
             "80 run10\n"
-            "90 goto 999\n"     //異常系
+            "90 goto 999\n"     // 異常系
 			"100 gosub 999\n"
             "110 ifa=0then999else20\n"
             "120 ifa=0then10else999\n"
@@ -328,7 +328,7 @@ void LibN6XBasicCheckerTest::testCase8()
 	ParserStatus stat;
 	std::wstring programList;
 
-	//異常系
+	// 異常系
 	programList =
 			L"10 rem\n"
             "10 rem\n"
@@ -351,10 +351,10 @@ void LibN6XBasicCheckerTest::testCase8()
 
 void LibN6XBasicCheckerTest::testCase7()
 {
-	//えすびさんに提供してもらったテストケース
+	// えすびさんに提供してもらったテストケース
 	ParserStatus stat;
 	std::wstring programList;
-	//異常系
+	// 異常系
 	programList =
 			L"500 A$=\"1\",\"b\":B$=\"AA\"+\n"
             "510 A=1+:B=111TO\n"
@@ -374,7 +374,7 @@ void LibN6XBasicCheckerTest::testCase7()
 	QVERIFY(stat.errorList_[i++].line_.basicLineNumber_ == 520);
 	QVERIFY(stat.errorList_[i++].line_.basicLineNumber_ == 530);
 	QVERIFY(stat.errorList_[i++].line_.basicLineNumber_ == 540);
-	//QVERIFY(stat.errorList_[i++].line_.basicLineNumber_ == 550); エミュレータでエラーにならなかったので、テストケースから除外
+	// QVERIFY(stat.errorList_[i++].line_.basicLineNumber_ == 550); エミュレータでエラーにならなかったので、テストケースから除外
 	QVERIFY(stat.errorList_[i++].line_.basicLineNumber_ == 560);
 	QVERIFY(stat.errorList_[i++].line_.basicLineNumber_ == 560);
 	QVERIFY(stat.errorList_[i++].line_.basicLineNumber_ == 560);
@@ -387,12 +387,12 @@ void LibN6XBasicCheckerTest::testCase7()
 
 void LibN6XBasicCheckerTest::testCase6()
 {
-	//えすびさんに提供してもらったテストケース
-	//モード4までの対応とのことだが、構文系のテストとして利用させていただきます。
+	// えすびさんに提供してもらったテストケース
+	// モード4までの対応とのことだが、構文系のテストとして利用させていただきます。
 
 	ParserStatus stat;
 	std::wstring programList;
-	//正常系
+	// 正常系
 	programList =
 			L"110 A=1:A$=\"11\":C=EXP(1):D$=MID$(INKEY$,1,2)\n"
             "120 A$=\"11\"+\"33\":B$=INKEY$+LEFT$(\"aa\",1)\n"
@@ -423,7 +423,7 @@ void LibN6XBasicCheckerTest::testCase5()
 	ParserStatus stat;
 	std::wstring programList;
 
-	//エラー
+	// エラー
 	programList =
 			L"10 print\"abcあいう\":got10\n"
             "20 a=abs(\"aa\")\n"
@@ -453,7 +453,7 @@ void LibN6XBasicCheckerTest::testCase4()
 	ParserStatus stat;
 	std::wstring programList;
 
-	//正常系(全角)
+	// 正常系(全角)
 	programList =
 			L"１０　ｐｒｉｎｔ”ａｂｃあいう\n"
             "２０　ｐｒｉｎｔ”ａｂｃあいう”：ｇｏｔｏ１０\n"
@@ -473,7 +473,7 @@ void LibN6XBasicCheckerTest::testCase3()
 {
 	ParserStatus stat;
 	std::wstring programList;
-	//正常系(各関数、ステートメント)
+	// 正常系(各関数、ステートメント)
 	programList =
 			L"10 print\"abcあいう\n"
             "20 print\"abcあいう\":print\"abc\"a\"abc\"a$:printa$\"abc\"a\"abc\":goto10\n"
@@ -649,13 +649,13 @@ void LibN6XBasicCheckerTest::testCase2()
 {
 	ParserStatus stat;
 	std::wstring programList;
-	//エラー行判定
+	// エラー行判定
 	programList =
 			L"10 goto 10: go to10\n"
-            "20 goo 20\n"       //エラー
+            "20 goo 20\n"       // エラー
 			"\n"
             "30 goto 30\n"
-            "40 goto-40\n"     //エラー
+            "40 goto-40\n"     // エラー
 			;
 	QVERIFY(!parse(programList, stat));
 	QVERIFY(stat.errorList_.size() == 2);
@@ -669,7 +669,7 @@ void LibN6XBasicCheckerTest::testCase1()
 {
 	ParserStatus stat;
 	std::wstring programList;
-	//正常系
+	// 正常系
 	programList =
 			L"10 goto 10: go to10\n"
             "\n"
@@ -688,22 +688,22 @@ struct sArg{
 void LibN6XBasicCheckerTest::testCaseX()
 {
 	babel::init_babel();
-	//tst_libn6xbasiccheckertesttestのバイナリと同階層にある
-	//listというディレクトリ内のBASICリストファイルを順次パースする。
-	//listディレクトリ内に配置するBASICリストファイルは自分で用意すること。
-	//Hashiさんのサイトに掲載されているBASICリストをまとめて回帰テストするためのテストケース。
+	// tst_libn6xbasiccheckertesttestのバイナリと同階層にある
+	// listというディレクトリ内のBASICリストファイルを順次パースする。
+	// listディレクトリ内に配置するBASICリストファイルは自分で用意すること。
+	// Hashiさんのサイトに掲載されているBASICリストをまとめて回帰テストするためのテストケース。
 	QString listPath = qApp->applicationDirPath() + QDir::separator() + "list";
 
-	//引数ファイル
-	//各リストファイルごとに、PLAY文、TALK分としてパースする行番号を指定する
+	// 引数ファイル
+	// 各リストファイルごとに、PLAY文、TALK分としてパースする行番号を指定する
 	std::ifstream fileArgsFile((listPath + QDir::separator() + "list.arg").toLocal8Bit());
 	QVERIFY(!fileArgsFile.fail());
 	std::map<std::string, sArg> argMap;
 	do {
-		//ファイルフォーマットは
-		//ファイル名　pオプション tオプション xオプション
-		//を1行とする。オプションに設定する値がない場合、-1を入れる。
-		//例)game.txt 50,100-200 -1 1500-1800
+		// ファイルフォーマットは
+		// ファイル名　pオプション tオプション xオプション
+		// を1行とする。オプションに設定する値がない場合、-1を入れる。
+		// 例)game.txt 50,100-200 -1 1500-1800
 		std::string fileName;
 		fileArgsFile >> fileName;
 		if(fileName.empty()) break;
