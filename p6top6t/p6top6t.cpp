@@ -3,12 +3,19 @@
 //   2013.12.31  by Yumitaro                         *
 //   2021.06.08  by eighttails                       *
 // ***************************************************
+
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <iostream>
+
+#include <boost/program_options.hpp>
+namespace po = boost::program_options;
 
 #include "babelwrap.h"
+
+#define VERSION 2.3
 
 // P6T形式フォーマットVer.2
 //  基本的には「ベタイメージ+フッタ+ベタイメージサイズ(4byte)」という構造
@@ -429,24 +436,66 @@ int main( int argc, char **argv )
 
     printf_local( "=== P6toP6T2 ===\n" );
 
-    if( argc < 2 ){
-		fprintf_local( stderr, "Usage: p6top6t2 inputfile [-u]\n" );
-        exit( 1 );
-    }
+	po::options_description desc("オプション", 200);
+	desc.add_options()
+			("help,h", "ヘルプを表示")
+			("version,v", "バージョンを表示")
+			("utf8,u", "出力をUTF-8でエンコード")
+			;
+	po::options_description hidden("不可視オプション");
+	hidden.add_options()
+			("input-file", po::value<std::vector<std::string> >(), "input file")
+			;
 
-	// 出力をUTF-8でエンコード
-	if( argc > 2 && !strcmp(argv[2], "-u")){
+	//無名のオプションはファイル名として処理される
+	po::positional_options_description p;
+	p.add("input-file", -1);
+
+	po::options_description cmdline_options;
+	cmdline_options.add(desc).add(hidden);
+
+	po::variables_map vm;
+	//構文エラー
+	bool argError = false;
+	try{
+		po::store(po::command_line_parser(argc, argv).
+				  options(cmdline_options).positional(p).run(), vm);
+		po::notify(vm);
+	} catch (...){
+		argError = true;
+	}
+
+	//出力のエンコード設定
+	if (vm.count("utf8")) {
 		utf8Output = true;
 	}
 
-    printf_local( "'%s'の変換を開始します。\n", argv[1] );
+	//バージョン情報
+	if (vm.count("version")) {
+		std::cout << "p6top6t ver." << VERSION << std::endl
+				  << "Copyright 2012-2021 Yumitaro(@Yumitaro60), Tadahito Yao(@eighttails)" << std::endl
+				  << "http://eighttails.seesaa.net" << std::endl;
+		return 0;
+	}
+
+	//ヘルプオプションが指定、またはファイル名が指定されていない場合はヘルプを表示
+	if (vm.count("help") || !vm.count("input-file") || argError) {
+		std::cout << utf8_to_local("Usage: p6top6t ファイル名 [オプション]") << std::endl;
+		std::stringstream s;
+		s << desc;
+		std::cout << utf8_to_local(s.str());
+		return 0;
+	}
+
+	std::string input_file = vm["input-file"].as<std::string>();
+	printf_local( "'%s'の変換を開始します。\n", input_file.c_str() );
 
     // P6T情報 領域確保 & 初期化
     if( !(fout=(P6CAS *)malloc( sizeof(P6CAS) ))) exit( 1 );
     memset( fout, 0, sizeof(P6CAS) );
     strncpy( fout->header, "P6", 2 );
     // 出力ファイル名を設定
-    strcpy( fout->fname, argv[1] );
+	strcpy( fout->fname, input_file.c_str() );
     strcpy( strrchr( fout->fname, '.' ), ".p6t" );
 
     // DATAブロック情報ポインタ配列 初期化
