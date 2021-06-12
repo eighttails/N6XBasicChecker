@@ -89,7 +89,7 @@ typedef struct{
 } P6CAS;
 
 // テープの種類
-char *TapeType[] = {
+const char *TapeType[] = {
 	"= QUIT =",
 	"ベタ",
 	"BASIC",
@@ -106,16 +106,19 @@ char *TapeType[] = {
 #define	StdBaud		1200
 
 
-P6CAS *fout=NULL;	// P6T情報ポインタ
-P6DATA *fdb[255];	// DATAブロック情報ポインタ配列
+P6CAS *fout=NULL;		// P6T情報ポインタ
+P6DATA *fdb[255];		// DATAブロック情報ポインタ配列
 
-FILE *infp = NULL;	// 入力ファイルポインタ
+FILE *infp = NULL;		// 入力ファイルポインタ
 uint32_t fsize = 0;		// 入力ファイルのサイズ
-uint8_t idnum = 0;	// DATAブロックのID番号
+uint8_t idnum = 0;		// DATAブロックのID番号
 
+FILE *inparam = stdin;	// パラメータ入力元(デフォルトでは標準入力)
+FILE *outparam = NULL;	// パラメータ出力先
+const char *paramfile = "p6tparams.txt";	// パラメータファイル名
 
 // gets()代替関数
-char* getsn(char* s, int n, FILE *fp)
+char* gets_f(char* s, int n, FILE *fp)
 {
 	// バッファサイズが1に満たない場合はNULLを返す
 	if (n < 1) return NULL;
@@ -126,16 +129,29 @@ char* getsn(char* s, int n, FILE *fp)
 	s[1] = '\0';
 	for(int i = 1; i < n; i++){
 		ch = fgetc(fp);
-		switch (ch) {
-		case EOF:
-		case '\n':
-			return s;
-		default:
+		if (ch == EOF || ch == '\n') {
+			break;
+		} else {
 			s[i] = ch;
 			s[i + 1] = '\0';
 		}
 	}
+	// パラメータファイルに書き出し
+	if (outparam){
+		fwrite(s, strlen(s) + 1, 1, outparam);
+	}
 	return s;
+}
+
+// getchar_f( inparam )代替関数
+int getchar_f( FILE *fp )
+{
+	int r = fgetc( fp );
+	// パラメータファイルに書き出し
+	if ( r != EOF && outparam ){
+		fputc( r, outparam );
+	}
+	return r;
 }
 
 // DATAブロック情報 領域確保 & 初期化
@@ -157,7 +173,7 @@ uint32_t input_datasize( uint32_t max )
 	char tmp[80];	// サイズ入力用バッファ
 
 	while( !dsize ){
-		if( getsn( tmp, sizeof(tmp), stdin ) )
+		if( gets_f( tmp, sizeof(tmp), inparam ) )
 			dsize = atol( tmp );
 		else
 			dsize = max;
@@ -437,42 +453,44 @@ int main( int argc, char **argv )
 
 	printf_local( "=== P6toP6T2 ===\n" );
 
-	po::options_description desc("オプション", 200);
+	po::options_description desc( "オプション", 200 );
 	desc.add_options()
-			("help,h", "ヘルプを表示")
-			("version,v", "バージョンを表示")
-			("utf8,u", "出力をUTF-8でエンコード")
+			( "help,h", "ヘルプを表示" )
+			( "version,v", "バージョンを表示" )
+			( "utf8,u", "出力をUTF-8でエンコード" )
+			( "store,s", "実行時の設定を保存" )
+			( "restore,r", "保存された設定で実行" )
 			;
-	po::options_description hidden("不可視オプション");
+	po::options_description hidden( "不可視オプション" );
 	hidden.add_options()
-			("input-file", po::value<std::vector<std::string> >(), "input file")
+			( "input-file", po::value<std::vector<std::string> >(), "input file" )
 			;
 
 	// 無名のオプションはファイル名として処理される
 	po::positional_options_description p;
-	p.add("input-file", -1);
+	p.add( "input-file", -1 );
 
 	po::options_description cmdline_options;
-	cmdline_options.add(desc).add(hidden);
+	cmdline_options.add( desc ).add( hidden );
 
 	po::variables_map vm;
 	// 構文エラー
 	bool argError = false;
 	try{
-		po::store(po::command_line_parser(argc, argv).
-				  options(cmdline_options).positional(p).run(), vm);
-		po::notify(vm);
+		po::store( po::command_line_parser( argc, argv ).
+				   options( cmdline_options ).positional( p ).run(), vm );
+		po::notify( vm );
 	} catch (...){
 		argError = true;
 	}
 
 	// 出力のエンコード設定
-	if (vm.count("utf8")) {
+	if ( vm.count( "utf8" ) ) {
 		utf8Output = true;
 	}
 
 	// バージョン情報
-	if (vm.count("version")) {
+	if ( vm.count( "version" ) ) {
 		std::cout << "p6top6t ver." << VERSION << std::endl
 				  << "Copyright 2012-2021 Yumitaro(@Yumitaro60), Tadahito Yao(@eighttails)" << std::endl
 				  << "http://eighttails.seesaa.net" << std::endl;
@@ -480,12 +498,32 @@ int main( int argc, char **argv )
 	}
 
 	// ヘルプオプションが指定、またはファイル名が指定されていない場合はヘルプを表示
-	if (vm.count("help") || !vm.count("input-file") || argError) {
-		std::cout << utf8_to_local("Usage: p6top6t ファイル名 [オプション]") << std::endl;
+	if ( vm.count( "help" ) || !vm.count( "input-file" ) || argError ) {
+		std::cout << utf8_to_local( "Usage: p6top6t ファイル名 [オプション]" ) << std::endl;
 		std::stringstream s;
 		s << desc;
-		std::cout << utf8_to_local(s.str());
+		std::cout << utf8_to_local( s.str() );
 		return 0;
+	}
+
+	if ( vm.count( "store" ) ){
+		if ( vm.count( "restore" ) ){
+			printf_local( "--store と --restore オプションは同時に使用できません。\n" );
+			return -1;
+		}
+		outparam = fopen( paramfile, "w" );
+		if ( !inparam )	{
+			printf_local( "%s が作成できません。\n", paramfile );
+			return -1;
+		}
+	}
+
+	if ( vm.count( "restore" ) ){
+		inparam = fopen( paramfile, "r" );
+		if ( !inparam )	{
+			printf_local( "%s が見つかりません。\n", paramfile );
+			return -1;
+		}
 	}
 
 	std::string input_file = vm["input-file"].as<std::string>();
@@ -506,23 +544,23 @@ int main( int argc, char **argv )
 	// オートスタート選択
 	do{
 		printf_local( "オートスタートを有効にしますか？ (0:No 1:Yes)>" );
-		fout->start = getchar() - '0';
-		getchar();	// Enter空読み
+		fout->start = getchar_f( inparam ) - '0';
+		getchar_f( inparam );	// Enter空読み
 	}while( fout->start > 1 );
 
 	if( fout->start ){
 		// BASICモード選択
 		do{
 			printf_local( "BASICモードを選んでください (1-6)>" );
-			fout->basic = getchar() - '0';
-			getchar();	// Enter空読み
+			fout->basic = getchar_f( inparam ) - '0';
+			getchar_f( inparam );	// Enter空読み
 		}while( fout->basic < 1 || fout->basic > 6 );
 
 		// ページ数選択
 		do{
 			printf_local( "ページ数を選んでください (1-4)>" );
-			fout->page = getchar() - '0';
-			getchar();	// Enter空読み
+			fout->page = getchar_f( inparam ) - '0';
+			getchar_f( inparam );	// Enter空読み
 		}while( fout->page < 1 || fout->page > 4 );
 
 		// オートスタートコマンド入力
@@ -532,7 +570,7 @@ int main( int argc, char **argv )
 		printf_local( "'CLOAD\\rRUN' の場合は何も入力せずにEnter\n> " );
 
 		// 入力なければ"CLOAD RUN"
-		if( !getsn( fout->ask, asksize, stdin ) ) strcpy( fout->ask, "CLOAD\\rRUN" );
+		if( !gets_f( fout->ask, asksize, inparam ) ) strcpy( fout->ask, "CLOAD\\rRUN" );
 		// エスケープシーケンスの処理
 		do{
 			c = (char *)strchr( fout->ask, (int)'\\' );
@@ -579,8 +617,8 @@ int main( int argc, char **argv )
 		printf_local( "<< テープの種類を選んでください >>\n" );
 		for( i=0; i<NumOfType; i++ )
 			printf_local( "%d. %s\n", i, TapeType[i] );
-		type = getchar() - '0';
-		getchar();	// Enter空読み
+		type = getchar_f( inparam ) - '0';
+		getchar_f( inparam );	// Enter空読み
 
 		// データブロック出力
 		switch( type ){
