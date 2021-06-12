@@ -122,36 +122,50 @@ char* gets_f(char* s, int n, FILE *fp)
 {
 	// バッファサイズが1に満たない場合はNULLを返す
 	if (n < 1) return NULL;
+	memset(s, 0, n);
 	// 1文字読み込み。EOFの場合はNULLを返す
-	int ch = fgetc(fp);
-	if ( ch == EOF || ch == '\n' ) return NULL;
-	s[0] = ch;
-	s[1] = '\0';
-	for(int i = 1; i < n; i++){
-		ch = fgetc(fp);
-		if (ch == EOF || ch == '\n') {
+	int i = 0;
+	for(; i < n; i++) {
+		int ch = fgetc( fp );
+		// 自動入力の場合は標準出力に表示
+		if (inparam != stdin) putchar(ch);
+		if (ch == EOF || ch == '\n' || ch == '\0' ) {
 			break;
-		} else {
-			s[i] = ch;
-			s[i + 1] = '\0';
 		}
+		s[i] = ch;
 	}
 	// パラメータファイルに書き出し
-	if (outparam){
-		fwrite(s, strlen(s) + 1, 1, outparam);
+	if ( outparam ){
+		// 書き出す際は終端を改行にする
+		s[i] = '\n';
+		fwrite( s, i + 1, 1, outparam );
 	}
-	return s;
+	// 改行を終端記号に置換
+	s[i] = '\0';
+	return i > 0 ? s : NULL;
 }
 
 // getchar_f( inparam )代替関数
 int getchar_f( FILE *fp )
 {
-	int r = fgetc( fp );
+	int ch = fgetc( fp );
+	// 自動入力の場合は標準出力に表示
+	if (inparam != stdin) putchar(ch);
 	// パラメータファイルに書き出し
-	if ( r != EOF && outparam ){
-		fputc( r, outparam );
+	if ( ch != EOF && outparam ){
+		fputc( ch, outparam );
 	}
-	return r;
+	return ch;
+}
+
+// strcpy代替関数
+// 1文字ずつコピーすることを保証するしてコピー元、コピー先が
+// 重なる場合の未定義動作を防ぐ
+char *strcpy_f(char *s1, const char *s2)
+{
+	char *p = s1;
+	while( *s1++ = *s2++ );
+	return p;
 }
 
 // DATAブロック情報 領域確保 & 初期化
@@ -512,7 +526,7 @@ int main( int argc, char **argv )
 			return -1;
 		}
 		outparam = fopen( paramfile, "w" );
-		if ( !inparam )	{
+		if ( !outparam )	{
 			printf_local( "%s が作成できません。\n", paramfile );
 			return -1;
 		}
@@ -526,7 +540,13 @@ int main( int argc, char **argv )
 		}
 	}
 
-	std::string input_file = vm["input-file"].as<std::string>();
+	std::vector<std::string> fileNames = vm["input-file"].as<std::vector<std::string> >();
+	if(fileNames.size() != 1){
+		printf_local( "ファイル名は１つのみ指定可能です。");
+		return -1;
+	}
+
+	std::string input_file = fileNames[0];
 	printf_local( "'%s'の変換を開始します。\n", input_file.c_str() );
 
 	// P6T情報 領域確保 & 初期化
@@ -534,8 +554,8 @@ int main( int argc, char **argv )
 	memset( fout, 0, sizeof(P6CAS) );
 	strncpy( fout->header, "P6", 2 );
 	// 出力ファイル名を設定
-	strcpy( fout->fname, input_file.c_str() );
-	strcpy( strrchr( fout->fname, '.' ), ".p6t" );
+	strcpy_f( fout->fname, input_file.c_str() );
+	strcpy_f( strrchr( fout->fname, '.' ), ".p6t" );
 
 	// DATAブロック情報ポインタ配列 初期化
 	for( i=0; i<255; i++ ) fdb[i] = NULL;
@@ -570,7 +590,7 @@ int main( int argc, char **argv )
 		printf_local( "'CLOAD\\rRUN' の場合は何も入力せずにEnter\n> " );
 
 		// 入力なければ"CLOAD RUN"
-		if( !gets_f( fout->ask, asksize, inparam ) ) strcpy( fout->ask, "CLOAD\\rRUN" );
+		if( !gets_f( fout->ask, asksize, inparam ) ) strcpy_f( fout->ask, "CLOAD\\rRUN" );
 		// エスケープシーケンスの処理
 		do{
 			c = (char *)strchr( fout->ask, (int)'\\' );
@@ -578,11 +598,11 @@ int main( int argc, char **argv )
 				switch( c[1] ){
 				case 'n':	// 改行
 					c[0] = 0x0d;
-					strcpy( &c[1], &c[2] );
+					strcpy_f( &c[1], &c[2] );
 					break;
 				case 'r':	// テープリレー待ち
 					c[0] = 0x0a;
-					strcpy( &c[1], &c[2] );
+					strcpy_f( &c[1], &c[2] );
 					break;
 				default:
 					printf_local( "!! '%c' 不正な制御文字です。", c[1] );
@@ -595,7 +615,7 @@ int main( int argc, char **argv )
 	}
 
 	// 入力ファイルを開く
-	if( (infp=fopen(argv[1], "rb")) == NULL ){
+	if( (infp=fopen(input_file.c_str(), "rb")) == NULL ){
 		fprintf_local( stderr, "p6top6t2: 入力ファイルが開けません '%s'\n", argv[1] );
 		exit( 1 );
 	}
@@ -673,6 +693,10 @@ int main( int argc, char **argv )
 	free( fout );
 
 	printf_local( "ファイルの変換が完了しました。\n" );
+
+	// パラメータファイルを閉じる
+	if ( inparam ) fclose( inparam );
+	if ( outparam ) fclose( outparam );
 
 	return 0;
 }
