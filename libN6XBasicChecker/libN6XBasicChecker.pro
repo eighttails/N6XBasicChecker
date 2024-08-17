@@ -3,13 +3,10 @@
 # Project created by QtCreator 2012-05-02T21:58:16
 #
 #-------------------------------------------------
-
-QT       -= core gui
-
 TARGET = N6XBasicChecker
 TEMPLATE = lib
 CONFIG += staticlib
-
+CONFIG -= qt
 
 win32{
 #WindowsではBOOSTDIR環境変数をセット
@@ -19,25 +16,16 @@ QMAKE_CXXFLAGS += --param ggc-min-expand=25 --param ggc-min-heapsize=8192 -Wa,-m
 }
 INCLUDEPATH += $$PWD/../babel
 
-unix:!symbian {
-    maemo5 {
-        target.path = /opt/usr/lib
-    } else {
-        target.path = /usr/lib
-    }
-    INSTALLS += target
-}
-
 HEADERS += \
-    checker.h \
     babelwrap.h \
-    spiritwrap.h \
+    checker.h \
     checkercommon.h \
-    parserstatus.h
+    parserstatus.h \
+    spiritwrap.h
 
 SOURCES += \
-    checker.cpp \
     babelwrap.cpp \
+    checker.cpp \
     parserstatus.cpp
 
 

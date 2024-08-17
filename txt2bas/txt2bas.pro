@@ -1,7 +1,6 @@
 TEMPLATE = app
 CONFIG += console
-CONFIG -= app_bundle
-CONFIG -= qt
+CONFIG -= app_bundle qt
 
 INCLUDEPATH += $$PWD/../libtxt2bas
 

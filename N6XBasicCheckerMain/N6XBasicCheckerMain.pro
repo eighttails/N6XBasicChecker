@@ -3,13 +3,9 @@
 # Project created by QtCreator 2012-05-02T22:59:40
 #
 #-------------------------------------------------
-
-
-QT       -= core gui
-
 TARGET = N6XBasicChecker
 CONFIG   += console
-CONFIG   -= app_bundle
+CONFIG   -= app_bundle qt
 
 TEMPLATE = app
 
@@ -24,7 +20,7 @@ QMAKE_LFLAGS += -static-libgcc -static-libstdc++
 }
 
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../libN6XBasicChecker/release/ -lN6XBasicChecker -L$(BOOSTDIR)/lib/ -lboost_program_options-mt -lboost_regex-mt
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../libN6XBasicChecker/debug/ -lN6XBasicChecker -L$(BOOSTDIR)/lib/ -lboost_program_optionsmt-d -lboost_regex-mt-d
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../libN6XBasicChecker/debug/ -lN6XBasicChecker -L$(BOOSTDIR)/lib/ -lboost_program_options-mt -lboost_regex-mt
 else:unix: LIBS += -L$$OUT_PWD/../libN6XBasicChecker/ -lN6XBasicChecker -lboost_program_options -lboost_regex
 
 INCLUDEPATH += $$PWD/../libN6XBasicChecker $$PWD/../babel $PWD/../libtxt2bas
@@ -52,3 +48,4 @@ DISTFILES += \
     ../N6XBasicChecker.txt \
     ../bas2txt.txt \
     ../txt2bas.txt
+

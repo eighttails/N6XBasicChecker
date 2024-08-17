@@ -1,7 +1,6 @@
 TEMPLATE = app
 CONFIG += console
-CONFIG -= app_bundle
-CONFIG -= qt
+CONFIG -= app_bundle qt
 
 win32{
 QMAKE_LFLAGS = -static -static-libgcc -static-libstdc++

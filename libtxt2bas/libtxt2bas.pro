@@ -4,11 +4,10 @@
 #
 #-------------------------------------------------
 
-QT       -= core gui
-
 TARGET = txt2bas
 TEMPLATE = lib
 CONFIG += staticlib
+CONFIG -= qt
 
 SOURCES += \
     buffer.c \

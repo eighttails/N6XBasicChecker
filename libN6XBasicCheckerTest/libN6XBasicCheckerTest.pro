@@ -4,11 +4,10 @@
 #
 #-------------------------------------------------
 
-QT       += testlib
+QT += testlib
+QT -= gui
 
-QT       -= gui
-
-TARGET = tst_libn6xbasiccheckertest
+TARGET = libn6xbasiccheckertest
 CONFIG   += console
 CONFIG   -= app_bundle
 
@@ -24,7 +23,7 @@ QMAKE_LFLAGS = -static-libgcc -static-libstdc++
 }
 
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../libN6XBasicChecker/release/ -lN6XBasicChecker -L$(BOOSTDIR)/lib/ -lboost_regex-mt
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../libN6XBasicChecker/debug/ -lN6XBasicChecker -L$(BOOSTDIR)/lib/ -lboost_regex-mt-d
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../libN6XBasicChecker/debug/ -lN6XBasicChecker -L$(BOOSTDIR)/lib/ -lboost_regex-mt
 else:symbian: LIBS += -llibN6XBasicChecker
 else:unix: LIBS += -L$$OUT_PWD/../libN6XBasicChecker/ -lN6XBasicChecker -lboost_regex
 
