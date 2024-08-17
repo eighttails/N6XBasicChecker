@@ -1,14 +1,15 @@
 #!/bin/bash
+export SCRIPT_DIR=$(dirname $(readlink -f ${BASH_SOURCE:-$0}))
 
 #依存ライブラリ
 pacman -S --needed --noconfirm \
     --disable-download-timeout \
     $MINGW_PACKAGE_PREFIX-toolchain \
-    $MINGW_PACKAGE_PREFIX-qt5 \
     $MINGW_PACKAGE_PREFIX-boost \
     2>/dev/null
 
-export SCRIPT_DIR=$(dirname $(readlink -f ${BASH_SOURCE:-$0}))
+#Qt6をインストール
+$SCRIPT_DIR/MSYS2Private/qt6-static-private/qt.sh
 
 #並列ビルド
 MINGW32MAKE="mingw32-make -j$NUMBER_OF_PROCESSORS"
@@ -27,6 +28,6 @@ fi
 mkdir $N6XBC_DBUILD_DIR
 
 cd $N6XBC_DBUILD_DIR
-qmake $SCRIPT_DIR/../N6XBasicChecker.pro 
+$MINGW_PREFIX/local/qt6-static-private/bin/qmake $SCRIPT_DIR/../N6XBasicChecker.pro 
 $MINGW32MAKE release
 
