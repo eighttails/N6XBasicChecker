@@ -4,8 +4,8 @@
 // boost::spiritに関連するヘッダーおよびtypedef
 
 #include <boost/spirit/include/qi.hpp>
-#include <boost/spirit/include/phoenix.hpp>
-#include <boost/spirit/include/phoenix_stl.hpp>
+#include <boost/phoenix.hpp>
+#include <boost/phoenix/stl.hpp>
 
 #include <boost/format.hpp>
 #include <boost/algorithm/string.hpp>
