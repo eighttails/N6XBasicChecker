@@ -1,15 +1,16 @@
 TEMPLATE = app
 CONFIG += console
 CONFIG -= app_bundle qt
+QMAKE_LFLAGS = -static
 
+win32{
+QMAKE_LFLAGS = -static-libgcc -static-libstdc++
+}
 INCLUDEPATH += $$PWD/../libtxt2bas
 
 SOURCES += \
     txt2bas.c
 
-win32{
-QMAKE_LFLAGS = -static -static-libgcc -static-libstdc++
-}
 
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../libtxt2bas/release/ -ltxt2bas
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../libtxt2bas/debug/ -ltxt2bas

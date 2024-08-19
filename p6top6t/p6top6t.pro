@@ -1,11 +1,12 @@
 TEMPLATE = app
 CONFIG += console
 CONFIG -= app_bundle qt
+QMAKE_LFLAGS = -static
 
 #WindowsではBOOSTDIR環境変数をセット
 win32{
 INCLUDEPATH += $(BOOSTDIR)/include
-QMAKE_LFLAGS = -static -static-libgcc -static-libstdc++
+QMAKE_LFLAGS = -static-libgcc -static-libstdc++
 }
 
 SOURCES += \
